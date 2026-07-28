@@ -1461,11 +1461,32 @@
               <p>O que você já reconheceu sobre si até agora</p>
             </div>
           </div>
-          <div class="caminho-card" onclick="abrirPerguntasEstrategicas()">
+          <div class="caminho-card" onclick="mostrarVistaReconhecimento('comecar')">
             <div class="caminho-icone" style="background:rgba(107,50,38,0.15)">🕯️</div>
             <div class="caminho-textos">
               <h3>Começar</h3>
-              <p>Modo história — novas perguntas para se reconhecer</p>
+              <p>Novas perguntas para se reconhecer</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- VISTA: Começar — escolher entre História e Novo -->
+      <div class="reconhecimento-vista" id="vista-comecar">
+        <p class="reconhecimento-intro">Por onde você quer começar?</p>
+        <div class="caminhos-grid">
+          <div class="caminho-card" onclick="irPara('tela-historia')">
+            <div class="caminho-icone" style="background:rgba(184,147,90,0.12)">📜</div>
+            <div class="caminho-textos">
+              <h3>História</h3>
+              <p>O ser humano nas Escrituras, antes da segunda vinda</p>
+            </div>
+          </div>
+          <div class="caminho-card" onclick="abrirPerguntasEstrategicas()">
+            <div class="caminho-icone" style="background:rgba(107,50,38,0.15)">🕯️</div>
+            <div class="caminho-textos">
+              <h3>Novo</h3>
+              <p>Perguntas para se reconhecer, do zero</p>
             </div>
           </div>
         </div>
@@ -1491,6 +1512,15 @@
           <h4>Crie sua própria pergunta</h4>
           <input type="text" class="campo-livre" id="campo-pergunta-propria"
                  placeholder="O que você quer perguntar?" style="text-align:left;">
+
+          <div class="editor-opcao-comunidade" style="margin-top:14px;">
+            <div class="editor-opcao-comunidade-texto">
+              <h4>Guardar em Anotações</h4>
+              <p>Opcional — a pergunta some depois se você não guardar</p>
+            </div>
+            <div class="toggle" id="toggle-guardar-pergunta" onclick="this.classList.toggle('ligado')"></div>
+          </div>
+
           <button class="continuar-btn pronto" style="margin-top:14px;" onclick="enviarPerguntaPropria()">Perguntar</button>
         </div>
 
@@ -1655,7 +1685,7 @@
   <!-- TELA SOBRE — informações sobre o espaço -->
   <div class="tela" id="tela-sobre">
     <div class="cadastro-topo">
-      <button class="voltar-simples" onclick="irPara('tela-territorio')">‹ voltar</button>
+      <button class="voltar-simples" onclick="mostrarReconhecimentoInicio()">‹ voltar</button>
     </div>
     <div class="cadastro-conteudo">
       <h2 class="cadastro-titulo">Sobre</h2>
@@ -1668,6 +1698,59 @@
       <p class="interior-valor" style="line-height:1.7;">
         Se você chegou aqui perguntando "como faço algo assim", a resposta começa por reconhecer:
         você não precisa de um manual para começar. Volte para o Reconhecimento quando quiser continuar.
+      </p>
+    </div>
+  </div>
+
+  <div class="tela" id="tela-leitura">
+    <div class="cadastro-topo">
+      <button class="voltar-simples" onclick="mostrarReconhecimentoInicio()">‹ voltar</button>
+    </div>
+    <div class="cadastro-conteudo">
+      <h2 class="cadastro-titulo">A leitura muda o corpo</h2>
+      <p class="cadastro-subtitulo">Não é só a mente que se transforma.</p>
+
+      <p class="interior-valor" style="line-height:1.7; margin-bottom:16px;">
+        Ler devagar acalma o sistema nervoso antes mesmo de você entender o que leu.
+        A respiração se ajusta ao ritmo das frases; o corpo aprende, sem perceber,
+        que não precisa reagir a tudo com pressa.
+      </p>
+      <p class="interior-valor" style="line-height:1.7; margin-bottom:16px;">
+        O que você lê com atenção deixa de ser informação solta e vira parte de como você
+        interpreta o que vive depois. Uma palavra lida hoje pode ser exatamente o que falta
+        numa decisão de amanhã.
+      </p>
+      <p class="interior-valor" style="line-height:1.7;">
+        O acesso ao Ecossistema Digital da Consciência é isso: um lugar para voltar sempre
+        que precisar reler, reconhecer, e continuar — no seu tempo, sem pressa de terminar.
+      </p>
+
+      <button class="continuar-btn pronto" style="margin-top:20px;" onclick="irPara('tela-sobre')">Seguir para informações</button>
+    </div>
+  </div>
+
+  <div class="tela" id="tela-historia">
+    <div class="cadastro-topo">
+      <button class="voltar-simples" onclick="mostrarReconhecimentoInicio()">‹ voltar</button>
+    </div>
+    <div class="cadastro-conteudo">
+      <h2 class="cadastro-titulo">História</h2>
+      <p class="cadastro-subtitulo">O ser humano nas Escrituras, antes da segunda vinda.</p>
+
+      <p class="interior-valor" style="line-height:1.7; margin-bottom:16px;">
+        As Escrituras descrevem o tempo entre a primeira e a segunda vinda de Cristo como um período
+        de espera vigilante. Em Mateus 24, Jesus fala de guerras, fome e sinais nos céus — não como
+        promessa de medo, mas como aviso para que o coração não se acomode.
+      </p>
+      <p class="interior-valor" style="line-height:1.7; margin-bottom:16px;">
+        Paulo escreve, em 2 Timóteo 3, sobre "tempos difíceis" em que as pessoas amariam a si mesmas
+        mais do que a verdade — descrevendo não um povo distante, mas uma condição humana reconhecível
+        em qualquer época, inclusive na sua.
+      </p>
+      <p class="interior-valor" style="line-height:1.7;">
+        Pedro, em sua segunda carta, capítulo 3, lembra que "para o Senhor um dia é como mil anos" —
+        o tempo de espera não é atraso, é paciência. O convite das Escrituras não é adivinhar quando,
+        mas permanecer desperto enquanto isso não chega.
       </p>
     </div>
   </div>
@@ -2508,13 +2591,19 @@ const perguntas = [
 let identidadeRespostas = perguntas.map(() => null);
 let perguntaAtual = 0;
 let respostaTemp = null;
-let vistaReconhecimentoAtual = 'inicio'; // 'inicio' | 'identidade' | 'perguntas'
+let vistaReconhecimentoAtual = 'inicio'; // 'inicio' | 'comecar' | 'identidade' | 'estrategicas' | 'perguntas'
 
-// ---------- Navegação entre as 3 vistas do Reconhecimento ----------
+// ---------- Navegação entre as vistas do Reconhecimento ----------
 function mostrarVistaReconhecimento(nome) {
   vistaReconhecimentoAtual = nome;
   document.querySelectorAll('.reconhecimento-vista').forEach(v => v.classList.remove('ativa'));
-  const idPorNome = { inicio: 'vista-reconhecimento-inicio', identidade: 'vista-identidade', estrategicas: 'vista-estrategicas', perguntas: 'vista-perguntas' };
+  const idPorNome = {
+    inicio: 'vista-reconhecimento-inicio',
+    comecar: 'vista-comecar',
+    identidade: 'vista-identidade',
+    estrategicas: 'vista-estrategicas',
+    perguntas: 'vista-perguntas'
+  };
   document.getElementById(idPorNome[nome]).classList.add('ativa');
 }
 
@@ -2524,10 +2613,21 @@ function mostrarReconhecimentoInicio() {
 }
 
 function voltarReconhecimento() {
-  if (vistaReconhecimentoAtual === 'inicio') {
+  // Cada vista sabe para qual vista anterior voltar, respeitando a hierarquia:
+  // inicio ← comecar ← estrategicas ← perguntas
+  const vistaAnterior = {
+    inicio: null, // já está no topo — voltar sai para o Território
+    comecar: 'inicio',
+    identidade: 'inicio',
+    estrategicas: 'comecar',
+    perguntas: 'estrategicas'
+  };
+
+  const anterior = vistaAnterior[vistaReconhecimentoAtual];
+  if (anterior === null || anterior === undefined) {
     irPara('tela-territorio');
   } else {
-    mostrarVistaReconhecimento('inicio');
+    mostrarVistaReconhecimento(anterior);
   }
 }
 
@@ -2595,8 +2695,7 @@ function reescreverResposta(indice) {
 // as outras perguntas mostram só "Reconheça isso." sem o link.
 const perguntasEstrategicas = [
   { texto: "Como faço algo assim?", temInformacao: true },
-  { texto: "Por onde eu começo, de verdade?", temInformacao: false },
-  { texto: "Isso vai mudar alguma coisa em mim?", temInformacao: false }
+  { texto: "Isso vai mudar alguma coisa em mim?", temInformacao: true, destino: 'tela-leitura' }
 ];
 
 function abrirPerguntasEstrategicas() {
@@ -2618,17 +2717,22 @@ function enviarPerguntaPropria() {
   const texto = input.value.trim();
   if (texto.length < 3) return;
 
-  // Guarda a pergunta como anotação privada, para não se perder.
-  const agora = new Date();
-  const dataFormatada = agora.toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' });
-  const textoAnotacao = `Pergunta: ${texto}`;
-  anotacoes.unshift({ id: proximoIdAnotacao++, texto: textoAnotacao, data: dataFormatada, criadoEm: agora.toISOString(), partilhada: false });
-  renderizarAnotacoes();
-  adicionarNaFila('anotacao', { texto: textoAnotacao, partilhada: false });
-  if (estaOnline()) sincronizarFila();
+  const guardarEmAnotacoes = document.getElementById('toggle-guardar-pergunta').classList.contains('ligado');
+
+  if (guardarEmAnotacoes) {
+    const agora = new Date();
+    const dataFormatada = agora.toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' });
+    const textoAnotacao = `Pergunta: ${texto}`;
+    anotacoes.unshift({ id: proximoIdAnotacao++, texto: textoAnotacao, data: dataFormatada, criadoEm: agora.toISOString(), partilhada: false });
+    renderizarAnotacoes();
+    adicionarNaFila('anotacao', { texto: textoAnotacao, partilhada: false });
+    if (estaOnline()) sincronizarFila();
+  }
 
   input.value = '';
+  document.getElementById('toggle-guardar-pergunta').classList.remove('ligado');
   // Pergunta criada pela própria pessoa nunca tem página de informação associada.
+  // A resposta permanece fixa na tela — só sai quando a pessoa navegar para outro lugar.
   responderEstrategica({ texto, temInformacao: false });
 }
 
@@ -2637,13 +2741,20 @@ function responderEstrategica(perguntaOuIndice) {
     ? perguntasEstrategicas[perguntaOuIndice]
     : perguntaOuIndice;
 
+  // Perguntas com página de informação associada levam para lá automaticamente —
+  // a pessoa não precisa tocar em nada além da própria pergunta.
+  if (pergunta.temInformacao) {
+    const telaDestino = pergunta.destino || 'tela-sobre';
+    irPara(telaDestino);
+    return;
+  }
+
+  // Perguntas sem informação associada (incluindo a pergunta própria da pessoa)
+  // mostram a confirmação na tela, sem navegar para lugar nenhum.
   const container = document.getElementById('resposta-estrategica');
   container.innerHTML = `
     <h4>${pergunta.texto}</h4>
     <p style="font-family:'Fraunces', serif; font-size:15px; color:var(--osso);">Reconheça isso.</p>
-    ${pergunta.temInformacao
-      ? `<button class="continuar-btn pronto" style="margin-top:4px;" onclick="irPara('tela-sobre')">Seguir para informações</button>`
-      : ''}
   `;
   container.style.display = 'block';
 }
