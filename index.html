@@ -2,8 +2,15 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Ecossistema Digital da Consciência</title>
+<meta name="description" content="Um espaço de presença, reconhecimento e consciência">
+<meta name="theme-color" content="#0B0B0A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Ecossistema">
+<meta name="mobile-web-app-capable" content="yes">
+<link rel="manifest" href="/manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -137,14 +144,31 @@
     opacity: 0;
     animation: surgir 1.4s ease forwards 1.45s;
   }
+  .entrada-nome {
+    margin-top: 28px;
+    font-size: 12px;
+    color: var(--osso-fraco);
+    letter-spacing: 0.04em;
+    opacity: 0;
+    animation: surgir 1.4s ease forwards 1.55s;
+  }
   .entrada-rodape {
     position: absolute;
     bottom: 36px;
-    font-size: 11px;
-    color: var(--osso-fraco);
+    font-size: 12px;
+    color: var(--dourado-fraco);
     opacity: 0;
-    animation: surgir 1.4s ease forwards 1.6s;
+    animation: surgir 1.4s ease forwards 1.7s;
     letter-spacing: 0.03em;
+    text-decoration: none;
+    border: 1px solid rgba(184, 147, 90, 0.25);
+    border-radius: 100px;
+    padding: 10px 18px;
+    transition: border-color 0.3s ease, background 0.3s ease;
+  }
+  .entrada-rodape:hover {
+    border-color: var(--dourado-fraco);
+    background: rgba(184, 147, 90, 0.06);
   }
 
   @keyframes surgir {
@@ -1351,7 +1375,8 @@
     <p class="subtitulo-marca">um espaço para se reconhecer</p>
     <button class="entrar-btn" onclick="irPara('tela-login')">Entrar</button>
     <button class="link-criar-conta" onclick="irPara('tela-cadastro')">Criar minha conta</button>
-    <p class="entrada-rodape">J Vitor Fernandes</p>
+    <p class="entrada-nome">J Vitor Fernandes</p>
+    <a class="entrada-rodape" href="https://www.instagram.com/01jvitorfernandes?igsh=MWdrMzJiemVhMmR5dg==" target="_blank" rel="noopener noreferrer">@01jvitorfernandes</a>
   </div>
 
   <!-- TELA LOGIN -->
@@ -1649,7 +1674,7 @@
   <div class="tela" id="tela-livro">
     <div class="livro-pagina">
       <div class="livro-topo-fixo">
-        <button class="voltar-simples voltar-clara" onclick="irPara('tela-territorio')">‹ voltar</button>
+        <button class="voltar-simples voltar-clara" onclick="voltarTela('tela-territorio')">‹ voltar</button>
       </div>
 
       <div class="livro-citacoes-fundo">
@@ -1685,7 +1710,7 @@
   <!-- TELA SOBRE — informações sobre o espaço -->
   <div class="tela" id="tela-sobre">
     <div class="cadastro-topo">
-      <button class="voltar-simples" onclick="mostrarReconhecimentoInicio()">‹ voltar</button>
+      <button class="voltar-simples" onclick="voltarTela('tela-reconhecimento')">‹ voltar</button>
     </div>
     <div class="cadastro-conteudo">
       <h2 class="cadastro-titulo">Sobre</h2>
@@ -1704,7 +1729,7 @@
 
   <div class="tela" id="tela-leitura">
     <div class="cadastro-topo">
-      <button class="voltar-simples" onclick="mostrarReconhecimentoInicio()">‹ voltar</button>
+      <button class="voltar-simples" onclick="voltarTela('tela-reconhecimento')">‹ voltar</button>
     </div>
     <div class="cadastro-conteudo">
       <h2 class="cadastro-titulo">A leitura muda o corpo</h2>
@@ -1731,7 +1756,7 @@
 
   <div class="tela" id="tela-historia">
     <div class="cadastro-topo">
-      <button class="voltar-simples" onclick="mostrarReconhecimentoInicio()">‹ voltar</button>
+      <button class="voltar-simples" onclick="voltarTela('tela-reconhecimento')">‹ voltar</button>
     </div>
     <div class="cadastro-conteudo">
       <h2 class="cadastro-titulo">História</h2>
@@ -1757,7 +1782,7 @@
 
   <div class="tela" id="tela-interior">
     <div class="cadastro-topo">
-      <button class="voltar-simples" onclick="irPara('tela-territorio')">‹ voltar</button>
+      <button class="voltar-simples" onclick="voltarTela('tela-territorio')">‹ voltar</button>
     </div>
     <div class="cadastro-conteudo">
       <h2 class="cadastro-titulo">Interior</h2>
@@ -1788,7 +1813,7 @@
   <!-- TELA PAINEL — edição do Ecossistema, acesso restrito ao fundador -->
   <div class="tela" id="tela-painel">
     <div class="cadastro-topo">
-      <button class="voltar-simples" onclick="irPara('tela-territorio')">‹ voltar</button>
+      <button class="voltar-simples" onclick="voltarTela('tela-territorio')">‹ voltar</button>
     </div>
     <div class="cadastro-conteudo">
       <h2 class="cadastro-titulo">Painel</h2>
@@ -2041,11 +2066,29 @@ async function carregarDadosDoServidor() {
 }
 
 // ============================================================
-// NAVEGAÇÃO ENTRE TELAS
+// NAVEGAÇÃO ENTRE TELAS (com histórico para o Voltar)
 // ============================================================
-function irPara(idTela) {
+const historicoTelas = [];
+let telaAtualId = 'tela-entrada';
+
+// Telas de autenticação / saída: não entram no histórico de "cards"
+const telasSemHistorico = new Set(['tela-entrada', 'tela-login', 'tela-cadastro']);
+
+function irPara(idTela, opcoes = {}) {
+  const { pularHistorico = false } = opcoes;
+  const destino = document.getElementById(idTela);
+  if (!destino) return;
+
+  // Guarda a tela atual no histórico antes de sair (exceto auth e quando for "voltar")
+  if (!pularHistorico && telaAtualId && telaAtualId !== idTela && !telasSemHistorico.has(telaAtualId)) {
+    historicoTelas.push(telaAtualId);
+    // Evita histórico infinito
+    if (historicoTelas.length > 30) historicoTelas.shift();
+  }
+
   document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'));
-  document.getElementById(idTela).classList.add('ativa');
+  destino.classList.add('ativa');
+  telaAtualId = idTela;
 
   const navInferior = document.getElementById('nav-inferior');
   const telasComNav = ['tela-territorio', 'tela-criacao', 'tela-comunidade'];
@@ -2058,6 +2101,17 @@ function irPara(idTela) {
   } else {
     navInferior.classList.remove('visivel');
   }
+}
+
+/** Volta para o card/tela anterior. Se não houver histórico, cai no Território (ou Entrada se deslogado). */
+function voltarTela(fallback) {
+  const anterior = historicoTelas.pop();
+  if (anterior) {
+    irPara(anterior, { pularHistorico: true });
+    return;
+  }
+  const destino = fallback || (dadosConta && dadosConta.nome ? 'tela-territorio' : 'tela-entrada');
+  irPara(destino, { pularHistorico: true });
 }
 
 // Data de hoje formatada
@@ -2094,6 +2148,7 @@ async function sairDaConta() {
   agendaItens = [];
   identidadeRespostas = perguntas.map(() => null);
   localStorage.removeItem('ecossistema_sessao'); // encerra a sessão salva
+  historicoTelas.length = 0; // limpa o histórico de navegação
   // Limpa os campos de login/cadastro para a próxima pessoa
   const camposParaLimpar = ['login-email', 'login-senha', 'campo-nome', 'campo-cpf',
                              'campo-email', 'campo-email-confirma', 'campo-senha', 'campo-senha-confirma'];
@@ -2101,7 +2156,7 @@ async function sairDaConta() {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
-  irPara('tela-entrada');
+  irPara('tela-entrada', { pularHistorico: true });
 }
 
 // ============================================================
@@ -3507,6 +3562,14 @@ function animar() {
 }
 animar();
 
+// ========== SERVICE WORKER (offline / PWA) ==========
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(reg => console.log('Service Worker registrado:', reg.scope))
+      .catch(err => console.log('Falha no Service Worker:', err));
+  });
+}
 </script>
 </body>
 </html>
