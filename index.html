@@ -2,15 +2,8 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Ecossistema Digital da Consciência</title>
-<meta name="description" content="Um espaço de presença, reconhecimento e consciência">
-<meta name="theme-color" content="#0B0B0A">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Ecossistema">
-<meta name="mobile-web-app-capable" content="yes">
-<link rel="manifest" href="/manifest.json">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -144,31 +137,14 @@
     opacity: 0;
     animation: surgir 1.4s ease forwards 1.45s;
   }
-  .entrada-nome {
-    margin-top: 28px;
-    font-size: 12px;
-    color: var(--osso-fraco);
-    letter-spacing: 0.04em;
-    opacity: 0;
-    animation: surgir 1.4s ease forwards 1.55s;
-  }
   .entrada-rodape {
     position: absolute;
     bottom: 36px;
-    font-size: 12px;
-    color: var(--dourado-fraco);
+    font-size: 11px;
+    color: var(--osso-fraco);
     opacity: 0;
-    animation: surgir 1.4s ease forwards 1.7s;
+    animation: surgir 1.4s ease forwards 1.6s;
     letter-spacing: 0.03em;
-    text-decoration: none;
-    border: 1px solid rgba(184, 147, 90, 0.25);
-    border-radius: 100px;
-    padding: 10px 18px;
-    transition: border-color 0.3s ease, background 0.3s ease;
-  }
-  .entrada-rodape:hover {
-    border-color: var(--dourado-fraco);
-    background: rgba(184, 147, 90, 0.06);
   }
 
   @keyframes surgir {
@@ -1375,8 +1351,7 @@
     <p class="subtitulo-marca">um espaço para se reconhecer</p>
     <button class="entrar-btn" onclick="irPara('tela-login')">Entrar</button>
     <button class="link-criar-conta" onclick="irPara('tela-cadastro')">Criar minha conta</button>
-    <p class="entrada-nome">J Vitor Fernandes</p>
-    <a class="entrada-rodape" href="https://www.instagram.com/01jvitorfernandes?igsh=MWdrMzJiemVhMmR5dg==" target="_blank" rel="noopener noreferrer">@01jvitorfernandes</a>
+    <p class="entrada-rodape">J Vitor Fernandes</p>
   </div>
 
   <!-- TELA LOGIN -->
@@ -1674,7 +1649,7 @@
   <div class="tela" id="tela-livro">
     <div class="livro-pagina">
       <div class="livro-topo-fixo">
-        <button class="voltar-simples voltar-clara" onclick="voltarTela('tela-territorio')">‹ voltar</button>
+        <button class="voltar-simples voltar-clara" onclick="irPara('tela-territorio')">‹ voltar</button>
       </div>
 
       <div class="livro-citacoes-fundo">
@@ -1720,16 +1695,34 @@
         Este é um espaço de reconhecimento — não de instrução. As perguntas não têm resposta certa;
         elas existem para que você perceba o que já está em você, antes de buscar fora.
       </p>
-      <p class="interior-valor" style="line-height:1.7;">
+      <p class="interior-valor" style="line-height:1.7; margin-bottom:16px;">
         Se você chegou aqui perguntando "como faço algo assim", a resposta começa por reconhecer:
         você não precisa de um manual para começar. Volte para o Reconhecimento quando quiser continuar.
       </p>
+
+      <p class="secao-label" style="margin-top:8px;">Continuar lendo</p>
+      <div class="caminho-card" onclick="irPara('tela-leitura')" style="margin-bottom:20px;">
+        <div class="caminho-icone" style="background:rgba(184,147,90,0.12)">📖</div>
+        <div class="caminho-textos">
+          <h3>A leitura muda o corpo</h3>
+          <p>Não é só a mente que se transforma</p>
+        </div>
+      </div>
+
+      <button class="continuar-btn pronto" style="margin-top:8px; width:100%;"
+        onclick="mostrarVistaReconhecimento('comecar'); irPara('tela-reconhecimento');">
+        Novo — começar o reconhecimento
+      </button>
+      <button class="entrar-btn" style="animation:none; opacity:1; margin-top:12px; width:100%;"
+        onclick="mostrarReconhecimentoInicio()">
+        Voltar às perguntas
+      </button>
     </div>
   </div>
 
   <div class="tela" id="tela-leitura">
     <div class="cadastro-topo">
-      <button class="voltar-simples" onclick="voltarTela('tela-reconhecimento')">‹ voltar</button>
+      <button class="voltar-simples" onclick="voltarTela('tela-sobre')">‹ voltar</button>
     </div>
     <div class="cadastro-conteudo">
       <h2 class="cadastro-titulo">A leitura muda o corpo</h2>
@@ -1756,7 +1749,7 @@
 
   <div class="tela" id="tela-historia">
     <div class="cadastro-topo">
-      <button class="voltar-simples" onclick="voltarTela('tela-reconhecimento')">‹ voltar</button>
+      <button class="voltar-simples" onclick="mostrarReconhecimentoInicio()">‹ voltar</button>
     </div>
     <div class="cadastro-conteudo">
       <h2 class="cadastro-titulo">História</h2>
@@ -1782,7 +1775,7 @@
 
   <div class="tela" id="tela-interior">
     <div class="cadastro-topo">
-      <button class="voltar-simples" onclick="voltarTela('tela-territorio')">‹ voltar</button>
+      <button class="voltar-simples" onclick="irPara('tela-territorio')">‹ voltar</button>
     </div>
     <div class="cadastro-conteudo">
       <h2 class="cadastro-titulo">Interior</h2>
@@ -1813,7 +1806,7 @@
   <!-- TELA PAINEL — edição do Ecossistema, acesso restrito ao fundador -->
   <div class="tela" id="tela-painel">
     <div class="cadastro-topo">
-      <button class="voltar-simples" onclick="voltarTela('tela-territorio')">‹ voltar</button>
+      <button class="voltar-simples" onclick="irPara('tela-territorio')">‹ voltar</button>
     </div>
     <div class="cadastro-conteudo">
       <h2 class="cadastro-titulo">Painel</h2>
@@ -1863,13 +1856,16 @@
   <!-- NAV INFERIOR -->
   <div id="nav-inferior">
     <button class="nav-item ativo" data-tela="tela-territorio" onclick="irPara('tela-territorio')">
-      <span class="nav-icone">◐</span>Território
+      <span class="nav-icone">◐</span>
+      <span class="nav-rotulo">Território</span>
     </button>
     <button class="nav-item" data-tela="tela-criacao" onclick="irPara('tela-criacao')">
-      <span class="nav-icone">✎</span>Criação
+      <span class="nav-icone">✎</span>
+      <span class="nav-rotulo">Criação</span>
     </button>
     <button class="nav-item" data-tela="tela-comunidade" onclick="irPara('tela-comunidade')">
-      <span class="nav-icone">◈</span>Comunidade
+      <span class="nav-icone">◈</span>
+      <span class="nav-rotulo">Comunidade</span>
     </button>
   </div>
 
@@ -2070,8 +2066,6 @@ async function carregarDadosDoServidor() {
 // ============================================================
 const historicoTelas = [];
 let telaAtualId = 'tela-entrada';
-
-// Telas de autenticação / saída: não entram no histórico de "cards"
 const telasSemHistorico = new Set(['tela-entrada', 'tela-login', 'tela-cadastro']);
 
 function irPara(idTela, opcoes = {}) {
@@ -2079,10 +2073,8 @@ function irPara(idTela, opcoes = {}) {
   const destino = document.getElementById(idTela);
   if (!destino) return;
 
-  // Guarda a tela atual no histórico antes de sair (exceto auth e quando for "voltar")
   if (!pularHistorico && telaAtualId && telaAtualId !== idTela && !telasSemHistorico.has(telaAtualId)) {
     historicoTelas.push(telaAtualId);
-    // Evita histórico infinito
     if (historicoTelas.length > 30) historicoTelas.shift();
   }
 
@@ -2103,7 +2095,6 @@ function irPara(idTela, opcoes = {}) {
   }
 }
 
-/** Volta para o card/tela anterior. Se não houver histórico, cai no Território (ou Entrada se deslogado). */
 function voltarTela(fallback) {
   const anterior = historicoTelas.pop();
   if (anterior) {
@@ -2147,8 +2138,8 @@ async function sairDaConta() {
   anotacoes = [];
   agendaItens = [];
   identidadeRespostas = perguntas.map(() => null);
+  identidadeProprias = [];
   localStorage.removeItem('ecossistema_sessao'); // encerra a sessão salva
-  historicoTelas.length = 0; // limpa o histórico de navegação
   // Limpa os campos de login/cadastro para a próxima pessoa
   const camposParaLimpar = ['login-email', 'login-senha', 'campo-nome', 'campo-cpf',
                              'campo-email', 'campo-email-confirma', 'campo-senha', 'campo-senha-confirma'];
@@ -2156,7 +2147,7 @@ async function sairDaConta() {
     const el = document.getElementById(id);
     if (el) el.value = '';
   });
-  irPara('tela-entrada', { pularHistorico: true });
+  irPara('tela-entrada');
 }
 
 // ============================================================
@@ -2168,7 +2159,8 @@ function salvarSessao() {
   try {
     localStorage.setItem('ecossistema_sessao', JSON.stringify({
       conta: dadosConta,
-      identidade: identidadeRespostas
+      identidade: identidadeRespostas,
+      identidadeProprias: identidadeProprias
     }));
   } catch (e) {
     // Armazenamento indisponível (ex: modo privado) — a sessão simplesmente não persiste
@@ -2185,6 +2177,9 @@ function carregarSessaoSalva() {
         dadosConta = dados.conta;
         if (Array.isArray(dados.identidade) && dados.identidade.length === perguntas.length) {
           identidadeRespostas = dados.identidade;
+        }
+        if (Array.isArray(dados.identidadeProprias)) {
+          identidadeProprias = dados.identidadeProprias;
         }
       } else {
         dadosConta = dados;
@@ -2256,13 +2251,58 @@ function aplicarConfiguracoes() {
     if (el) el.textContent = valor;
   });
 
-  // "Território" aparece em vários lugares (saudação, nav inferior) —
-  // por ora aplicamos só ao rótulo do menu de navegação, que é o rótulo direto da seção.
-  const navTerritorio = document.querySelector('.nav-item[data-tela="tela-territorio"]');
-  if (navTerritorio) {
-    const textoNode = Array.from(navTerritorio.childNodes).find(n => n.nodeType === Node.TEXT_NODE);
-    if (textoNode) textoNode.textContent = cfg.nomeTerritorio;
+  // Rótulos da navegação inferior (um único texto por botão)
+  const mapaNav = {
+    'tela-territorio': cfg.nomeTerritorio,
+    'tela-criacao': cfg.nomeCriacao === 'Sua criação' ? 'Criação' : cfg.nomeCriacao,
+    'tela-comunidade': cfg.nomeComunidade
+  };
+  Object.entries(mapaNav).forEach(([tela, nome]) => {
+    const btn = document.querySelector(`.nav-item[data-tela="${tela}"] .nav-rotulo`);
+    if (btn && nome) btn.textContent = nome;
+  });
+
+  // Versículo do dia (roda automaticamente; o Painel ainda pode fixar um)
+  aplicarVersiculoDoDia(cfg);
+}
+
+// Banco de escrituras para o card do Território — muda a cada dia
+const versiculosDoDia = [
+  { citacao: '"O Reino de Deus não vem com aparência visível... porque o Reino de Deus está entre vós."', fonte: 'LUCAS 17:20-21' },
+  { citacao: '"Vós sois a luz do mundo. Não se pode esconder uma cidade situada sobre um monte."', fonte: 'MATEUS 5:14' },
+  { citacao: '"Conhecereis a verdade, e a verdade vos libertará."', fonte: 'JOÃO 8:32' },
+  { citacao: '"O Senhor é o meu pastor; nada me faltará."', fonte: 'SALMOS 23:1' },
+  { citacao: '"Tudo posso naquele que me fortalece."', fonte: 'FILIPENSES 4:13' },
+  { citacao: '"Não temas, porque eu sou contigo."', fonte: 'ISAÍAS 41:10' },
+  { citacao: '"Buscai primeiro o Reino de Deus, e a sua justiça, e todas estas coisas vos serão acrescentadas."', fonte: 'MATEUS 6:33' },
+  { citacao: '"Aquele que habita no esconderijo do Altíssimo, à sombra do Onipotente descansará."', fonte: 'SALMOS 91:1' },
+  { citacao: '"Sede quietos, e sabei que eu sou Deus."', fonte: 'SALMOS 46:10' },
+  { citacao: '"O Espírito da verdade... habita convosco, e estará em vós."', fonte: 'JOÃO 14:17' },
+  { citacao: '"Renova-vos no espírito do vosso sentido."', fonte: 'EFÉSIOS 4:23' },
+  { citacao: '"A fé é o firme fundamento das coisas que se esperam."', fonte: 'HEBREUS 11:1' },
+  { citacao: '"Bem-aventurados os que têm fome e sede de justiça, porque eles serão fartos."', fonte: 'MATEUS 5:6' },
+  { citacao: '"Onde estiver o vosso tesouro, aí estará também o vosso coração."', fonte: 'MATEUS 6:21' }
+];
+
+function aplicarVersiculoDoDia(cfg) {
+  const elCitacao = document.getElementById('frase-dia-citacao');
+  const elFonte = document.getElementById('frase-dia-fonte');
+  if (!elCitacao || !elFonte) return;
+
+  // Se o fundador fixou uma frase diferente do padrão no Painel, respeita
+  const padrao = configuracoesPadrao.fraseCitacao;
+  if (cfg.fraseCitacao && cfg.fraseCitacao !== padrao) {
+    elCitacao.textContent = cfg.fraseCitacao;
+    elFonte.textContent = cfg.fraseFonte || '';
+    return;
   }
+
+  const agora = new Date();
+  const inicio = new Date(agora.getFullYear(), 0, 0);
+  const diaDoAno = Math.floor((agora - inicio) / 86400000);
+  const v = versiculosDoDia[diaDoAno % versiculosDoDia.length];
+  elCitacao.textContent = v.citacao;
+  elFonte.textContent = v.fonte;
 }
 
 function renderizarPainel() {
@@ -2644,6 +2684,8 @@ const perguntas = [
 
 // identidadeRespostas[i] = null (ainda não respondida) ou { resposta, partilhada }
 let identidadeRespostas = perguntas.map(() => null);
+// Perguntas próprias (Novo) salvas em Identidade, com reflexão das Escrituras
+let identidadeProprias = [];
 let perguntaAtual = 0;
 let respostaTemp = null;
 let vistaReconhecimentoAtual = 'inicio'; // 'inicio' | 'comecar' | 'identidade' | 'estrategicas' | 'perguntas'
@@ -2698,16 +2740,32 @@ function renderizarIdentidade() {
     .map((r, i) => (r ? { ...r, indice: i } : null))
     .filter(Boolean);
 
-  if (respondidas.length === 0) {
+  const propriasHtml = identidadeProprias.map((item, i) => `
+    <div class="identidade-item">
+      <div class="identidade-item-topo">
+        <span class="identidade-pergunta">${item.pergunta}</span>
+      </div>
+      <p class="identidade-resposta">${item.resposta}</p>
+      ${item.fonte ? `<p style="font-size:11px;color:var(--dourado-fraco);letter-spacing:0.05em;margin:-4px 0 12px;">${item.fonte}</p>` : ''}
+      <div class="identidade-item-rodape">
+        <span class="identidade-partilhar" onclick="alternarPartilhaPropria(${i})">
+          <span class="toggle ${item.partilhada ? 'ligado' : ''}"></span> partilhar na comunidade
+        </span>
+        <button class="identidade-reescrever" onclick="removerPerguntaPropria(${i})">remover</button>
+      </div>
+    </div>
+  `).join('');
+
+  if (respondidas.length === 0 && identidadeProprias.length === 0) {
     lista.innerHTML = `
       <div class="anotacao-vazia">
-        <p>Ainda não há respostas aqui.<br>Toque em "Começar" para dar os primeiros passos.</p>
+        <p>Ainda não há respostas aqui.<br>Toque em "Começar" ou crie sua própria pergunta.</p>
       </div>
     `;
     return;
   }
 
-  lista.innerHTML = respondidas.map(r => `
+  const fixasHtml = respondidas.map(r => `
     <div class="identidade-item">
       <div class="identidade-item-topo">
         <span class="identidade-pergunta">${perguntas[r.indice].texto}</span>
@@ -2721,6 +2779,31 @@ function renderizarIdentidade() {
       </div>
     </div>
   `).join('');
+
+  lista.innerHTML = propriasHtml + fixasHtml;
+}
+
+function alternarPartilhaPropria(indice) {
+  const item = identidadeProprias[indice];
+  if (!item) return;
+  item.partilhada = !item.partilhada;
+  salvarSessao();
+  renderizarIdentidade();
+  renderizarComunidade();
+  adicionarNaFila('identidade', {
+    pergunta: item.pergunta,
+    resposta: item.resposta,
+    partilhada: item.partilhada
+  });
+  if (estaOnline()) sincronizarFila();
+  mostrarConfirmacao(item.partilhada ? 'Enviado à comunidade' : 'Removido da comunidade');
+}
+
+function removerPerguntaPropria(indice) {
+  identidadeProprias.splice(indice, 1);
+  salvarSessao();
+  renderizarIdentidade();
+  mostrarConfirmacao('Removido de Identidade');
 }
 
 function alternarPartilhaIdentidade(indice) {
@@ -2767,17 +2850,55 @@ function renderizarPerguntasEstrategicas() {
   ).join('');
 }
 
+// Respostas alinhadas às Escrituras para perguntas criadas pela própria pessoa
+const reflexoesEscritura = [
+  { chave: /medo|temor|ansiedade|preocup/i, texto: 'Não temas, porque Eu sou contigo. (Isaías 41:10) — O reconhecimento começa quando você deixa de carregar sozinho o que já foi entregue.', fonte: 'Isaías 41:10' },
+  { chave: /amor|amar|coração/i, texto: 'Onde estiver o vosso tesouro, aí estará também o vosso coração. (Mateus 6:21) — O que você ama revela o que você serve.', fonte: 'Mateus 6:21' },
+  { chave: /verdade|mentira|engana/i, texto: 'Conhecereis a verdade, e a verdade vos libertará. (João 8:32) — Ver com clareza é o primeiro passo para ser livre.', fonte: 'João 8:32' },
+  { chave: /fé|crer|acreditar|esperan/i, texto: 'A fé é o firme fundamento das coisas que se esperam. (Hebreus 11:1) — O que você ainda não vê pode já estar sendo formado em você.', fonte: 'Hebreus 11:1' },
+  { chave: /paz|silêncio|quiet|descanso/i, texto: 'Sede quietos, e sabei que eu sou Deus. (Salmos 46:10) — A paz não é ausência de movimento; é presença que não se abala.', fonte: 'Salmos 46:10' },
+  { chave: /luz|escuro|treva|ver/i, texto: 'Vós sois a luz do mundo. (Mateus 5:14) — O que você reconhece em si também ilumina o caminho de outros.', fonte: 'Mateus 5:14' },
+  { chave: /força|fraco|cansad|poder/i, texto: 'Tudo posso naquele que me fortalece. (Filipenses 4:13) — A força que falta em você pode estar em quem habita em você.', fonte: 'Filipenses 4:13' },
+  { chave: /perdão|perdoar|culpa|erro/i, texto: 'Perdoai, e sereis perdoados. (Lucas 6:37) — Soltar o outro também solta o que pesava em você.', fonte: 'Lucas 6:37' },
+  { chave: /caminho|direção|o que fazer|decidir/i, texto: 'Buscai primeiro o Reino de Deus, e a sua justiça. (Mateus 6:33) — A direção certa nasce do que é prioritário, não do que é urgente.', fonte: 'Mateus 6:33' },
+  { chave: /identidade|quem sou|propósito|chamado/i, texto: 'O Reino de Deus está entre vós. (Lucas 17:21) — O que você procura fora pode já estar habitando dentro.', fonte: 'Lucas 17:21' }
+];
+
+function reflexaoParaPergunta(textoPergunta) {
+  for (const r of reflexoesEscritura) {
+    if (r.chave.test(textoPergunta)) return r;
+  }
+  // Padrão: convite ao reconhecimento interior
+  return {
+    texto: 'O Reino de Deus está entre vós. (Lucas 17:21) — Antes de buscar a resposta fora, reconheça o que já se move em você ao fazer essa pergunta.',
+    fonte: 'Lucas 17:21'
+  };
+}
+
 function enviarPerguntaPropria() {
   const input = document.getElementById('campo-pergunta-propria');
   const texto = input.value.trim();
   if (texto.length < 3) return;
 
   const guardarEmAnotacoes = document.getElementById('toggle-guardar-pergunta').classList.contains('ligado');
+  const reflexao = reflexaoParaPergunta(texto);
+
+  // Sempre organiza em Identidade — a pessoa publica quando quiser
+  const item = {
+    id: 'prop_' + Date.now(),
+    pergunta: texto,
+    resposta: reflexao.texto,
+    fonte: reflexao.fonte,
+    partilhada: false,
+    criadoEm: new Date().toISOString()
+  };
+  identidadeProprias.unshift(item);
+  salvarSessao();
 
   if (guardarEmAnotacoes) {
     const agora = new Date();
     const dataFormatada = agora.toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' });
-    const textoAnotacao = `Pergunta: ${texto}`;
+    const textoAnotacao = `Pergunta: ${texto}\n${reflexao.texto}`;
     anotacoes.unshift({ id: proximoIdAnotacao++, texto: textoAnotacao, data: dataFormatada, criadoEm: agora.toISOString(), partilhada: false });
     renderizarAnotacoes();
     adicionarNaFila('anotacao', { texto: textoAnotacao, partilhada: false });
@@ -2786,9 +2907,16 @@ function enviarPerguntaPropria() {
 
   input.value = '';
   document.getElementById('toggle-guardar-pergunta').classList.remove('ligado');
-  // Pergunta criada pela própria pessoa nunca tem página de informação associada.
-  // A resposta permanece fixa na tela — só sai quando a pessoa navegar para outro lugar.
-  responderEstrategica({ texto, temInformacao: false });
+
+  const container = document.getElementById('resposta-estrategica');
+  container.innerHTML = `
+    <h4 style="margin-bottom:10px;">${texto}</h4>
+    <p style="font-family:'Fraunces', serif; font-size:15px; color:var(--osso); line-height:1.6; margin-bottom:8px;">${reflexao.texto}</p>
+    <p style="font-size:11px; color:var(--dourado-fraco); letter-spacing:0.06em; margin-bottom:16px;">${reflexao.fonte}</p>
+    <p style="font-size:12px; color:var(--osso-fraco); margin-bottom:14px;">Salvo em Identidade. Você publica quando quiser.</p>
+    <button class="continuar-btn pronto" onclick="abrirIdentidade()">Ver em Identidade</button>
+  `;
+  container.style.display = 'block';
 }
 
 function responderEstrategica(perguntaOuIndice) {
@@ -2796,16 +2924,12 @@ function responderEstrategica(perguntaOuIndice) {
     ? perguntasEstrategicas[perguntaOuIndice]
     : perguntaOuIndice;
 
-  // Perguntas com página de informação associada levam para lá automaticamente —
-  // a pessoa não precisa tocar em nada além da própria pergunta.
   if (pergunta.temInformacao) {
     const telaDestino = pergunta.destino || 'tela-sobre';
     irPara(telaDestino);
     return;
   }
 
-  // Perguntas sem informação associada (incluindo a pergunta própria da pessoa)
-  // mostram a confirmação na tela, sem navegar para lugar nenhum.
   const container = document.getElementById('resposta-estrategica');
   container.innerHTML = `
     <h4>${pergunta.texto}</h4>
@@ -3562,14 +3686,6 @@ function animar() {
 }
 animar();
 
-// ========== SERVICE WORKER (offline / PWA) ==========
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js')
-      .then(reg => console.log('Service Worker registrado:', reg.scope))
-      .catch(err => console.log('Falha no Service Worker:', err));
-  });
-}
 </script>
 </body>
 </html>
