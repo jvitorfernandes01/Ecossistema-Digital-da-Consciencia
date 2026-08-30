@@ -1555,7 +1555,7 @@
       <div style="position:relative;">
         <div class="avatar-circulo" onclick="alternarMenuPerfil()">V</div>
         <div id="menu-perfil" class="menu-perfil">
-          <button onclick="irPara('tela-interior'); fecharMenuPerfil();">◐ Interior</button>
+          <button onclick="preencherInterior(); irPara('tela-interior'); fecharMenuPerfil();">◐ Interior</button>
           <button onclick="irPara('tela-sobre'); fecharMenuPerfil();">i Infor</button>
           <button id="btn-menu-painel" onclick="irPara('tela-painel'); fecharMenuPerfil(); renderizarPainel();" style="display:none;">✎ Painel</button>
           <button onclick="sairDaConta()">⏻ Sair</button>
@@ -1685,7 +1685,7 @@
   <!-- TELA SOBRE — informações sobre o espaço -->
   <div class="tela" id="tela-sobre">
     <div class="cadastro-topo">
-      <button class="voltar-simples" onclick="voltarTela('tela-reconhecimento')">‹ voltar</button>
+      <button class="voltar-simples" onclick="mostrarReconhecimentoInicio()">‹ voltar</button>
     </div>
     <div class="cadastro-conteudo">
       <h2 class="cadastro-titulo">Sobre</h2>
@@ -1695,34 +1695,16 @@
         Este é um espaço de reconhecimento — não de instrução. As perguntas não têm resposta certa;
         elas existem para que você perceba o que já está em você, antes de buscar fora.
       </p>
-      <p class="interior-valor" style="line-height:1.7; margin-bottom:16px;">
+      <p class="interior-valor" style="line-height:1.7;">
         Se você chegou aqui perguntando "como faço algo assim", a resposta começa por reconhecer:
         você não precisa de um manual para começar. Volte para o Reconhecimento quando quiser continuar.
       </p>
-
-      <p class="secao-label" style="margin-top:8px;">Continuar lendo</p>
-      <div class="caminho-card" onclick="irPara('tela-leitura')" style="margin-bottom:20px;">
-        <div class="caminho-icone" style="background:rgba(184,147,90,0.12)">📖</div>
-        <div class="caminho-textos">
-          <h3>A leitura muda o corpo</h3>
-          <p>Não é só a mente que se transforma</p>
-        </div>
-      </div>
-
-      <button class="continuar-btn pronto" style="margin-top:8px; width:100%;"
-        onclick="mostrarVistaReconhecimento('comecar'); irPara('tela-reconhecimento');">
-        Novo — começar o reconhecimento
-      </button>
-      <button class="entrar-btn" style="animation:none; opacity:1; margin-top:12px; width:100%;"
-        onclick="mostrarReconhecimentoInicio()">
-        Voltar às perguntas
-      </button>
     </div>
   </div>
 
   <div class="tela" id="tela-leitura">
     <div class="cadastro-topo">
-      <button class="voltar-simples" onclick="voltarTela('tela-sobre')">‹ voltar</button>
+      <button class="voltar-simples" onclick="mostrarReconhecimentoInicio()">‹ voltar</button>
     </div>
     <div class="cadastro-conteudo">
       <h2 class="cadastro-titulo">A leitura muda o corpo</h2>
@@ -1775,12 +1757,13 @@
 
   <div class="tela" id="tela-interior">
     <div class="cadastro-topo">
-      <button class="voltar-simples" onclick="irPara('tela-territorio')">‹ voltar</button>
+      <button class="voltar-simples" onclick="voltarTela('tela-territorio')">‹ voltar</button>
     </div>
-    <div class="cadastro-conteudo">
+    <div class="cadastro-conteudo" style="padding-bottom:48px;">
       <h2 class="cadastro-titulo">Interior</h2>
-      <p class="cadastro-subtitulo">Só você vê o que está aqui.</p>
+      <p class="cadastro-subtitulo">Seu espaço privado e a presença que os outros podem reconhecer.</p>
 
+      <p class="secao-label">Dados privados</p>
       <div class="campo-grupo">
         <label class="campo-label">Nome completo</label>
         <p class="interior-valor" id="interior-nome">—</p>
@@ -1793,13 +1776,66 @@
         <label class="campo-label">E-mail</label>
         <p class="interior-valor" id="interior-email">—</p>
       </div>
-
       <div class="aviso-privacidade">
         <span>◐</span>
-        <span>Estes dados nunca aparecem para outras pessoas da comunidade — apenas seu nome é visível externamente.</span>
+        <span>CPF e e-mail só você vê. O nome é o que permite que outros te reconheçam no Ecossistema.</span>
       </div>
 
-      <button class="criar-conta-btn" onclick="sairDaConta()" style="background:transparent; border:1px solid var(--linha); color:var(--osso);">Sair da conta</button>
+      <p class="secao-label" style="margin-top:28px;">Destaques do perfil</p>
+      <p style="font-size:12.5px; color:var(--osso-fraco); line-height:1.55; margin-bottom:14px;">
+        O que aparece quando alguém reconhece você pelo nome. Edite online — outros usuários podem criar destaques parecidos.
+      </p>
+      <div id="lista-destaques-interior"></div>
+      <button class="entrar-btn" style="animation:none;opacity:1;margin-top:12px;width:100%;" onclick="abrirEditorDestaque()">+ Adicionar destaque</button>
+
+      <p class="secao-label" style="margin-top:28px;">Reconhecer alguém</p>
+      <p style="font-size:12.5px; color:var(--osso-fraco); line-height:1.55; margin-bottom:12px;">
+        Digite o nome de outra pessoa do Ecossistema. Reconhecer é marcar presença — não é seguir.
+      </p>
+      <div class="campo-grupo">
+        <input type="text" id="campo-buscar-perfil" class="campo-input" placeholder="Buscar pelo nome..." autocomplete="off"
+               onkeydown="if(event.key==='Enter') buscarPerfisPorNome()">
+      </div>
+      <button class="continuar-btn pronto" style="width:100%;margin-top:4px;" onclick="buscarPerfisPorNome()">Buscar</button>
+      <div id="resultados-busca-perfil" style="margin-top:14px;"></div>
+
+      <p class="secao-label" style="margin-top:28px;">Quem você reconheceu</p>
+      <div id="lista-reconheci"></div>
+
+      <p class="secao-label" style="margin-top:22px;">Quem te reconheceu</p>
+      <div id="lista-me-reconheceram"></div>
+
+      <button class="criar-conta-btn" onclick="sairDaConta()" style="background:transparent; border:1px solid var(--linha); color:var(--osso); margin-top:28px;">Sair da conta</button>
+    </div>
+  </div>
+
+  <!-- Perfil público de outra pessoa (reconhecimento pelo nome) -->
+  <div class="tela" id="tela-perfil-publico">
+    <div class="cadastro-topo">
+      <button class="voltar-simples" onclick="voltarTela('tela-interior')">‹ voltar</button>
+    </div>
+    <div class="cadastro-conteudo" style="padding-bottom:48px;">
+      <h2 class="cadastro-titulo" id="perfil-publico-nome">—</h2>
+      <p class="cadastro-subtitulo">Presença neste espaço</p>
+      <div id="perfil-publico-destaques"></div>
+      <div id="perfil-publico-acao" style="margin-top:20px;"></div>
+    </div>
+  </div>
+
+  <!-- Editor de destaque -->
+  <div id="editor-destaque" style="display:none; position:fixed; inset:0; z-index:40; background:rgba(11,11,10,0.96); flex-direction:column;">
+    <div class="editor-topo">
+      <button class="editor-fechar" onclick="fecharEditorDestaque()">✕</button>
+      <button class="editor-salvar" onclick="salvarDestaque()">Guardar</button>
+    </div>
+    <div style="padding:20px 24px; max-width:480px; margin:0 auto; width:100%;">
+      <p class="campo-label">Título</p>
+      <input type="text" id="destaque-titulo" class="campo-input" placeholder="Ex: Além do Algoritmo" style="margin-bottom:16px;">
+      <p class="campo-label">Subtítulo</p>
+      <input type="text" id="destaque-subtitulo" class="campo-input" placeholder="Ex: Reino: O Poder que Vive em Ti" style="margin-bottom:16px;">
+      <p class="campo-label">Ícone (emoji)</p>
+      <input type="text" id="destaque-icone" class="campo-input" placeholder="📖" maxlength="4" style="margin-bottom:8px;">
+      <p style="font-size:11px;color:var(--osso-fraco);">Aparece no seu perfil público e no Interior.</p>
     </div>
   </div>
 
@@ -1856,16 +1892,13 @@
   <!-- NAV INFERIOR -->
   <div id="nav-inferior">
     <button class="nav-item ativo" data-tela="tela-territorio" onclick="irPara('tela-territorio')">
-      <span class="nav-icone">◐</span>
-      <span class="nav-rotulo">Território</span>
+      <span class="nav-icone">◐</span>Território
     </button>
     <button class="nav-item" data-tela="tela-criacao" onclick="irPara('tela-criacao')">
-      <span class="nav-icone">✎</span>
-      <span class="nav-rotulo">Criação</span>
+      <span class="nav-icone">✎</span>Criação
     </button>
     <button class="nav-item" data-tela="tela-comunidade" onclick="irPara('tela-comunidade')">
-      <span class="nav-icone">◈</span>
-      <span class="nav-rotulo">Comunidade</span>
+      <span class="nav-icone">◈</span>Comunidade
     </button>
   </div>
 
@@ -1955,6 +1988,24 @@ const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 // -- Sem isto, ninguém consegue ver o NOME de quem partilhou algo além de si mesmo:
 // create policy "qualquer pessoa autenticada pode ver o nome de outros perfis"
 //   on perfis for select using (auth.role() = 'authenticated');
+// -- Destaques públicos do perfil (livro, projetos, etc.):
+// alter table perfis add column if not exists destaques jsonb default '[]'::jsonb;
+//
+// -- Reconhecimento entre perfis (pelo nome):
+// create table if not exists reconhecimentos_perfil (
+//   id uuid primary key default gen_random_uuid(),
+//   de_user_id uuid not null references auth.users(id) on delete cascade,
+//   para_user_id uuid not null references auth.users(id) on delete cascade,
+//   criado_em timestamptz default now(),
+//   unique (de_user_id, para_user_id)
+// );
+// alter table reconhecimentos_perfil enable row level security;
+// create policy "autenticado lê reconhecimentos de perfil"
+//   on reconhecimentos_perfil for select using (auth.role() = 'authenticated');
+// create policy "cada pessoa registra o próprio reconhecimento"
+//   on reconhecimentos_perfil for insert with check (auth.uid() = de_user_id);
+// create policy "cada pessoa remove o próprio reconhecimento"
+//   on reconhecimentos_perfil for delete using (auth.uid() = de_user_id);
 //
 // create table reflexoes (
 //   id uuid primary key default gen_random_uuid(),
@@ -2062,7 +2113,7 @@ async function carregarDadosDoServidor() {
 }
 
 // ============================================================
-// NAVEGAÇÃO ENTRE TELAS (com histórico para o Voltar)
+// NAVEGAÇÃO ENTRE TELAS
 // ============================================================
 const historicoTelas = [];
 let telaAtualId = 'tela-entrada';
@@ -2138,7 +2189,6 @@ async function sairDaConta() {
   anotacoes = [];
   agendaItens = [];
   identidadeRespostas = perguntas.map(() => null);
-  identidadeProprias = [];
   localStorage.removeItem('ecossistema_sessao'); // encerra a sessão salva
   // Limpa os campos de login/cadastro para a próxima pessoa
   const camposParaLimpar = ['login-email', 'login-senha', 'campo-nome', 'campo-cpf',
@@ -2159,8 +2209,7 @@ function salvarSessao() {
   try {
     localStorage.setItem('ecossistema_sessao', JSON.stringify({
       conta: dadosConta,
-      identidade: identidadeRespostas,
-      identidadeProprias: identidadeProprias
+      identidade: identidadeRespostas
     }));
   } catch (e) {
     // Armazenamento indisponível (ex: modo privado) — a sessão simplesmente não persiste
@@ -2178,9 +2227,6 @@ function carregarSessaoSalva() {
         if (Array.isArray(dados.identidade) && dados.identidade.length === perguntas.length) {
           identidadeRespostas = dados.identidade;
         }
-        if (Array.isArray(dados.identidadeProprias)) {
-          identidadeProprias = dados.identidadeProprias;
-        }
       } else {
         dadosConta = dados;
       }
@@ -2197,6 +2243,384 @@ function preencherInterior() {
   document.getElementById('interior-cpf').textContent = dadosConta.cpf || '—';
   document.getElementById('interior-email').textContent = dadosConta.email || '—';
   verificarAcessoPainel();
+  carregarDestaquesLocais();
+  renderizarDestaquesInterior();
+  carregarReconhecimentosPerfil();
+}
+
+// ============================================================
+// DESTAQUES DO PERFIL (editáveis online)
+// O livro Além do Algoritmo fica em destaque no perfil do fundador;
+// qualquer pessoa pode criar destaques parecidos no próprio Interior.
+// ============================================================
+const DESTAQUE_LIVRO_PADRAO = {
+  id: 'livro-alem-do-algoritmo',
+  titulo: 'Além do Algoritmo',
+  subtitulo: 'Reino: O Poder que Vive em Ti · Capítulo 3',
+  icone: '📖',
+  acao: 'tela-livro',
+  fixo: true
+};
+
+let destaquesPerfil = [];
+let editandoDestaqueId = null;
+
+function carregarDestaquesLocais() {
+  try {
+    const chave = 'ecossistema_destaques_' + (dadosConta.email || 'anon');
+    const salvo = localStorage.getItem(chave);
+    if (salvo) {
+      destaquesPerfil = JSON.parse(salvo);
+    } else {
+      destaquesPerfil = [];
+    }
+  } catch (e) {
+    destaquesPerfil = [];
+  }
+
+  // Fundador: garante o card do livro em destaque
+  const ehFundador = dadosConta.email && dadosConta.email.toLowerCase() === EMAIL_FUNDADOR;
+  if (ehFundador && !destaquesPerfil.some(d => d.id === DESTAQUE_LIVRO_PADRAO.id)) {
+    destaquesPerfil.unshift({ ...DESTAQUE_LIVRO_PADRAO });
+    salvarDestaquesLocais();
+  }
+}
+
+function salvarDestaquesLocais() {
+  try {
+    const chave = 'ecossistema_destaques_' + (dadosConta.email || 'anon');
+    localStorage.setItem(chave, JSON.stringify(destaquesPerfil));
+  } catch (e) {}
+  // Tenta sincronizar no Supabase (coluna destaques em perfis), se existir
+  sincronizarDestaquesNoServidor();
+}
+
+async function sincronizarDestaquesNoServidor() {
+  try {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) return;
+    await supabaseClient.from('perfis').update({ destaques: destaquesPerfil }).eq('id', session.user.id);
+  } catch (e) {
+    // Coluna pode ainda não existir — localStorage continua sendo a fonte
+  }
+}
+
+function renderizarDestaquesInterior() {
+  const container = document.getElementById('lista-destaques-interior');
+  if (!container) return;
+
+  if (destaquesPerfil.length === 0) {
+    container.innerHTML = `
+      <div class="anotacao-vazia" style="padding:18px 0;">
+        <p style="font-size:13px;">Nenhum destaque ainda.<br>Adicione o que quiser que outros reconheçam em você.</p>
+      </div>`;
+    return;
+  }
+
+  container.innerHTML = destaquesPerfil.map(d => `
+    <div class="caminho-card" style="margin-bottom:10px;" onclick="${d.acao ? `irPara('${d.acao}')` : ''}">
+      <div class="caminho-icone" style="background:rgba(184,147,90,0.12)">${d.icone || '◇'}</div>
+      <div class="caminho-textos" style="flex:1;">
+        <h3>${d.titulo}</h3>
+        <p>${d.subtitulo || ''}</p>
+      </div>
+      <button class="identidade-reescrever" style="padding:8px;"
+        onclick="event.stopPropagation(); editarDestaque('${d.id}')">editar</button>
+    </div>
+  `).join('');
+}
+
+function abrirEditorDestaque() {
+  editandoDestaqueId = null;
+  document.getElementById('destaque-titulo').value = '';
+  document.getElementById('destaque-subtitulo').value = '';
+  document.getElementById('destaque-icone').value = '◇';
+  const ed = document.getElementById('editor-destaque');
+  ed.style.display = 'flex';
+}
+
+function editarDestaque(id) {
+  const d = destaquesPerfil.find(x => x.id === id);
+  if (!d) return;
+  editandoDestaqueId = id;
+  document.getElementById('destaque-titulo').value = d.titulo || '';
+  document.getElementById('destaque-subtitulo').value = d.subtitulo || '';
+  document.getElementById('destaque-icone').value = d.icone || '◇';
+  document.getElementById('editor-destaque').style.display = 'flex';
+}
+
+function fecharEditorDestaque() {
+  document.getElementById('editor-destaque').style.display = 'none';
+  editandoDestaqueId = null;
+}
+
+function salvarDestaque() {
+  const titulo = document.getElementById('destaque-titulo').value.trim();
+  if (!titulo) {
+    mostrarConfirmacao('Escreva um título para o destaque');
+    return;
+  }
+  const subtitulo = document.getElementById('destaque-subtitulo').value.trim();
+  const icone = document.getElementById('destaque-icone').value.trim() || '◇';
+
+  if (editandoDestaqueId) {
+    const d = destaquesPerfil.find(x => x.id === editandoDestaqueId);
+    if (d) {
+      d.titulo = titulo;
+      d.subtitulo = subtitulo;
+      d.icone = icone;
+    }
+  } else {
+    destaquesPerfil.push({
+      id: 'd_' + Date.now(),
+      titulo,
+      subtitulo,
+      icone,
+      acao: null,
+      fixo: false
+    });
+  }
+  salvarDestaquesLocais();
+  renderizarDestaquesInterior();
+  fecharEditorDestaque();
+  mostrarConfirmacao('Destaque guardado');
+}
+
+// ============================================================
+// RECONHECIMENTO ENTRE PERFIS (pelo nome)
+// ============================================================
+let reconhecimentosFeitos = [];   // { id, nome, userId }
+let reconhecimentosRecebidos = []; // { id, nome, userId }
+
+function chaveReconhecimentos() {
+  return 'ecossistema_rec_perfil_' + (dadosConta.email || 'anon');
+}
+
+function carregarReconhecimentosPerfil() {
+  try {
+    const salvo = localStorage.getItem(chaveReconhecimentos());
+    if (salvo) {
+      const dados = JSON.parse(salvo);
+      reconhecimentosFeitos = dados.feitos || [];
+      reconhecimentosRecebidos = dados.recebidos || [];
+    } else {
+      reconhecimentosFeitos = [];
+      reconhecimentosRecebidos = [];
+    }
+  } catch (e) {
+    reconhecimentosFeitos = [];
+    reconhecimentosRecebidos = [];
+  }
+  renderizarListasReconhecimento();
+  carregarReconhecimentosDoServidor();
+}
+
+function salvarReconhecimentosLocais() {
+  try {
+    localStorage.setItem(chaveReconhecimentos(), JSON.stringify({
+      feitos: reconhecimentosFeitos,
+      recebidos: reconhecimentosRecebidos
+    }));
+  } catch (e) {}
+}
+
+function renderizarListasReconhecimento() {
+  const elFeitos = document.getElementById('lista-reconheci');
+  const elRecebidos = document.getElementById('lista-me-reconheceram');
+  if (!elFeitos || !elRecebidos) return;
+
+  elFeitos.innerHTML = reconhecimentosFeitos.length === 0
+    ? `<p style="font-size:13px;color:var(--osso-fraco);">Você ainda não reconheceu ninguém pelo nome.</p>`
+    : reconhecimentosFeitos.map(r => `
+        <div class="identidade-item" style="margin-bottom:8px;">
+          <p class="identidade-resposta" style="margin:0;">${r.nome}</p>
+          <button class="identidade-reescrever" style="margin-top:8px;"
+            onclick="abrirPerfilPublico('${r.userId || ''}','${(r.nome || '').replace(/'/g, "\\'")}')">ver presença</button>
+        </div>
+      `).join('');
+
+  elRecebidos.innerHTML = reconhecimentosRecebidos.length === 0
+    ? `<p style="font-size:13px;color:var(--osso-fraco);">Ninguém reconheceu você ainda — quando reconhecerem pelo seu nome, aparece aqui.</p>`
+    : reconhecimentosRecebidos.map(r => `
+        <div class="identidade-item" style="margin-bottom:8px;">
+          <p class="identidade-resposta" style="margin:0;">${r.nome}</p>
+        </div>
+      `).join('');
+}
+
+async function buscarPerfisPorNome() {
+  const q = (document.getElementById('campo-buscar-perfil').value || '').trim();
+  const box = document.getElementById('resultados-busca-perfil');
+  if (!box) return;
+  if (q.length < 2) {
+    box.innerHTML = `<p style="font-size:12.5px;color:var(--osso-fraco);">Digite pelo menos 2 letras do nome.</p>`;
+    return;
+  }
+
+  box.innerHTML = `<p style="font-size:12.5px;color:var(--osso-fraco);">Buscando...</p>`;
+
+  try {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) {
+      box.innerHTML = `<p style="font-size:12.5px;color:var(--osso-fraco);">Entre na conta para buscar perfis.</p>`;
+      return;
+    }
+
+    const { data, error } = await supabaseClient
+      .from('perfis')
+      .select('id, nome')
+      .ilike('nome', `%${q}%`)
+      .limit(12);
+
+    if (error) throw error;
+
+    const resultados = (data || []).filter(p =>
+      p.id !== session.user.id && p.nome && p.nome.trim().length > 0
+    );
+
+    if (resultados.length === 0) {
+      box.innerHTML = `<p style="font-size:12.5px;color:var(--osso-fraco);">Nenhum perfil encontrado com esse nome.</p>`;
+      return;
+    }
+
+    box.innerHTML = resultados.map(p => {
+      const ja = reconhecimentosFeitos.some(r => r.userId === p.id);
+      return `
+        <div class="identidade-item" style="margin-bottom:8px;">
+          <p class="identidade-resposta" style="margin-bottom:10px;">${p.nome}</p>
+          <div style="display:flex;gap:10px;flex-wrap:wrap;">
+            <button class="continuar-btn pronto" style="margin:0;padding:10px 16px;"
+              onclick="reconhecerPerfil('${p.id}','${(p.nome || '').replace(/'/g, "\\'")}')">
+              ${ja ? '✓ Já reconhecido' : '◐ Reconhecer'}
+            </button>
+            <button class="entrar-btn" style="animation:none;opacity:1;margin:0;padding:10px 16px;"
+              onclick="abrirPerfilPublico('${p.id}','${(p.nome || '').replace(/'/g, "\\'")}')">
+              Ver presença
+            </button>
+          </div>
+        </div>`;
+    }).join('');
+  } catch (e) {
+    console.error(e);
+    box.innerHTML = `<p style="font-size:12.5px;color:var(--osso-fraco);">Não foi possível buscar agora. Tente de novo em instantes.</p>`;
+  }
+}
+
+async function reconhecerPerfil(userId, nome) {
+  if (!userId) return;
+  if (reconhecimentosFeitos.some(r => r.userId === userId)) {
+    mostrarConfirmacao('Você já reconheceu esta pessoa');
+    return;
+  }
+
+  reconhecimentosFeitos.unshift({ userId, nome, em: new Date().toISOString() });
+  salvarReconhecimentosLocais();
+  renderizarListasReconhecimento();
+  mostrarConfirmacao(`Você reconheceu ${nome}`);
+
+  try {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) return;
+    await supabaseClient.from('reconhecimentos_perfil').insert({
+      de_user_id: session.user.id,
+      para_user_id: userId
+    });
+  } catch (e) {
+    // Tabela pode ainda não existir — local continua valendo
+  }
+
+  buscarPerfisPorNome();
+}
+
+async function carregarReconhecimentosDoServidor() {
+  try {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) return;
+
+    const [{ data: feitos }, { data: recebidos }] = await Promise.all([
+      supabaseClient.from('reconhecimentos_perfil').select('para_user_id, criado_em').eq('de_user_id', session.user.id),
+      supabaseClient.from('reconhecimentos_perfil').select('de_user_id, criado_em').eq('para_user_id', session.user.id)
+    ]);
+
+    const idsFeitos = (feitos || []).map(x => x.para_user_id);
+    const idsRecebidos = (recebidos || []).map(x => x.de_user_id);
+    const todosIds = [...new Set([...idsFeitos, ...idsRecebidos])];
+    if (todosIds.length === 0) return;
+
+    const { data: perfis } = await supabaseClient.from('perfis').select('id, nome').in('id', todosIds);
+    const nomes = Object.fromEntries((perfis || []).map(p => [p.id, p.nome]));
+
+    if (feitos && feitos.length) {
+      reconhecimentosFeitos = feitos.map(x => ({
+        userId: x.para_user_id,
+        nome: nomes[x.para_user_id] || 'Alguém do espaço',
+        em: x.criado_em
+      }));
+    }
+    if (recebidos && recebidos.length) {
+      reconhecimentosRecebidos = recebidos.map(x => ({
+        userId: x.de_user_id,
+        nome: nomes[x.de_user_id] || 'Alguém do espaço',
+        em: x.criado_em
+      }));
+    }
+    salvarReconhecimentosLocais();
+    renderizarListasReconhecimento();
+  } catch (e) {
+    // Silencioso se a tabela ainda não existir
+  }
+}
+
+async function abrirPerfilPublico(userId, nomeFallback) {
+  document.getElementById('perfil-publico-nome').textContent = nomeFallback || 'Presença';
+  const boxD = document.getElementById('perfil-publico-destaques');
+  const boxA = document.getElementById('perfil-publico-acao');
+  boxD.innerHTML = `<p style="font-size:13px;color:var(--osso-fraco);">Carregando presença...</p>`;
+  boxA.innerHTML = '';
+  irPara('tela-perfil-publico');
+
+  let nome = nomeFallback || 'Alguém do espaço';
+  let destaques = [];
+
+  try {
+    if (userId) {
+      const { data } = await supabaseClient.from('perfis').select('nome, destaques').eq('id', userId).maybeSingle();
+      if (data) {
+        if (data.nome) nome = data.nome;
+        if (Array.isArray(data.destaques)) destaques = data.destaques;
+      }
+    }
+  } catch (e) {}
+
+  // Se for o fundador e não houver destaques no servidor, mostra o livro
+  const nomeLower = (nome || '').toLowerCase();
+  if (destaques.length === 0 && (nomeLower.includes('vitor') || nomeLower.includes('fernandes'))) {
+    destaques = [{ ...DESTAQUE_LIVRO_PADRAO }];
+  }
+
+  document.getElementById('perfil-publico-nome').textContent = nome;
+
+  if (destaques.length === 0) {
+    boxD.innerHTML = `<p style="font-size:13px;color:var(--osso-fraco);">Esta presença ainda não publicou destaques.</p>`;
+  } else {
+    boxD.innerHTML = destaques.map(d => `
+      <div class="caminho-card" style="margin-bottom:10px;" ${d.acao ? `onclick="irPara('${d.acao}')"` : ''}>
+        <div class="caminho-icone" style="background:rgba(184,147,90,0.12)">${d.icone || '◇'}</div>
+        <div class="caminho-textos">
+          <h3>${d.titulo || ''}</h3>
+          <p>${d.subtitulo || ''}</p>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  const ja = userId && reconhecimentosFeitos.some(r => r.userId === userId);
+  boxA.innerHTML = userId ? `
+    <button class="continuar-btn pronto" style="width:100%;"
+      onclick="reconhecerPerfil('${userId}','${(nome || '').replace(/'/g, "\\'")}')">
+      ${ja ? '✓ Você já reconheceu esta presença' : '◐ Reconhecer pelo nome'}
+    </button>
+  ` : '';
 }
 
 // ============================================================
@@ -2251,58 +2675,13 @@ function aplicarConfiguracoes() {
     if (el) el.textContent = valor;
   });
 
-  // Rótulos da navegação inferior (um único texto por botão)
-  const mapaNav = {
-    'tela-territorio': cfg.nomeTerritorio,
-    'tela-criacao': cfg.nomeCriacao === 'Sua criação' ? 'Criação' : cfg.nomeCriacao,
-    'tela-comunidade': cfg.nomeComunidade
-  };
-  Object.entries(mapaNav).forEach(([tela, nome]) => {
-    const btn = document.querySelector(`.nav-item[data-tela="${tela}"] .nav-rotulo`);
-    if (btn && nome) btn.textContent = nome;
-  });
-
-  // Versículo do dia (roda automaticamente; o Painel ainda pode fixar um)
-  aplicarVersiculoDoDia(cfg);
-}
-
-// Banco de escrituras para o card do Território — muda a cada dia
-const versiculosDoDia = [
-  { citacao: '"O Reino de Deus não vem com aparência visível... porque o Reino de Deus está entre vós."', fonte: 'LUCAS 17:20-21' },
-  { citacao: '"Vós sois a luz do mundo. Não se pode esconder uma cidade situada sobre um monte."', fonte: 'MATEUS 5:14' },
-  { citacao: '"Conhecereis a verdade, e a verdade vos libertará."', fonte: 'JOÃO 8:32' },
-  { citacao: '"O Senhor é o meu pastor; nada me faltará."', fonte: 'SALMOS 23:1' },
-  { citacao: '"Tudo posso naquele que me fortalece."', fonte: 'FILIPENSES 4:13' },
-  { citacao: '"Não temas, porque eu sou contigo."', fonte: 'ISAÍAS 41:10' },
-  { citacao: '"Buscai primeiro o Reino de Deus, e a sua justiça, e todas estas coisas vos serão acrescentadas."', fonte: 'MATEUS 6:33' },
-  { citacao: '"Aquele que habita no esconderijo do Altíssimo, à sombra do Onipotente descansará."', fonte: 'SALMOS 91:1' },
-  { citacao: '"Sede quietos, e sabei que eu sou Deus."', fonte: 'SALMOS 46:10' },
-  { citacao: '"O Espírito da verdade... habita convosco, e estará em vós."', fonte: 'JOÃO 14:17' },
-  { citacao: '"Renova-vos no espírito do vosso sentido."', fonte: 'EFÉSIOS 4:23' },
-  { citacao: '"A fé é o firme fundamento das coisas que se esperam."', fonte: 'HEBREUS 11:1' },
-  { citacao: '"Bem-aventurados os que têm fome e sede de justiça, porque eles serão fartos."', fonte: 'MATEUS 5:6' },
-  { citacao: '"Onde estiver o vosso tesouro, aí estará também o vosso coração."', fonte: 'MATEUS 6:21' }
-];
-
-function aplicarVersiculoDoDia(cfg) {
-  const elCitacao = document.getElementById('frase-dia-citacao');
-  const elFonte = document.getElementById('frase-dia-fonte');
-  if (!elCitacao || !elFonte) return;
-
-  // Se o fundador fixou uma frase diferente do padrão no Painel, respeita
-  const padrao = configuracoesPadrao.fraseCitacao;
-  if (cfg.fraseCitacao && cfg.fraseCitacao !== padrao) {
-    elCitacao.textContent = cfg.fraseCitacao;
-    elFonte.textContent = cfg.fraseFonte || '';
-    return;
+  // "Território" aparece em vários lugares (saudação, nav inferior) —
+  // por ora aplicamos só ao rótulo do menu de navegação, que é o rótulo direto da seção.
+  const navTerritorio = document.querySelector('.nav-item[data-tela="tela-territorio"]');
+  if (navTerritorio) {
+    const textoNode = Array.from(navTerritorio.childNodes).find(n => n.nodeType === Node.TEXT_NODE);
+    if (textoNode) textoNode.textContent = cfg.nomeTerritorio;
   }
-
-  const agora = new Date();
-  const inicio = new Date(agora.getFullYear(), 0, 0);
-  const diaDoAno = Math.floor((agora - inicio) / 86400000);
-  const v = versiculosDoDia[diaDoAno % versiculosDoDia.length];
-  elCitacao.textContent = v.citacao;
-  elFonte.textContent = v.fonte;
 }
 
 function renderizarPainel() {
@@ -2684,8 +3063,6 @@ const perguntas = [
 
 // identidadeRespostas[i] = null (ainda não respondida) ou { resposta, partilhada }
 let identidadeRespostas = perguntas.map(() => null);
-// Perguntas próprias (Novo) salvas em Identidade, com reflexão das Escrituras
-let identidadeProprias = [];
 let perguntaAtual = 0;
 let respostaTemp = null;
 let vistaReconhecimentoAtual = 'inicio'; // 'inicio' | 'comecar' | 'identidade' | 'estrategicas' | 'perguntas'
@@ -2740,32 +3117,16 @@ function renderizarIdentidade() {
     .map((r, i) => (r ? { ...r, indice: i } : null))
     .filter(Boolean);
 
-  const propriasHtml = identidadeProprias.map((item, i) => `
-    <div class="identidade-item">
-      <div class="identidade-item-topo">
-        <span class="identidade-pergunta">${item.pergunta}</span>
-      </div>
-      <p class="identidade-resposta">${item.resposta}</p>
-      ${item.fonte ? `<p style="font-size:11px;color:var(--dourado-fraco);letter-spacing:0.05em;margin:-4px 0 12px;">${item.fonte}</p>` : ''}
-      <div class="identidade-item-rodape">
-        <span class="identidade-partilhar" onclick="alternarPartilhaPropria(${i})">
-          <span class="toggle ${item.partilhada ? 'ligado' : ''}"></span> partilhar na comunidade
-        </span>
-        <button class="identidade-reescrever" onclick="removerPerguntaPropria(${i})">remover</button>
-      </div>
-    </div>
-  `).join('');
-
-  if (respondidas.length === 0 && identidadeProprias.length === 0) {
+  if (respondidas.length === 0) {
     lista.innerHTML = `
       <div class="anotacao-vazia">
-        <p>Ainda não há respostas aqui.<br>Toque em "Começar" ou crie sua própria pergunta.</p>
+        <p>Ainda não há respostas aqui.<br>Toque em "Começar" para dar os primeiros passos.</p>
       </div>
     `;
     return;
   }
 
-  const fixasHtml = respondidas.map(r => `
+  lista.innerHTML = respondidas.map(r => `
     <div class="identidade-item">
       <div class="identidade-item-topo">
         <span class="identidade-pergunta">${perguntas[r.indice].texto}</span>
@@ -2779,31 +3140,6 @@ function renderizarIdentidade() {
       </div>
     </div>
   `).join('');
-
-  lista.innerHTML = propriasHtml + fixasHtml;
-}
-
-function alternarPartilhaPropria(indice) {
-  const item = identidadeProprias[indice];
-  if (!item) return;
-  item.partilhada = !item.partilhada;
-  salvarSessao();
-  renderizarIdentidade();
-  renderizarComunidade();
-  adicionarNaFila('identidade', {
-    pergunta: item.pergunta,
-    resposta: item.resposta,
-    partilhada: item.partilhada
-  });
-  if (estaOnline()) sincronizarFila();
-  mostrarConfirmacao(item.partilhada ? 'Enviado à comunidade' : 'Removido da comunidade');
-}
-
-function removerPerguntaPropria(indice) {
-  identidadeProprias.splice(indice, 1);
-  salvarSessao();
-  renderizarIdentidade();
-  mostrarConfirmacao('Removido de Identidade');
 }
 
 function alternarPartilhaIdentidade(indice) {
@@ -2850,55 +3186,17 @@ function renderizarPerguntasEstrategicas() {
   ).join('');
 }
 
-// Respostas alinhadas às Escrituras para perguntas criadas pela própria pessoa
-const reflexoesEscritura = [
-  { chave: /medo|temor|ansiedade|preocup/i, texto: 'Não temas, porque Eu sou contigo. (Isaías 41:10) — O reconhecimento começa quando você deixa de carregar sozinho o que já foi entregue.', fonte: 'Isaías 41:10' },
-  { chave: /amor|amar|coração/i, texto: 'Onde estiver o vosso tesouro, aí estará também o vosso coração. (Mateus 6:21) — O que você ama revela o que você serve.', fonte: 'Mateus 6:21' },
-  { chave: /verdade|mentira|engana/i, texto: 'Conhecereis a verdade, e a verdade vos libertará. (João 8:32) — Ver com clareza é o primeiro passo para ser livre.', fonte: 'João 8:32' },
-  { chave: /fé|crer|acreditar|esperan/i, texto: 'A fé é o firme fundamento das coisas que se esperam. (Hebreus 11:1) — O que você ainda não vê pode já estar sendo formado em você.', fonte: 'Hebreus 11:1' },
-  { chave: /paz|silêncio|quiet|descanso/i, texto: 'Sede quietos, e sabei que eu sou Deus. (Salmos 46:10) — A paz não é ausência de movimento; é presença que não se abala.', fonte: 'Salmos 46:10' },
-  { chave: /luz|escuro|treva|ver/i, texto: 'Vós sois a luz do mundo. (Mateus 5:14) — O que você reconhece em si também ilumina o caminho de outros.', fonte: 'Mateus 5:14' },
-  { chave: /força|fraco|cansad|poder/i, texto: 'Tudo posso naquele que me fortalece. (Filipenses 4:13) — A força que falta em você pode estar em quem habita em você.', fonte: 'Filipenses 4:13' },
-  { chave: /perdão|perdoar|culpa|erro/i, texto: 'Perdoai, e sereis perdoados. (Lucas 6:37) — Soltar o outro também solta o que pesava em você.', fonte: 'Lucas 6:37' },
-  { chave: /caminho|direção|o que fazer|decidir/i, texto: 'Buscai primeiro o Reino de Deus, e a sua justiça. (Mateus 6:33) — A direção certa nasce do que é prioritário, não do que é urgente.', fonte: 'Mateus 6:33' },
-  { chave: /identidade|quem sou|propósito|chamado/i, texto: 'O Reino de Deus está entre vós. (Lucas 17:21) — O que você procura fora pode já estar habitando dentro.', fonte: 'Lucas 17:21' }
-];
-
-function reflexaoParaPergunta(textoPergunta) {
-  for (const r of reflexoesEscritura) {
-    if (r.chave.test(textoPergunta)) return r;
-  }
-  // Padrão: convite ao reconhecimento interior
-  return {
-    texto: 'O Reino de Deus está entre vós. (Lucas 17:21) — Antes de buscar a resposta fora, reconheça o que já se move em você ao fazer essa pergunta.',
-    fonte: 'Lucas 17:21'
-  };
-}
-
 function enviarPerguntaPropria() {
   const input = document.getElementById('campo-pergunta-propria');
   const texto = input.value.trim();
   if (texto.length < 3) return;
 
   const guardarEmAnotacoes = document.getElementById('toggle-guardar-pergunta').classList.contains('ligado');
-  const reflexao = reflexaoParaPergunta(texto);
-
-  // Sempre organiza em Identidade — a pessoa publica quando quiser
-  const item = {
-    id: 'prop_' + Date.now(),
-    pergunta: texto,
-    resposta: reflexao.texto,
-    fonte: reflexao.fonte,
-    partilhada: false,
-    criadoEm: new Date().toISOString()
-  };
-  identidadeProprias.unshift(item);
-  salvarSessao();
 
   if (guardarEmAnotacoes) {
     const agora = new Date();
     const dataFormatada = agora.toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' });
-    const textoAnotacao = `Pergunta: ${texto}\n${reflexao.texto}`;
+    const textoAnotacao = `Pergunta: ${texto}`;
     anotacoes.unshift({ id: proximoIdAnotacao++, texto: textoAnotacao, data: dataFormatada, criadoEm: agora.toISOString(), partilhada: false });
     renderizarAnotacoes();
     adicionarNaFila('anotacao', { texto: textoAnotacao, partilhada: false });
@@ -2907,16 +3205,9 @@ function enviarPerguntaPropria() {
 
   input.value = '';
   document.getElementById('toggle-guardar-pergunta').classList.remove('ligado');
-
-  const container = document.getElementById('resposta-estrategica');
-  container.innerHTML = `
-    <h4 style="margin-bottom:10px;">${texto}</h4>
-    <p style="font-family:'Fraunces', serif; font-size:15px; color:var(--osso); line-height:1.6; margin-bottom:8px;">${reflexao.texto}</p>
-    <p style="font-size:11px; color:var(--dourado-fraco); letter-spacing:0.06em; margin-bottom:16px;">${reflexao.fonte}</p>
-    <p style="font-size:12px; color:var(--osso-fraco); margin-bottom:14px;">Salvo em Identidade. Você publica quando quiser.</p>
-    <button class="continuar-btn pronto" onclick="abrirIdentidade()">Ver em Identidade</button>
-  `;
-  container.style.display = 'block';
+  // Pergunta criada pela própria pessoa nunca tem página de informação associada.
+  // A resposta permanece fixa na tela — só sai quando a pessoa navegar para outro lugar.
+  responderEstrategica({ texto, temInformacao: false });
 }
 
 function responderEstrategica(perguntaOuIndice) {
@@ -2924,12 +3215,16 @@ function responderEstrategica(perguntaOuIndice) {
     ? perguntasEstrategicas[perguntaOuIndice]
     : perguntaOuIndice;
 
+  // Perguntas com página de informação associada levam para lá automaticamente —
+  // a pessoa não precisa tocar em nada além da própria pergunta.
   if (pergunta.temInformacao) {
     const telaDestino = pergunta.destino || 'tela-sobre';
     irPara(telaDestino);
     return;
   }
 
+  // Perguntas sem informação associada (incluindo a pergunta própria da pessoa)
+  // mostram a confirmação na tela, sem navegar para lugar nenhum.
   const container = document.getElementById('resposta-estrategica');
   container.innerHTML = `
     <h4>${pergunta.texto}</h4>
@@ -3465,7 +3760,11 @@ async function renderizarComunidade() {
   container.innerHTML = comunidadeCache.map(item => `
     <div class="partilha-card">
       <div class="partilha-card-topo">
-        <p class="partilha-autor">${item.autor} — ${item.dataHora}</p>
+        <p class="partilha-autor">
+          <span style="cursor:pointer;text-decoration:underline;text-decoration-color:rgba(184,147,90,0.35);"
+            onclick="abrirPerfilPublico('${item.userId || ''}','${(item.autor || '').replace(/'/g, "\\'")}')">${item.autor}</span>
+          — ${item.dataHora}
+        </p>
         ${item.mine ? `<button class="partilha-opcoes-btn" onclick="abrirMenuPost('${item.id}')">⋯</button>` : ''}
       </div>
       <p class="partilha-texto">${item.texto}</p>
