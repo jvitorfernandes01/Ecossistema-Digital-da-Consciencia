@@ -2,8 +2,16 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
 <title>Ecossistema Digital da Consciência</title>
+<meta name="description" content="Um espaço de presença, reconhecimento e consciência — fora do algoritmo.">
+<meta name="theme-color" content="#0B0B0A">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Ecossistema">
+<link rel="manifest" href="/manifest.json">
+<link rel="apple-touch-icon" href="/icon-192.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500;9..144,600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -829,25 +837,11 @@
     transition: transform 0.3s ease;
     color: var(--dourado-fraco);
   }
-  .noticias-dia.aberto .noticias-toggle span.chevron {
-    transform: rotate(90deg);
-  }
-  .noticias-corpo {
-    display: none;
-    padding: 0 16px 16px;
-    border-top: 1px solid var(--linha);
-  }
-  .noticias-dia.aberto .noticias-corpo {
-    display: block;
-  }
-  .noticia-item {
-    padding: 12px 0;
-    border-bottom: 1px solid var(--linha);
-  }
-  .noticia-item:last-child {
-    border-bottom: none;
-    padding-bottom: 4px;
-  }
+  .noticias-dia.aberto .noticias-toggle span.chevron { transform: rotate(90deg); }
+  .noticias-corpo { display: none; padding: 0 16px 16px; border-top: 1px solid var(--linha); }
+  .noticias-dia.aberto .noticias-corpo { display: block; }
+  .noticia-item { padding: 12px 0; border-bottom: 1px solid var(--linha); }
+  .noticia-item:last-child { border-bottom: none; padding-bottom: 4px; }
   .noticia-item h4 {
     font-family: 'Fraunces', serif;
     font-weight: 400;
@@ -856,11 +850,7 @@
     margin-bottom: 4px;
     line-height: 1.4;
   }
-  .noticia-item p {
-    font-size: 12px;
-    color: var(--osso-fraco);
-    line-height: 1.5;
-  }
+  .noticia-item p { font-size: 12px; color: var(--osso-fraco); line-height: 1.5; }
 
   .secao-label {
     font-size: 11px;
@@ -1884,10 +1874,10 @@
 
       <p class="secao-label">Notícias do dia (Território)</p>
       <p style="font-size:12px;color:var(--osso-fraco);line-height:1.5;margin-bottom:10px;">
-        Uma notícia por linha no formato: <em>Título | Resumo curto</em>. O versículo se ajusta ao tom. Deixe vazio para usar o padrão embutido.
+        Uma por linha: <em>Título | Resumo</em>. O versículo se ajusta ao tom.
       </p>
       <div class="campo-grupo">
-        <textarea id="painel-noticias" class="campo-input" style="min-height:110px;resize:vertical;" placeholder="Nepal: enchentes | Centenas de mortos...&#10;EUA e Irã | Troca de ataques no Ormuz..."></textarea>
+        <textarea id="painel-noticias" class="campo-input" style="min-height:110px;resize:vertical;" placeholder="Nepal: enchentes | Centenas de mortos..."></textarea>
       </div>
 
       <button class="criar-conta-btn" onclick="salvarPainel()">Salvar alterações</button>
@@ -2252,11 +2242,6 @@ function carregarConfiguracoes() {
 function aplicarConfiguracoes() {
   const cfg = carregarConfiguracoes();
 
-  const elFraseCitacao = document.getElementById('frase-dia-citacao');
-  const elFraseFonte = document.getElementById('frase-dia-fonte');
-  if (elFraseCitacao) elFraseCitacao.textContent = cfg.fraseCitacao;
-  if (elFraseFonte) elFraseFonte.textContent = cfg.fraseFonte;
-
   const mapaTitulos = {
     'titulo-criacao': cfg.nomeCriacao,
     'titulo-comunidade': cfg.nomeComunidade,
@@ -2268,7 +2253,6 @@ function aplicarConfiguracoes() {
     if (el) el.textContent = valor;
   });
 
-  // Rótulos da nav inferior — um único texto por botão (evita "Território" duplicado)
   const mapaNav = {
     'tela-territorio': cfg.nomeTerritorio || 'Território',
     'tela-criacao': (cfg.nomeCriacao === 'Sua criação' ? 'Criação' : (cfg.nomeCriacao || 'Criação')),
@@ -2279,41 +2263,20 @@ function aplicarConfiguracoes() {
     if (btn) btn.textContent = nome;
   });
 
-  // Versículo + notícias do dia (versículo acompanha o tom das notícias)
   aplicarVersiculoENoticias(cfg);
 }
 
-// ============================================================
-// NOTÍCIAS DO DIA + VERSÍCULO ALINHADO
-// Fechado por padrão — a pessoa escolhe olhar ou não.
-// ============================================================
 const noticiasPadrao = [
-  {
-    titulo: 'Nepal e Tibete: enchentes e avalanche de lama',
-    resumo: 'Centenas de mortos e milhares de desaparecidos após colapso glacial e inundações na fronteira.',
-    temas: ['desastre', 'sofrimento', 'clima']
-  },
-  {
-    titulo: 'EUA e Irã voltam a trocar ataques',
-    resumo: 'Ação no Estreito de Ormuz e respostas na região interrompem semanas de relativa trégua.',
-    temas: ['guerra', 'conflito', 'medo']
-  },
-  {
-    titulo: 'Acordo de petróleo EUA–Venezuela em debate',
-    resumo: 'Anúncio de acesso a reservas enormes gera críticas sobre o que muda de fato no curto prazo.',
-    temas: ['poder', 'economia', 'nacoes']
-  },
-  {
-    titulo: 'Islândia rejeita retomar entrada na UE',
-    resumo: 'Referendo recusa reabrir negociações de adesão à União Europeia.',
-    temas: ['nacoes', 'direcao']
-  }
+  { titulo: 'Nepal e Tibete: enchentes e avalanche de lama', resumo: 'Centenas de mortos e milhares de desaparecidos após colapso glacial.', temas: ['desastre', 'sofrimento', 'clima'] },
+  { titulo: 'EUA e Irã voltam a trocar ataques', resumo: 'Ação no Estreito de Ormuz e respostas na região após semanas de trégua.', temas: ['guerra', 'conflito', 'medo'] },
+  { titulo: 'Acordo de petróleo EUA–Venezuela em debate', resumo: 'Acesso a reservas enormes gera críticas sobre o impacto real no curto prazo.', temas: ['poder', 'economia'] },
+  { titulo: 'Islândia rejeita retomar entrada na UE', resumo: 'Referendo recusa reabrir negociações de adesão à União Europeia.', temas: ['nacoes', 'direcao'] }
 ];
 
 const versiculosPorTema = {
   desastre: [
-    { citacao: '"O Senhor é o meu pastor; nada me faltará. Deitar-me faz em verdes pastos, guia-me mansamente a águas tranquilas."', fonte: 'SALMOS 23:1-2' },
-    { citacao: '"Não temas, porque eu sou contigo; não te assombres, porque eu sou o teu Deus."', fonte: 'ISAÍAS 41:10' }
+    { citacao: '"O Senhor é o meu pastor; nada me faltará."', fonte: 'SALMOS 23:1' },
+    { citacao: '"Não temas, porque eu sou contigo."', fonte: 'ISAÍAS 41:10' }
   ],
   sofrimento: [
     { citacao: '"Bem-aventurados os que choram, porque eles serão consolados."', fonte: 'MATEUS 5:4' },
@@ -2324,11 +2287,9 @@ const versiculosPorTema = {
     { citacao: '"Sede quietos, e sabei que eu sou Deus."', fonte: 'SALMOS 46:10' }
   ],
   conflito: [
-    { citacao: '"Não vos conformeis com este mundo, mas transformai-vos pela renovação do vosso entendimento."', fonte: 'ROMANOS 12:2' },
-    { citacao: '"A brandura desvia o furor."', fonte: 'PROVÉRBIOS 15:1' }
+    { citacao: '"Não vos conformeis com este mundo, mas transformai-vos pela renovação do vosso entendimento."', fonte: 'ROMANOS 12:2' }
   ],
   medo: [
-    { citacao: '"Não temas, porque eu sou contigo."', fonte: 'ISAÍAS 41:10' },
     { citacao: '"A paz de Deus, que excede todo o entendimento, guardará os vossos corações."', fonte: 'FILIPENSES 4:7' }
   ],
   poder: [
@@ -2336,20 +2297,16 @@ const versiculosPorTema = {
     { citacao: '"Não por força nem por poder, mas pelo meu Espírito, diz o Senhor."', fonte: 'ZACARIAS 4:6' }
   ],
   economia: [
-    { citacao: '"Onde estiver o vosso tesouro, aí estará também o vosso coração."', fonte: 'MATEUS 6:21' },
-    { citacao: '"Buscai primeiro o Reino de Deus, e a sua justiça."', fonte: 'MATEUS 6:33' }
+    { citacao: '"Onde estiver o vosso tesouro, aí estará também o vosso coração."', fonte: 'MATEUS 6:21' }
   ],
   clima: [
-    { citacao: '"A terra é do Senhor e a sua plenitude."', fonte: 'SALMOS 24:1' },
-    { citacao: '"Olhai as aves do céu... vosso Pai celestial as alimenta."', fonte: 'MATEUS 6:26' }
+    { citacao: '"A terra é do Senhor e a sua plenitude."', fonte: 'SALMOS 24:1' }
   ],
   nacoes: [
-    { citacao: '"Ele faz cessar as guerras até aos confins da terra."', fonte: 'SALMOS 46:9' },
     { citacao: '"A justiça exalta as nações."', fonte: 'PROVÉRBIOS 14:34' }
   ],
   direcao: [
-    { citacao: '"Confia no Senhor de todo o teu coração, e não te estribes no teu próprio entendimento."', fonte: 'PROVÉRBIOS 3:5' },
-    { citacao: '"Eu sou o caminho, e a verdade e a vida."', fonte: 'JOÃO 14:6' }
+    { citacao: '"Confia no Senhor de todo o teu coração."', fonte: 'PROVÉRBIOS 3:5' }
   ],
   padrao: [
     { citacao: '"O Reino de Deus não vem com aparência visível... porque o Reino de Deus está entre vós."', fonte: 'LUCAS 17:20-21' },
@@ -2369,23 +2326,14 @@ function carregarNoticiasDoDia() {
 }
 
 function salvarNoticiasDoDia(lista) {
-  try {
-    localStorage.setItem('ecossistema_noticias', JSON.stringify(lista));
-  } catch (e) {}
+  try { localStorage.setItem('ecossistema_noticias', JSON.stringify(lista)); } catch (e) {}
 }
 
 function temaDominante(noticias) {
   const contagem = {};
-  noticias.forEach(n => {
-    (n.temas || []).forEach(t => {
-      contagem[t] = (contagem[t] || 0) + 1;
-    });
-  });
-  let melhor = 'padrao';
-  let max = 0;
-  Object.entries(contagem).forEach(([t, c]) => {
-    if (c > max) { max = c; melhor = t; }
-  });
+  noticias.forEach(n => (n.temas || []).forEach(t => { contagem[t] = (contagem[t] || 0) + 1; }));
+  let melhor = 'padrao', max = 0;
+  Object.entries(contagem).forEach(([t, c]) => { if (c > max) { max = c; melhor = t; } });
   return melhor;
 }
 
@@ -2393,34 +2341,23 @@ function aplicarVersiculoENoticias(cfg) {
   const noticias = carregarNoticiasDoDia();
   const lista = document.getElementById('lista-noticias-dia');
   const toggleTexto = document.getElementById('noticias-toggle-texto');
-
   if (lista) {
-    lista.innerHTML = noticias.map(n => `
-      <div class="noticia-item">
-        <h4>${n.titulo}</h4>
-        <p>${n.resumo || ''}</p>
-      </div>
-    `).join('');
+    lista.innerHTML = noticias.map(n => `<div class="noticia-item"><h4>${n.titulo}</h4><p>${n.resumo || ''}</p></div>`).join('');
   }
   if (toggleTexto) {
-    const n = noticias.length;
-    toggleTexto.textContent = n
-      ? `Notícias do dia (${n}) — tocar para ver ou esconder`
+    toggleTexto.textContent = noticias.length
+      ? `Notícias do dia (${noticias.length}) — tocar para ver ou esconder`
       : 'Notícias do dia — ainda não há resumo';
   }
-
-  // Versículo: se o fundador fixou frase diferente do padrão no Painel, respeita
   const elCitacao = document.getElementById('frase-dia-citacao');
   const elFonte = document.getElementById('frase-dia-fonte');
   if (!elCitacao || !elFonte) return;
-
   const padrao = configuracoesPadrao.fraseCitacao;
   if (cfg && cfg.fraseCitacao && cfg.fraseCitacao !== padrao) {
     elCitacao.textContent = cfg.fraseCitacao;
     elFonte.textContent = cfg.fraseFonte || '';
     return;
   }
-
   const tema = temaDominante(noticias);
   const pool = versiculosPorTema[tema] || versiculosPorTema.padrao;
   const agora = new Date();
@@ -2447,32 +2384,26 @@ function renderizarPainel() {
   document.getElementById('painel-nome-comunidade').value = cfg.nomeComunidade;
   document.getElementById('painel-nome-agenda').value = cfg.nomeAgenda;
   document.getElementById('painel-nome-anotacoes').value = cfg.nomeAnotacoes;
-
   const elNoticias = document.getElementById('painel-noticias');
   if (elNoticias) {
-    const lista = carregarNoticiasDoDia();
-    elNoticias.value = lista.map(n => `${n.titulo} | ${n.resumo || ''}`).join('\n');
+    elNoticias.value = carregarNoticiasDoDia().map(n => `${n.titulo} | ${n.resumo || ''}`).join('\n');
   }
 }
 
 function parseNoticiasDoPainel(texto) {
-  return texto.split('\n')
-    .map(l => l.trim())
-    .filter(Boolean)
-    .map(l => {
-      const partes = l.split('|');
-      const titulo = (partes[0] || '').trim();
-      const resumo = (partes.slice(1).join('|') || '').trim();
-      const temas = [];
-      const t = (titulo + ' ' + resumo).toLowerCase();
-      if (/enchente|inunda|desastre|terremoto|mortos|nepal|clima/.test(t)) temas.push('desastre', 'sofrimento', 'clima');
-      if (/guerra|ataque|míssil|irã|ucrânia|conflito/.test(t)) temas.push('guerra', 'conflito', 'medo');
-      if (/petróleo|economia|mercado|dívida/.test(t)) temas.push('economia', 'poder');
-      if (/paz|acordo|negocia/.test(t)) temas.push('direcao', 'nacoes');
-      if (!temas.length) temas.push('padrao');
-      return { titulo, resumo, temas };
-    })
-    .filter(n => n.titulo.length > 0);
+  return (texto || '').split('\n').map(l => l.trim()).filter(Boolean).map(l => {
+    const partes = l.split('|');
+    const titulo = (partes[0] || '').trim();
+    const resumo = (partes.slice(1).join('|') || '').trim();
+    const t = (titulo + ' ' + resumo).toLowerCase();
+    const temas = [];
+    if (/enchente|inunda|desastre|terremoto|mortos|nepal|clima/.test(t)) temas.push('desastre', 'sofrimento', 'clima');
+    if (/guerra|ataque|míssil|irã|ucrânia|conflito/.test(t)) temas.push('guerra', 'conflito', 'medo');
+    if (/petróleo|economia|mercado|dívida/.test(t)) temas.push('economia', 'poder');
+    if (/paz|acordo|negocia/.test(t)) temas.push('direcao', 'nacoes');
+    if (!temas.length) temas.push('padrao');
+    return { titulo, resumo, temas };
+  }).filter(n => n.titulo.length > 0);
 }
 
 function salvarPainel() {
@@ -3764,6 +3695,13 @@ function animar() {
   requestAnimationFrame(animar);
 }
 animar();
+
+// PWA — registra service worker para instalação e uso offline
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  });
+}
 
 </script>
 </body>
