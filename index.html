@@ -1682,10 +1682,10 @@
   <div class="tela" id="tela-comunidade">
     <div class="comunidade-topo">
       <h2 id="titulo-comunidade">Comunidade</h2>
-      <p>Ninguém aqui está sendo avaliado. Isso é o que algumas pessoas escolheram tornar visível.</p>
+      <p>Onde nos encontramos — ideias, inícios de projetos e o que vamos desenvolvendo juntos.</p>
     </div>
     <div class="aviso-suave">
-      Nada do que você escreve em "Sua criação" aparece aqui, a menos que você escolha partilhar.
+      Aqui nascem ideias e projetos em estágio inicial. Com os recursos que cada um adiciona, o Ecossistema Digital da Consciência amadurece. Nada do que você escreve em "Sua criação" aparece aqui, a menos que você escolha partilhar.
     </div>
 
     <div id="partilhas-reais"></div>
@@ -1805,10 +1805,41 @@
     <div class="cadastro-topo">
       <button class="voltar-simples" onclick="irPara('tela-territorio')">‹ voltar</button>
     </div>
-    <div class="cadastro-conteudo">
+    <div class="cadastro-conteudo" style="padding-bottom:48px;">
       <h2 class="cadastro-titulo">Interior</h2>
-      <p class="cadastro-subtitulo">Só você vê o que está aqui.</p>
+      <p class="cadastro-subtitulo">Presença pública e dados que só você vê.</p>
 
+      <p class="secao-label">Perfil público</p>
+      <p style="font-size:12.5px;color:var(--osso-fraco);line-height:1.55;margin-bottom:14px;">
+        Como você aparece na Comunidade e quando alguém te reconhece pelo nome.
+      </p>
+
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
+        <div id="interior-foto-wrap" onclick="document.getElementById('input-foto-perfil').click()"
+             style="width:72px;height:72px;border-radius:50%;border:1px solid var(--linha);background:var(--preto-suave);overflow:hidden;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+          <img id="interior-foto" alt="" style="width:100%;height:100%;object-fit:cover;display:none;">
+          <span id="interior-foto-letra" style="font-family:'Fraunces',serif;font-size:28px;color:var(--dourado);">—</span>
+        </div>
+        <div style="flex:1;">
+          <button type="button" class="entrar-btn" style="animation:none;opacity:1;margin:0;padding:10px 14px;width:auto;"
+                  onclick="document.getElementById('input-foto-perfil').click()">Trocar foto</button>
+          <p style="font-size:11px;color:var(--osso-fraco);margin-top:8px;">Toque para escolher uma imagem do aparelho.</p>
+        </div>
+        <input type="file" id="input-foto-perfil" accept="image/*" style="display:none;" onchange="aoEscolherFotoPerfil(event)">
+      </div>
+
+      <div class="campo-grupo">
+        <label class="campo-label" for="campo-nome-exibicao">Como quer ser chamado</label>
+        <input type="text" id="campo-nome-exibicao" class="campo-input" placeholder="Nome ou apelido visível" maxlength="40" autocomplete="nickname">
+      </div>
+      <div class="campo-grupo">
+        <label class="campo-label" for="campo-handle">@ no Ecossistema</label>
+        <input type="text" id="campo-handle" class="campo-input" placeholder="ex: 01jvitorfernandes" maxlength="30" autocomplete="username"
+               oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9._]/g,'')">
+      </div>
+      <button type="button" class="continuar-btn pronto" style="width:100%;margin-top:4px;" onclick="salvarPerfilPublico()">Guardar perfil</button>
+
+      <p class="secao-label" style="margin-top:28px;">Dados privados</p>
       <div class="campo-grupo">
         <label class="campo-label">Nome completo</label>
         <p class="interior-valor" id="interior-nome">—</p>
@@ -1824,10 +1855,10 @@
 
       <div class="aviso-privacidade">
         <span>◐</span>
-        <span>Estes dados nunca aparecem para outras pessoas da comunidade — apenas seu nome é visível externamente.</span>
+        <span>CPF e e-mail só você vê. Nome de exibição, @ e foto podem aparecer na Comunidade.</span>
       </div>
 
-      <button class="criar-conta-btn" onclick="sairDaConta()" style="background:transparent; border:1px solid var(--linha); color:var(--osso);">Sair da conta</button>
+      <button class="criar-conta-btn" onclick="sairDaConta()" style="background:transparent; border:1px solid var(--linha); color:var(--osso); margin-top:20px;">Sair da conta</button>
     </div>
   </div>
 
@@ -1991,6 +2022,9 @@ const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 // -- Sem isto, ninguém consegue ver o NOME de quem partilhou algo além de si mesmo:
 // create policy "qualquer pessoa autenticada pode ver o nome de outros perfis"
 //   on perfis for select using (auth.role() = 'authenticated');
+// -- Perfil público (@ e nome de exibição):
+// alter table perfis add column if not exists handle text;
+// alter table perfis add column if not exists nome_exibicao text;
 //
 // create table reflexoes (
 //   id uuid primary key default gen_random_uuid(),
@@ -2146,7 +2180,7 @@ document.addEventListener('click', function(e) {
 async function sairDaConta() {
   fecharMenuPerfil();
   await supabaseClient.auth.signOut();
-  dadosConta = { nome: '', cpf: '', email: '' };
+  dadosConta = { nome: '', cpf: '', email: '', nomeExibicao: '', handle: '', foto: '' };
   anotacoes = [];
   agendaItens = [];
   identidadeRespostas = perguntas.map(() => null);
@@ -2164,7 +2198,7 @@ async function sairDaConta() {
 // ============================================================
 // DADOS DA CONTA (sessão persistida no aparelho — funciona online e offline)
 // ============================================================
-let dadosConta = { nome: '', cpf: '', email: '' };
+let dadosConta = { nome: '', cpf: '', email: '', nomeExibicao: '', handle: '', foto: '' };
 
 function salvarSessao() {
   try {
@@ -2203,7 +2237,122 @@ function preencherInterior() {
   document.getElementById('interior-nome').textContent = dadosConta.nome || '—';
   document.getElementById('interior-cpf').textContent = dadosConta.cpf || '—';
   document.getElementById('interior-email').textContent = dadosConta.email || '—';
+
+  const elNomeEx = document.getElementById('campo-nome-exibicao');
+  const elHandle = document.getElementById('campo-handle');
+  if (elNomeEx) elNomeEx.value = dadosConta.nomeExibicao || dadosConta.nome || '';
+  if (elHandle) elHandle.value = dadosConta.handle || '';
+
+  atualizarFotoPerfilUI();
+  atualizarAvatarTopo();
   verificarAcessoPainel();
+}
+
+function inicialLetraPerfil() {
+  const base = (dadosConta.nomeExibicao || dadosConta.nome || dadosConta.handle || 'E').trim();
+  return (base.charAt(0) || 'E').toUpperCase();
+}
+
+function atualizarFotoPerfilUI() {
+  const img = document.getElementById('interior-foto');
+  const letra = document.getElementById('interior-foto-letra');
+  if (!img || !letra) return;
+  if (dadosConta.foto) {
+    img.src = dadosConta.foto;
+    img.style.display = 'block';
+    letra.style.display = 'none';
+  } else {
+    img.removeAttribute('src');
+    img.style.display = 'none';
+    letra.style.display = 'block';
+    letra.textContent = inicialLetraPerfil();
+  }
+}
+
+function atualizarAvatarTopo() {
+  const avatar = document.querySelector('.avatar-circulo');
+  if (!avatar) return;
+  if (dadosConta.foto) {
+    avatar.style.backgroundImage = `url(${dadosConta.foto})`;
+    avatar.style.backgroundSize = 'cover';
+    avatar.style.backgroundPosition = 'center';
+    avatar.textContent = '';
+  } else {
+    avatar.style.backgroundImage = '';
+    avatar.textContent = inicialLetraPerfil();
+  }
+}
+
+function aoEscolherFotoPerfil(event) {
+  const file = event.target.files && event.target.files[0];
+  if (!file) return;
+  if (!file.type.startsWith('image/')) {
+    mostrarConfirmacao('Escolha uma imagem');
+    return;
+  }
+  // Limite aproximado para caber no localStorage
+  if (file.size > 1.8 * 1024 * 1024) {
+    mostrarConfirmacao('Use uma foto menor (até cerca de 1,5 MB)');
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = () => {
+    // Redimensiona para não estourar armazenamento
+    const img = new Image();
+    img.onload = () => {
+      const max = 320;
+      let w = img.width, h = img.height;
+      if (w > max || h > max) {
+        const r = Math.min(max / w, max / h);
+        w = Math.round(w * r);
+        h = Math.round(h * r);
+      }
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0, w, h);
+      dadosConta.foto = canvas.toDataURL('image/jpeg', 0.82);
+      salvarSessao();
+      atualizarFotoPerfilUI();
+      atualizarAvatarTopo();
+      sincronizarPerfilNoServidor();
+      mostrarConfirmacao('Foto atualizada');
+    };
+    img.src = reader.result;
+  };
+  reader.readAsDataURL(file);
+  event.target.value = '';
+}
+
+function salvarPerfilPublico() {
+  const nomeEx = (document.getElementById('campo-nome-exibicao') || {}).value || '';
+  const handle = ((document.getElementById('campo-handle') || {}).value || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9._]/g, '')
+    .slice(0, 30);
+
+  dadosConta.nomeExibicao = nomeEx.trim().slice(0, 40);
+  dadosConta.handle = handle;
+  salvarSessao();
+  atualizarFotoPerfilUI();
+  atualizarAvatarTopo();
+  sincronizarPerfilNoServidor();
+  mostrarConfirmacao('Perfil guardado');
+}
+
+async function sincronizarPerfilNoServidor() {
+  try {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) return;
+    await supabaseClient.from('perfis').update({
+      nome: dadosConta.nomeExibicao || dadosConta.nome || null,
+      handle: dadosConta.handle || null,
+      // foto fica local por enquanto se a coluna não existir
+    }).eq('id', session.user.id);
+  } catch (e) {
+    // silencioso — localStorage já salvou
+  }
 }
 
 // ============================================================
@@ -2524,6 +2673,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Isso dá uma entrada instantânea mesmo offline.
   if (carregarSessaoSalva()) {
     preencherInterior();
+    atualizarAvatarTopo();
     irPara('tela-territorio');
   }
 
@@ -3438,7 +3588,7 @@ async function renderizarComunidade() {
   if (error || !reflexoes || reflexoes.length === 0) {
     container.innerHTML = `
       <div class="comunidade-crescimento">
-        <p>Este espaço cresce com quem chega.<br>Em breve, novas presenças aparecem aqui.</p>
+        <p>Aqui nascem ideias e inícios de projetos.<br>Compartilhe algo em Sua criação — o Ecossistema amadurece com o que cada um adiciona.</p>
       </div>
     `;
     comunidadeCache = [];
@@ -3449,12 +3599,13 @@ async function renderizarComunidade() {
   const idsUsuarios = [...new Set(reflexoes.map(r => r.user_id))];
 
   const [{ data: perfis }, { data: reconhecimentos }, { data: respostas }] = await Promise.all([
-    supabaseClient.from('perfis').select('id, nome').in('id', idsUsuarios),
+    supabaseClient.from('perfis').select('*').in('id', idsUsuarios),
     supabaseClient.from('reconhecimentos').select('reflexao_id, user_id').in('reflexao_id', ids),
     supabaseClient.from('respostas_comunidade').select('reflexao_id').in('reflexao_id', ids)
   ]);
 
   const nomesPorId = Object.fromEntries((perfis || []).map(p => [p.id, p.nome]));
+  const handlesPorId = Object.fromEntries((perfis || []).map(p => [p.id, p.handle || '']));
 
   comunidadeCache = reflexoes.map(r => {
     const reconhecimentosDoPost = (reconhecimentos || []).filter(x => x.reflexao_id === r.id);
@@ -3464,6 +3615,7 @@ async function renderizarComunidade() {
       userId: r.user_id,
       mine: r.user_id === meuUserIdComunidade,
       autor: nomesPorId[r.user_id] || 'Alguém do espaço',
+      handle: handlesPorId[r.user_id] || '',
       dataHora: formatarDataHoraCompleta(r.criado_em),
       texto: r.conteudo?.texto || r.conteudo?.resposta || '',
       totalReconhecimentos: reconhecimentosDoPost.length,
@@ -3475,7 +3627,7 @@ async function renderizarComunidade() {
   container.innerHTML = comunidadeCache.map(item => `
     <div class="partilha-card">
       <div class="partilha-card-topo">
-        <p class="partilha-autor">${item.autor} — ${item.dataHora}</p>
+        <p class="partilha-autor">${item.handle ? '@' + item.handle + ' · ' : ''}${item.autor} — ${item.dataHora}</p>
         ${item.mine ? `<button class="partilha-opcoes-btn" onclick="abrirMenuPost('${item.id}')">⋯</button>` : ''}
       </div>
       <p class="partilha-texto">${item.texto}</p>
