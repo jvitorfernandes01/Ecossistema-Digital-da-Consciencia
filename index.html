@@ -802,6 +802,66 @@
     letter-spacing: 0.03em;
   }
 
+  .noticias-dia {
+    margin: -12px 0 28px;
+    border: 1px solid var(--linha);
+    border-radius: 14px;
+    overflow: hidden;
+    background: rgba(237, 234, 227, 0.02);
+  }
+  .noticias-toggle {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    background: none;
+    border: none;
+    color: var(--osso-fraco);
+    font-family: 'Inter', sans-serif;
+    font-size: 12.5px;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    text-align: left;
+  }
+  .noticias-toggle span.chevron {
+    transition: transform 0.3s ease;
+    color: var(--dourado-fraco);
+  }
+  .noticias-dia.aberto .noticias-toggle span.chevron {
+    transform: rotate(90deg);
+  }
+  .noticias-corpo {
+    display: none;
+    padding: 0 16px 16px;
+    border-top: 1px solid var(--linha);
+  }
+  .noticias-dia.aberto .noticias-corpo {
+    display: block;
+  }
+  .noticia-item {
+    padding: 12px 0;
+    border-bottom: 1px solid var(--linha);
+  }
+  .noticia-item:last-child {
+    border-bottom: none;
+    padding-bottom: 4px;
+  }
+  .noticia-item h4 {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: 14.5px;
+    color: var(--osso);
+    margin-bottom: 4px;
+    line-height: 1.4;
+  }
+  .noticia-item p {
+    font-size: 12px;
+    color: var(--osso-fraco);
+    line-height: 1.5;
+  }
+
   .secao-label {
     font-size: 11px;
     color: var(--osso-fraco);
@@ -1555,7 +1615,7 @@
       <div style="position:relative;">
         <div class="avatar-circulo" onclick="alternarMenuPerfil()">V</div>
         <div id="menu-perfil" class="menu-perfil">
-          <button onclick="preencherInterior(); irPara('tela-interior'); fecharMenuPerfil();">◐ Interior</button>
+          <button onclick="irPara('tela-interior'); fecharMenuPerfil();">◐ Interior</button>
           <button onclick="irPara('tela-sobre'); fecharMenuPerfil();">i Infor</button>
           <button id="btn-menu-painel" onclick="irPara('tela-painel'); fecharMenuPerfil(); renderizarPainel();" style="display:none;">✎ Painel</button>
           <button onclick="sairDaConta()">⏻ Sair</button>
@@ -1566,6 +1626,16 @@
     <div class="frase-dia">
       <p id="frase-dia-citacao">"O Reino de Deus não vem com aparência visível... porque o Reino de Deus está entre vós."</p>
       <p class="fonte" id="frase-dia-fonte">LUCAS 17:20-21</p>
+    </div>
+
+    <div class="noticias-dia" id="bloco-noticias-dia">
+      <button type="button" class="noticias-toggle" onclick="alternarNoticiasDia()" aria-expanded="false">
+        <span id="noticias-toggle-texto">Notícias do dia — tocar para ver</span>
+        <span class="chevron">›</span>
+      </button>
+      <div class="noticias-corpo" id="noticias-corpo">
+        <div id="lista-noticias-dia"></div>
+      </div>
     </div>
 
     <p class="secao-label">Caminhos</p>
@@ -1582,20 +1652,6 @@
         <div class="caminho-textos">
           <h3>Sua criação</h3>
           <p>O espaço em branco é seu</p>
-        </div>
-      </div>
-      <div class="caminho-card" onclick="irPara('tela-comunidade')">
-        <div class="caminho-icone" style="background:rgba(184,147,90,0.12)">◐</div>
-        <div class="caminho-textos">
-          <h3>Comunidade</h3>
-          <p>O que outros escolheram partilhar</p>
-        </div>
-      </div>
-      <div class="caminho-card" onclick="irPara('tela-livro')">
-        <div class="caminho-icone" style="background:rgba(237,234,227,0.05)">📖</div>
-        <div class="caminho-textos">
-          <h3>Além do Algoritmo</h3>
-          <p>Capítulo 3 — A identidade de quem foi traído</p>
         </div>
       </div>
     </div>
@@ -1757,13 +1813,12 @@
 
   <div class="tela" id="tela-interior">
     <div class="cadastro-topo">
-      <button class="voltar-simples" onclick="voltarTela('tela-territorio')">‹ voltar</button>
+      <button class="voltar-simples" onclick="irPara('tela-territorio')">‹ voltar</button>
     </div>
-    <div class="cadastro-conteudo" style="padding-bottom:48px;">
+    <div class="cadastro-conteudo">
       <h2 class="cadastro-titulo">Interior</h2>
-      <p class="cadastro-subtitulo">Seu espaço privado e a presença que os outros podem reconhecer.</p>
+      <p class="cadastro-subtitulo">Só você vê o que está aqui.</p>
 
-      <p class="secao-label">Dados privados</p>
       <div class="campo-grupo">
         <label class="campo-label">Nome completo</label>
         <p class="interior-valor" id="interior-nome">—</p>
@@ -1776,66 +1831,13 @@
         <label class="campo-label">E-mail</label>
         <p class="interior-valor" id="interior-email">—</p>
       </div>
+
       <div class="aviso-privacidade">
         <span>◐</span>
-        <span>CPF e e-mail só você vê. O nome é o que permite que outros te reconheçam no Ecossistema.</span>
+        <span>Estes dados nunca aparecem para outras pessoas da comunidade — apenas seu nome é visível externamente.</span>
       </div>
 
-      <p class="secao-label" style="margin-top:28px;">Destaques do perfil</p>
-      <p style="font-size:12.5px; color:var(--osso-fraco); line-height:1.55; margin-bottom:14px;">
-        O que aparece quando alguém reconhece você pelo nome. Edite online — outros usuários podem criar destaques parecidos.
-      </p>
-      <div id="lista-destaques-interior"></div>
-      <button class="entrar-btn" style="animation:none;opacity:1;margin-top:12px;width:100%;" onclick="abrirEditorDestaque()">+ Adicionar destaque</button>
-
-      <p class="secao-label" style="margin-top:28px;">Reconhecer alguém</p>
-      <p style="font-size:12.5px; color:var(--osso-fraco); line-height:1.55; margin-bottom:12px;">
-        Digite o nome de outra pessoa do Ecossistema. Reconhecer é marcar presença — não é seguir.
-      </p>
-      <div class="campo-grupo">
-        <input type="text" id="campo-buscar-perfil" class="campo-input" placeholder="Buscar pelo nome..." autocomplete="off"
-               onkeydown="if(event.key==='Enter') buscarPerfisPorNome()">
-      </div>
-      <button class="continuar-btn pronto" style="width:100%;margin-top:4px;" onclick="buscarPerfisPorNome()">Buscar</button>
-      <div id="resultados-busca-perfil" style="margin-top:14px;"></div>
-
-      <p class="secao-label" style="margin-top:28px;">Quem você reconheceu</p>
-      <div id="lista-reconheci"></div>
-
-      <p class="secao-label" style="margin-top:22px;">Quem te reconheceu</p>
-      <div id="lista-me-reconheceram"></div>
-
-      <button class="criar-conta-btn" onclick="sairDaConta()" style="background:transparent; border:1px solid var(--linha); color:var(--osso); margin-top:28px;">Sair da conta</button>
-    </div>
-  </div>
-
-  <!-- Perfil público de outra pessoa (reconhecimento pelo nome) -->
-  <div class="tela" id="tela-perfil-publico">
-    <div class="cadastro-topo">
-      <button class="voltar-simples" onclick="voltarTela('tela-interior')">‹ voltar</button>
-    </div>
-    <div class="cadastro-conteudo" style="padding-bottom:48px;">
-      <h2 class="cadastro-titulo" id="perfil-publico-nome">—</h2>
-      <p class="cadastro-subtitulo">Presença neste espaço</p>
-      <div id="perfil-publico-destaques"></div>
-      <div id="perfil-publico-acao" style="margin-top:20px;"></div>
-    </div>
-  </div>
-
-  <!-- Editor de destaque -->
-  <div id="editor-destaque" style="display:none; position:fixed; inset:0; z-index:40; background:rgba(11,11,10,0.96); flex-direction:column;">
-    <div class="editor-topo">
-      <button class="editor-fechar" onclick="fecharEditorDestaque()">✕</button>
-      <button class="editor-salvar" onclick="salvarDestaque()">Guardar</button>
-    </div>
-    <div style="padding:20px 24px; max-width:480px; margin:0 auto; width:100%;">
-      <p class="campo-label">Título</p>
-      <input type="text" id="destaque-titulo" class="campo-input" placeholder="Ex: Além do Algoritmo" style="margin-bottom:16px;">
-      <p class="campo-label">Subtítulo</p>
-      <input type="text" id="destaque-subtitulo" class="campo-input" placeholder="Ex: Reino: O Poder que Vive em Ti" style="margin-bottom:16px;">
-      <p class="campo-label">Ícone (emoji)</p>
-      <input type="text" id="destaque-icone" class="campo-input" placeholder="📖" maxlength="4" style="margin-bottom:8px;">
-      <p style="font-size:11px;color:var(--osso-fraco);">Aparece no seu perfil público e no Interior.</p>
+      <button class="criar-conta-btn" onclick="sairDaConta()" style="background:transparent; border:1px solid var(--linha); color:var(--osso);">Sair da conta</button>
     </div>
   </div>
 
@@ -1880,6 +1882,14 @@
         <input type="text" id="painel-nome-anotacoes" class="campo-input">
       </div>
 
+      <p class="secao-label">Notícias do dia (Território)</p>
+      <p style="font-size:12px;color:var(--osso-fraco);line-height:1.5;margin-bottom:10px;">
+        Uma notícia por linha no formato: <em>Título | Resumo curto</em>. O versículo se ajusta ao tom. Deixe vazio para usar o padrão embutido.
+      </p>
+      <div class="campo-grupo">
+        <textarea id="painel-noticias" class="campo-input" style="min-height:110px;resize:vertical;" placeholder="Nepal: enchentes | Centenas de mortos...&#10;EUA e Irã | Troca de ataques no Ormuz..."></textarea>
+      </div>
+
       <button class="criar-conta-btn" onclick="salvarPainel()">Salvar alterações</button>
 
       <div class="aviso-privacidade" style="margin-top:20px;">
@@ -1892,13 +1902,16 @@
   <!-- NAV INFERIOR -->
   <div id="nav-inferior">
     <button class="nav-item ativo" data-tela="tela-territorio" onclick="irPara('tela-territorio')">
-      <span class="nav-icone">◐</span>Território
+      <span class="nav-icone">◐</span>
+      <span class="nav-rotulo">Território</span>
     </button>
     <button class="nav-item" data-tela="tela-criacao" onclick="irPara('tela-criacao')">
-      <span class="nav-icone">✎</span>Criação
+      <span class="nav-icone">✎</span>
+      <span class="nav-rotulo">Criação</span>
     </button>
     <button class="nav-item" data-tela="tela-comunidade" onclick="irPara('tela-comunidade')">
-      <span class="nav-icone">◈</span>Comunidade
+      <span class="nav-icone">◈</span>
+      <span class="nav-rotulo">Comunidade</span>
     </button>
   </div>
 
@@ -1988,24 +2001,6 @@ const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 // -- Sem isto, ninguém consegue ver o NOME de quem partilhou algo além de si mesmo:
 // create policy "qualquer pessoa autenticada pode ver o nome de outros perfis"
 //   on perfis for select using (auth.role() = 'authenticated');
-// -- Destaques públicos do perfil (livro, projetos, etc.):
-// alter table perfis add column if not exists destaques jsonb default '[]'::jsonb;
-//
-// -- Reconhecimento entre perfis (pelo nome):
-// create table if not exists reconhecimentos_perfil (
-//   id uuid primary key default gen_random_uuid(),
-//   de_user_id uuid not null references auth.users(id) on delete cascade,
-//   para_user_id uuid not null references auth.users(id) on delete cascade,
-//   criado_em timestamptz default now(),
-//   unique (de_user_id, para_user_id)
-// );
-// alter table reconhecimentos_perfil enable row level security;
-// create policy "autenticado lê reconhecimentos de perfil"
-//   on reconhecimentos_perfil for select using (auth.role() = 'authenticated');
-// create policy "cada pessoa registra o próprio reconhecimento"
-//   on reconhecimentos_perfil for insert with check (auth.uid() = de_user_id);
-// create policy "cada pessoa remove o próprio reconhecimento"
-//   on reconhecimentos_perfil for delete using (auth.uid() = de_user_id);
 //
 // create table reflexoes (
 //   id uuid primary key default gen_random_uuid(),
@@ -2115,23 +2110,9 @@ async function carregarDadosDoServidor() {
 // ============================================================
 // NAVEGAÇÃO ENTRE TELAS
 // ============================================================
-const historicoTelas = [];
-let telaAtualId = 'tela-entrada';
-const telasSemHistorico = new Set(['tela-entrada', 'tela-login', 'tela-cadastro']);
-
-function irPara(idTela, opcoes = {}) {
-  const { pularHistorico = false } = opcoes;
-  const destino = document.getElementById(idTela);
-  if (!destino) return;
-
-  if (!pularHistorico && telaAtualId && telaAtualId !== idTela && !telasSemHistorico.has(telaAtualId)) {
-    historicoTelas.push(telaAtualId);
-    if (historicoTelas.length > 30) historicoTelas.shift();
-  }
-
+function irPara(idTela) {
   document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'));
-  destino.classList.add('ativa');
-  telaAtualId = idTela;
+  document.getElementById(idTela).classList.add('ativa');
 
   const navInferior = document.getElementById('nav-inferior');
   const telasComNav = ['tela-territorio', 'tela-criacao', 'tela-comunidade'];
@@ -2144,16 +2125,6 @@ function irPara(idTela, opcoes = {}) {
   } else {
     navInferior.classList.remove('visivel');
   }
-}
-
-function voltarTela(fallback) {
-  const anterior = historicoTelas.pop();
-  if (anterior) {
-    irPara(anterior, { pularHistorico: true });
-    return;
-  }
-  const destino = fallback || (dadosConta && dadosConta.nome ? 'tela-territorio' : 'tela-entrada');
-  irPara(destino, { pularHistorico: true });
 }
 
 // Data de hoje formatada
@@ -2243,384 +2214,6 @@ function preencherInterior() {
   document.getElementById('interior-cpf').textContent = dadosConta.cpf || '—';
   document.getElementById('interior-email').textContent = dadosConta.email || '—';
   verificarAcessoPainel();
-  carregarDestaquesLocais();
-  renderizarDestaquesInterior();
-  carregarReconhecimentosPerfil();
-}
-
-// ============================================================
-// DESTAQUES DO PERFIL (editáveis online)
-// O livro Além do Algoritmo fica em destaque no perfil do fundador;
-// qualquer pessoa pode criar destaques parecidos no próprio Interior.
-// ============================================================
-const DESTAQUE_LIVRO_PADRAO = {
-  id: 'livro-alem-do-algoritmo',
-  titulo: 'Além do Algoritmo',
-  subtitulo: 'Reino: O Poder que Vive em Ti · Capítulo 3',
-  icone: '📖',
-  acao: 'tela-livro',
-  fixo: true
-};
-
-let destaquesPerfil = [];
-let editandoDestaqueId = null;
-
-function carregarDestaquesLocais() {
-  try {
-    const chave = 'ecossistema_destaques_' + (dadosConta.email || 'anon');
-    const salvo = localStorage.getItem(chave);
-    if (salvo) {
-      destaquesPerfil = JSON.parse(salvo);
-    } else {
-      destaquesPerfil = [];
-    }
-  } catch (e) {
-    destaquesPerfil = [];
-  }
-
-  // Fundador: garante o card do livro em destaque
-  const ehFundador = dadosConta.email && dadosConta.email.toLowerCase() === EMAIL_FUNDADOR;
-  if (ehFundador && !destaquesPerfil.some(d => d.id === DESTAQUE_LIVRO_PADRAO.id)) {
-    destaquesPerfil.unshift({ ...DESTAQUE_LIVRO_PADRAO });
-    salvarDestaquesLocais();
-  }
-}
-
-function salvarDestaquesLocais() {
-  try {
-    const chave = 'ecossistema_destaques_' + (dadosConta.email || 'anon');
-    localStorage.setItem(chave, JSON.stringify(destaquesPerfil));
-  } catch (e) {}
-  // Tenta sincronizar no Supabase (coluna destaques em perfis), se existir
-  sincronizarDestaquesNoServidor();
-}
-
-async function sincronizarDestaquesNoServidor() {
-  try {
-    const { data: { session } } = await supabaseClient.auth.getSession();
-    if (!session) return;
-    await supabaseClient.from('perfis').update({ destaques: destaquesPerfil }).eq('id', session.user.id);
-  } catch (e) {
-    // Coluna pode ainda não existir — localStorage continua sendo a fonte
-  }
-}
-
-function renderizarDestaquesInterior() {
-  const container = document.getElementById('lista-destaques-interior');
-  if (!container) return;
-
-  if (destaquesPerfil.length === 0) {
-    container.innerHTML = `
-      <div class="anotacao-vazia" style="padding:18px 0;">
-        <p style="font-size:13px;">Nenhum destaque ainda.<br>Adicione o que quiser que outros reconheçam em você.</p>
-      </div>`;
-    return;
-  }
-
-  container.innerHTML = destaquesPerfil.map(d => `
-    <div class="caminho-card" style="margin-bottom:10px;" onclick="${d.acao ? `irPara('${d.acao}')` : ''}">
-      <div class="caminho-icone" style="background:rgba(184,147,90,0.12)">${d.icone || '◇'}</div>
-      <div class="caminho-textos" style="flex:1;">
-        <h3>${d.titulo}</h3>
-        <p>${d.subtitulo || ''}</p>
-      </div>
-      <button class="identidade-reescrever" style="padding:8px;"
-        onclick="event.stopPropagation(); editarDestaque('${d.id}')">editar</button>
-    </div>
-  `).join('');
-}
-
-function abrirEditorDestaque() {
-  editandoDestaqueId = null;
-  document.getElementById('destaque-titulo').value = '';
-  document.getElementById('destaque-subtitulo').value = '';
-  document.getElementById('destaque-icone').value = '◇';
-  const ed = document.getElementById('editor-destaque');
-  ed.style.display = 'flex';
-}
-
-function editarDestaque(id) {
-  const d = destaquesPerfil.find(x => x.id === id);
-  if (!d) return;
-  editandoDestaqueId = id;
-  document.getElementById('destaque-titulo').value = d.titulo || '';
-  document.getElementById('destaque-subtitulo').value = d.subtitulo || '';
-  document.getElementById('destaque-icone').value = d.icone || '◇';
-  document.getElementById('editor-destaque').style.display = 'flex';
-}
-
-function fecharEditorDestaque() {
-  document.getElementById('editor-destaque').style.display = 'none';
-  editandoDestaqueId = null;
-}
-
-function salvarDestaque() {
-  const titulo = document.getElementById('destaque-titulo').value.trim();
-  if (!titulo) {
-    mostrarConfirmacao('Escreva um título para o destaque');
-    return;
-  }
-  const subtitulo = document.getElementById('destaque-subtitulo').value.trim();
-  const icone = document.getElementById('destaque-icone').value.trim() || '◇';
-
-  if (editandoDestaqueId) {
-    const d = destaquesPerfil.find(x => x.id === editandoDestaqueId);
-    if (d) {
-      d.titulo = titulo;
-      d.subtitulo = subtitulo;
-      d.icone = icone;
-    }
-  } else {
-    destaquesPerfil.push({
-      id: 'd_' + Date.now(),
-      titulo,
-      subtitulo,
-      icone,
-      acao: null,
-      fixo: false
-    });
-  }
-  salvarDestaquesLocais();
-  renderizarDestaquesInterior();
-  fecharEditorDestaque();
-  mostrarConfirmacao('Destaque guardado');
-}
-
-// ============================================================
-// RECONHECIMENTO ENTRE PERFIS (pelo nome)
-// ============================================================
-let reconhecimentosFeitos = [];   // { id, nome, userId }
-let reconhecimentosRecebidos = []; // { id, nome, userId }
-
-function chaveReconhecimentos() {
-  return 'ecossistema_rec_perfil_' + (dadosConta.email || 'anon');
-}
-
-function carregarReconhecimentosPerfil() {
-  try {
-    const salvo = localStorage.getItem(chaveReconhecimentos());
-    if (salvo) {
-      const dados = JSON.parse(salvo);
-      reconhecimentosFeitos = dados.feitos || [];
-      reconhecimentosRecebidos = dados.recebidos || [];
-    } else {
-      reconhecimentosFeitos = [];
-      reconhecimentosRecebidos = [];
-    }
-  } catch (e) {
-    reconhecimentosFeitos = [];
-    reconhecimentosRecebidos = [];
-  }
-  renderizarListasReconhecimento();
-  carregarReconhecimentosDoServidor();
-}
-
-function salvarReconhecimentosLocais() {
-  try {
-    localStorage.setItem(chaveReconhecimentos(), JSON.stringify({
-      feitos: reconhecimentosFeitos,
-      recebidos: reconhecimentosRecebidos
-    }));
-  } catch (e) {}
-}
-
-function renderizarListasReconhecimento() {
-  const elFeitos = document.getElementById('lista-reconheci');
-  const elRecebidos = document.getElementById('lista-me-reconheceram');
-  if (!elFeitos || !elRecebidos) return;
-
-  elFeitos.innerHTML = reconhecimentosFeitos.length === 0
-    ? `<p style="font-size:13px;color:var(--osso-fraco);">Você ainda não reconheceu ninguém pelo nome.</p>`
-    : reconhecimentosFeitos.map(r => `
-        <div class="identidade-item" style="margin-bottom:8px;">
-          <p class="identidade-resposta" style="margin:0;">${r.nome}</p>
-          <button class="identidade-reescrever" style="margin-top:8px;"
-            onclick="abrirPerfilPublico('${r.userId || ''}','${(r.nome || '').replace(/'/g, "\\'")}')">ver presença</button>
-        </div>
-      `).join('');
-
-  elRecebidos.innerHTML = reconhecimentosRecebidos.length === 0
-    ? `<p style="font-size:13px;color:var(--osso-fraco);">Ninguém reconheceu você ainda — quando reconhecerem pelo seu nome, aparece aqui.</p>`
-    : reconhecimentosRecebidos.map(r => `
-        <div class="identidade-item" style="margin-bottom:8px;">
-          <p class="identidade-resposta" style="margin:0;">${r.nome}</p>
-        </div>
-      `).join('');
-}
-
-async function buscarPerfisPorNome() {
-  const q = (document.getElementById('campo-buscar-perfil').value || '').trim();
-  const box = document.getElementById('resultados-busca-perfil');
-  if (!box) return;
-  if (q.length < 2) {
-    box.innerHTML = `<p style="font-size:12.5px;color:var(--osso-fraco);">Digite pelo menos 2 letras do nome.</p>`;
-    return;
-  }
-
-  box.innerHTML = `<p style="font-size:12.5px;color:var(--osso-fraco);">Buscando...</p>`;
-
-  try {
-    const { data: { session } } = await supabaseClient.auth.getSession();
-    if (!session) {
-      box.innerHTML = `<p style="font-size:12.5px;color:var(--osso-fraco);">Entre na conta para buscar perfis.</p>`;
-      return;
-    }
-
-    const { data, error } = await supabaseClient
-      .from('perfis')
-      .select('id, nome')
-      .ilike('nome', `%${q}%`)
-      .limit(12);
-
-    if (error) throw error;
-
-    const resultados = (data || []).filter(p =>
-      p.id !== session.user.id && p.nome && p.nome.trim().length > 0
-    );
-
-    if (resultados.length === 0) {
-      box.innerHTML = `<p style="font-size:12.5px;color:var(--osso-fraco);">Nenhum perfil encontrado com esse nome.</p>`;
-      return;
-    }
-
-    box.innerHTML = resultados.map(p => {
-      const ja = reconhecimentosFeitos.some(r => r.userId === p.id);
-      return `
-        <div class="identidade-item" style="margin-bottom:8px;">
-          <p class="identidade-resposta" style="margin-bottom:10px;">${p.nome}</p>
-          <div style="display:flex;gap:10px;flex-wrap:wrap;">
-            <button class="continuar-btn pronto" style="margin:0;padding:10px 16px;"
-              onclick="reconhecerPerfil('${p.id}','${(p.nome || '').replace(/'/g, "\\'")}')">
-              ${ja ? '✓ Já reconhecido' : '◐ Reconhecer'}
-            </button>
-            <button class="entrar-btn" style="animation:none;opacity:1;margin:0;padding:10px 16px;"
-              onclick="abrirPerfilPublico('${p.id}','${(p.nome || '').replace(/'/g, "\\'")}')">
-              Ver presença
-            </button>
-          </div>
-        </div>`;
-    }).join('');
-  } catch (e) {
-    console.error(e);
-    box.innerHTML = `<p style="font-size:12.5px;color:var(--osso-fraco);">Não foi possível buscar agora. Tente de novo em instantes.</p>`;
-  }
-}
-
-async function reconhecerPerfil(userId, nome) {
-  if (!userId) return;
-  if (reconhecimentosFeitos.some(r => r.userId === userId)) {
-    mostrarConfirmacao('Você já reconheceu esta pessoa');
-    return;
-  }
-
-  reconhecimentosFeitos.unshift({ userId, nome, em: new Date().toISOString() });
-  salvarReconhecimentosLocais();
-  renderizarListasReconhecimento();
-  mostrarConfirmacao(`Você reconheceu ${nome}`);
-
-  try {
-    const { data: { session } } = await supabaseClient.auth.getSession();
-    if (!session) return;
-    await supabaseClient.from('reconhecimentos_perfil').insert({
-      de_user_id: session.user.id,
-      para_user_id: userId
-    });
-  } catch (e) {
-    // Tabela pode ainda não existir — local continua valendo
-  }
-
-  buscarPerfisPorNome();
-}
-
-async function carregarReconhecimentosDoServidor() {
-  try {
-    const { data: { session } } = await supabaseClient.auth.getSession();
-    if (!session) return;
-
-    const [{ data: feitos }, { data: recebidos }] = await Promise.all([
-      supabaseClient.from('reconhecimentos_perfil').select('para_user_id, criado_em').eq('de_user_id', session.user.id),
-      supabaseClient.from('reconhecimentos_perfil').select('de_user_id, criado_em').eq('para_user_id', session.user.id)
-    ]);
-
-    const idsFeitos = (feitos || []).map(x => x.para_user_id);
-    const idsRecebidos = (recebidos || []).map(x => x.de_user_id);
-    const todosIds = [...new Set([...idsFeitos, ...idsRecebidos])];
-    if (todosIds.length === 0) return;
-
-    const { data: perfis } = await supabaseClient.from('perfis').select('id, nome').in('id', todosIds);
-    const nomes = Object.fromEntries((perfis || []).map(p => [p.id, p.nome]));
-
-    if (feitos && feitos.length) {
-      reconhecimentosFeitos = feitos.map(x => ({
-        userId: x.para_user_id,
-        nome: nomes[x.para_user_id] || 'Alguém do espaço',
-        em: x.criado_em
-      }));
-    }
-    if (recebidos && recebidos.length) {
-      reconhecimentosRecebidos = recebidos.map(x => ({
-        userId: x.de_user_id,
-        nome: nomes[x.de_user_id] || 'Alguém do espaço',
-        em: x.criado_em
-      }));
-    }
-    salvarReconhecimentosLocais();
-    renderizarListasReconhecimento();
-  } catch (e) {
-    // Silencioso se a tabela ainda não existir
-  }
-}
-
-async function abrirPerfilPublico(userId, nomeFallback) {
-  document.getElementById('perfil-publico-nome').textContent = nomeFallback || 'Presença';
-  const boxD = document.getElementById('perfil-publico-destaques');
-  const boxA = document.getElementById('perfil-publico-acao');
-  boxD.innerHTML = `<p style="font-size:13px;color:var(--osso-fraco);">Carregando presença...</p>`;
-  boxA.innerHTML = '';
-  irPara('tela-perfil-publico');
-
-  let nome = nomeFallback || 'Alguém do espaço';
-  let destaques = [];
-
-  try {
-    if (userId) {
-      const { data } = await supabaseClient.from('perfis').select('nome, destaques').eq('id', userId).maybeSingle();
-      if (data) {
-        if (data.nome) nome = data.nome;
-        if (Array.isArray(data.destaques)) destaques = data.destaques;
-      }
-    }
-  } catch (e) {}
-
-  // Se for o fundador e não houver destaques no servidor, mostra o livro
-  const nomeLower = (nome || '').toLowerCase();
-  if (destaques.length === 0 && (nomeLower.includes('vitor') || nomeLower.includes('fernandes'))) {
-    destaques = [{ ...DESTAQUE_LIVRO_PADRAO }];
-  }
-
-  document.getElementById('perfil-publico-nome').textContent = nome;
-
-  if (destaques.length === 0) {
-    boxD.innerHTML = `<p style="font-size:13px;color:var(--osso-fraco);">Esta presença ainda não publicou destaques.</p>`;
-  } else {
-    boxD.innerHTML = destaques.map(d => `
-      <div class="caminho-card" style="margin-bottom:10px;" ${d.acao ? `onclick="irPara('${d.acao}')"` : ''}>
-        <div class="caminho-icone" style="background:rgba(184,147,90,0.12)">${d.icone || '◇'}</div>
-        <div class="caminho-textos">
-          <h3>${d.titulo || ''}</h3>
-          <p>${d.subtitulo || ''}</p>
-        </div>
-      </div>
-    `).join('');
-  }
-
-  const ja = userId && reconhecimentosFeitos.some(r => r.userId === userId);
-  boxA.innerHTML = userId ? `
-    <button class="continuar-btn pronto" style="width:100%;"
-      onclick="reconhecerPerfil('${userId}','${(nome || '').replace(/'/g, "\\'")}')">
-      ${ja ? '✓ Você já reconheceu esta presença' : '◐ Reconhecer pelo nome'}
-    </button>
-  ` : '';
 }
 
 // ============================================================
@@ -2675,13 +2268,174 @@ function aplicarConfiguracoes() {
     if (el) el.textContent = valor;
   });
 
-  // "Território" aparece em vários lugares (saudação, nav inferior) —
-  // por ora aplicamos só ao rótulo do menu de navegação, que é o rótulo direto da seção.
-  const navTerritorio = document.querySelector('.nav-item[data-tela="tela-territorio"]');
-  if (navTerritorio) {
-    const textoNode = Array.from(navTerritorio.childNodes).find(n => n.nodeType === Node.TEXT_NODE);
-    if (textoNode) textoNode.textContent = cfg.nomeTerritorio;
+  // Rótulos da nav inferior — um único texto por botão (evita "Território" duplicado)
+  const mapaNav = {
+    'tela-territorio': cfg.nomeTerritorio || 'Território',
+    'tela-criacao': (cfg.nomeCriacao === 'Sua criação' ? 'Criação' : (cfg.nomeCriacao || 'Criação')),
+    'tela-comunidade': cfg.nomeComunidade || 'Comunidade'
+  };
+  Object.entries(mapaNav).forEach(([tela, nome]) => {
+    const btn = document.querySelector(`.nav-item[data-tela="${tela}"] .nav-rotulo`);
+    if (btn) btn.textContent = nome;
+  });
+
+  // Versículo + notícias do dia (versículo acompanha o tom das notícias)
+  aplicarVersiculoENoticias(cfg);
+}
+
+// ============================================================
+// NOTÍCIAS DO DIA + VERSÍCULO ALINHADO
+// Fechado por padrão — a pessoa escolhe olhar ou não.
+// ============================================================
+const noticiasPadrao = [
+  {
+    titulo: 'Nepal e Tibete: enchentes e avalanche de lama',
+    resumo: 'Centenas de mortos e milhares de desaparecidos após colapso glacial e inundações na fronteira.',
+    temas: ['desastre', 'sofrimento', 'clima']
+  },
+  {
+    titulo: 'EUA e Irã voltam a trocar ataques',
+    resumo: 'Ação no Estreito de Ormuz e respostas na região interrompem semanas de relativa trégua.',
+    temas: ['guerra', 'conflito', 'medo']
+  },
+  {
+    titulo: 'Acordo de petróleo EUA–Venezuela em debate',
+    resumo: 'Anúncio de acesso a reservas enormes gera críticas sobre o que muda de fato no curto prazo.',
+    temas: ['poder', 'economia', 'nacoes']
+  },
+  {
+    titulo: 'Islândia rejeita retomar entrada na UE',
+    resumo: 'Referendo recusa reabrir negociações de adesão à União Europeia.',
+    temas: ['nacoes', 'direcao']
   }
+];
+
+const versiculosPorTema = {
+  desastre: [
+    { citacao: '"O Senhor é o meu pastor; nada me faltará. Deitar-me faz em verdes pastos, guia-me mansamente a águas tranquilas."', fonte: 'SALMOS 23:1-2' },
+    { citacao: '"Não temas, porque eu sou contigo; não te assombres, porque eu sou o teu Deus."', fonte: 'ISAÍAS 41:10' }
+  ],
+  sofrimento: [
+    { citacao: '"Bem-aventurados os que choram, porque eles serão consolados."', fonte: 'MATEUS 5:4' },
+    { citacao: '"Perto está o Senhor dos que têm o coração quebrantado."', fonte: 'SALMOS 34:18' }
+  ],
+  guerra: [
+    { citacao: '"Bem-aventurados os pacificadores, porque eles serão chamados filhos de Deus."', fonte: 'MATEUS 5:9' },
+    { citacao: '"Sede quietos, e sabei que eu sou Deus."', fonte: 'SALMOS 46:10' }
+  ],
+  conflito: [
+    { citacao: '"Não vos conformeis com este mundo, mas transformai-vos pela renovação do vosso entendimento."', fonte: 'ROMANOS 12:2' },
+    { citacao: '"A brandura desvia o furor."', fonte: 'PROVÉRBIOS 15:1' }
+  ],
+  medo: [
+    { citacao: '"Não temas, porque eu sou contigo."', fonte: 'ISAÍAS 41:10' },
+    { citacao: '"A paz de Deus, que excede todo o entendimento, guardará os vossos corações."', fonte: 'FILIPENSES 4:7' }
+  ],
+  poder: [
+    { citacao: '"O Reino de Deus não vem com aparência visível... porque o Reino de Deus está entre vós."', fonte: 'LUCAS 17:20-21' },
+    { citacao: '"Não por força nem por poder, mas pelo meu Espírito, diz o Senhor."', fonte: 'ZACARIAS 4:6' }
+  ],
+  economia: [
+    { citacao: '"Onde estiver o vosso tesouro, aí estará também o vosso coração."', fonte: 'MATEUS 6:21' },
+    { citacao: '"Buscai primeiro o Reino de Deus, e a sua justiça."', fonte: 'MATEUS 6:33' }
+  ],
+  clima: [
+    { citacao: '"A terra é do Senhor e a sua plenitude."', fonte: 'SALMOS 24:1' },
+    { citacao: '"Olhai as aves do céu... vosso Pai celestial as alimenta."', fonte: 'MATEUS 6:26' }
+  ],
+  nacoes: [
+    { citacao: '"Ele faz cessar as guerras até aos confins da terra."', fonte: 'SALMOS 46:9' },
+    { citacao: '"A justiça exalta as nações."', fonte: 'PROVÉRBIOS 14:34' }
+  ],
+  direcao: [
+    { citacao: '"Confia no Senhor de todo o teu coração, e não te estribes no teu próprio entendimento."', fonte: 'PROVÉRBIOS 3:5' },
+    { citacao: '"Eu sou o caminho, e a verdade e a vida."', fonte: 'JOÃO 14:6' }
+  ],
+  padrao: [
+    { citacao: '"O Reino de Deus não vem com aparência visível... porque o Reino de Deus está entre vós."', fonte: 'LUCAS 17:20-21' },
+    { citacao: '"Conhecereis a verdade, e a verdade vos libertará."', fonte: 'JOÃO 8:32' }
+  ]
+};
+
+function carregarNoticiasDoDia() {
+  try {
+    const salvo = localStorage.getItem('ecossistema_noticias');
+    if (salvo) {
+      const dados = JSON.parse(salvo);
+      if (Array.isArray(dados) && dados.length) return dados;
+    }
+  } catch (e) {}
+  return noticiasPadrao;
+}
+
+function salvarNoticiasDoDia(lista) {
+  try {
+    localStorage.setItem('ecossistema_noticias', JSON.stringify(lista));
+  } catch (e) {}
+}
+
+function temaDominante(noticias) {
+  const contagem = {};
+  noticias.forEach(n => {
+    (n.temas || []).forEach(t => {
+      contagem[t] = (contagem[t] || 0) + 1;
+    });
+  });
+  let melhor = 'padrao';
+  let max = 0;
+  Object.entries(contagem).forEach(([t, c]) => {
+    if (c > max) { max = c; melhor = t; }
+  });
+  return melhor;
+}
+
+function aplicarVersiculoENoticias(cfg) {
+  const noticias = carregarNoticiasDoDia();
+  const lista = document.getElementById('lista-noticias-dia');
+  const toggleTexto = document.getElementById('noticias-toggle-texto');
+
+  if (lista) {
+    lista.innerHTML = noticias.map(n => `
+      <div class="noticia-item">
+        <h4>${n.titulo}</h4>
+        <p>${n.resumo || ''}</p>
+      </div>
+    `).join('');
+  }
+  if (toggleTexto) {
+    const n = noticias.length;
+    toggleTexto.textContent = n
+      ? `Notícias do dia (${n}) — tocar para ver ou esconder`
+      : 'Notícias do dia — ainda não há resumo';
+  }
+
+  // Versículo: se o fundador fixou frase diferente do padrão no Painel, respeita
+  const elCitacao = document.getElementById('frase-dia-citacao');
+  const elFonte = document.getElementById('frase-dia-fonte');
+  if (!elCitacao || !elFonte) return;
+
+  const padrao = configuracoesPadrao.fraseCitacao;
+  if (cfg && cfg.fraseCitacao && cfg.fraseCitacao !== padrao) {
+    elCitacao.textContent = cfg.fraseCitacao;
+    elFonte.textContent = cfg.fraseFonte || '';
+    return;
+  }
+
+  const tema = temaDominante(noticias);
+  const pool = versiculosPorTema[tema] || versiculosPorTema.padrao;
+  const agora = new Date();
+  const diaDoAno = Math.floor((agora - new Date(agora.getFullYear(), 0, 0)) / 86400000);
+  const v = pool[diaDoAno % pool.length];
+  elCitacao.textContent = v.citacao;
+  elFonte.textContent = v.fonte;
+}
+
+function alternarNoticiasDia() {
+  const bloco = document.getElementById('bloco-noticias-dia');
+  if (!bloco) return;
+  const aberto = bloco.classList.toggle('aberto');
+  const btn = bloco.querySelector('.noticias-toggle');
+  if (btn) btn.setAttribute('aria-expanded', aberto ? 'true' : 'false');
 }
 
 function renderizarPainel() {
@@ -2693,6 +2447,32 @@ function renderizarPainel() {
   document.getElementById('painel-nome-comunidade').value = cfg.nomeComunidade;
   document.getElementById('painel-nome-agenda').value = cfg.nomeAgenda;
   document.getElementById('painel-nome-anotacoes').value = cfg.nomeAnotacoes;
+
+  const elNoticias = document.getElementById('painel-noticias');
+  if (elNoticias) {
+    const lista = carregarNoticiasDoDia();
+    elNoticias.value = lista.map(n => `${n.titulo} | ${n.resumo || ''}`).join('\n');
+  }
+}
+
+function parseNoticiasDoPainel(texto) {
+  return texto.split('\n')
+    .map(l => l.trim())
+    .filter(Boolean)
+    .map(l => {
+      const partes = l.split('|');
+      const titulo = (partes[0] || '').trim();
+      const resumo = (partes.slice(1).join('|') || '').trim();
+      const temas = [];
+      const t = (titulo + ' ' + resumo).toLowerCase();
+      if (/enchente|inunda|desastre|terremoto|mortos|nepal|clima/.test(t)) temas.push('desastre', 'sofrimento', 'clima');
+      if (/guerra|ataque|míssil|irã|ucrânia|conflito/.test(t)) temas.push('guerra', 'conflito', 'medo');
+      if (/petróleo|economia|mercado|dívida/.test(t)) temas.push('economia', 'poder');
+      if (/paz|acordo|negocia/.test(t)) temas.push('direcao', 'nacoes');
+      if (!temas.length) temas.push('padrao');
+      return { titulo, resumo, temas };
+    })
+    .filter(n => n.titulo.length > 0);
 }
 
 function salvarPainel() {
@@ -2708,6 +2488,10 @@ function salvarPainel() {
 
   try {
     localStorage.setItem('ecossistema_config', JSON.stringify(novaConfig));
+    const textoNoticias = (document.getElementById('painel-noticias') || {}).value || '';
+    const parseadas = parseNoticiasDoPainel(textoNoticias);
+    if (parseadas.length) salvarNoticiasDoDia(parseadas);
+    else localStorage.removeItem('ecossistema_noticias');
   } catch (e) {
     alert('Não foi possível salvar as alterações neste aparelho.');
     return;
@@ -3760,11 +3544,7 @@ async function renderizarComunidade() {
   container.innerHTML = comunidadeCache.map(item => `
     <div class="partilha-card">
       <div class="partilha-card-topo">
-        <p class="partilha-autor">
-          <span style="cursor:pointer;text-decoration:underline;text-decoration-color:rgba(184,147,90,0.35);"
-            onclick="abrirPerfilPublico('${item.userId || ''}','${(item.autor || '').replace(/'/g, "\\'")}')">${item.autor}</span>
-          — ${item.dataHora}
-        </p>
+        <p class="partilha-autor">${item.autor} — ${item.dataHora}</p>
         ${item.mine ? `<button class="partilha-opcoes-btn" onclick="abrirMenuPost('${item.id}')">⋯</button>` : ''}
       </div>
       <p class="partilha-texto">${item.texto}</p>
