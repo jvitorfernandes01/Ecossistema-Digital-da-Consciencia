@@ -1839,6 +1839,13 @@
       </div>
       <button type="button" class="continuar-btn pronto" style="width:100%;margin-top:4px;" onclick="salvarPerfilPublico()">Guardar perfil</button>
 
+      <p class="secao-label" style="margin-top:28px;">Meus projetos / cards</p>
+      <p style="font-size:12.5px;color:var(--osso-fraco);line-height:1.55;margin-bottom:12px;">
+        Projetos pessoais em andamento. Ficam privados até você decidir que estão prontos para o público. Podem ter texto, link de vídeo, PDF e um link longo para compartilhar.
+      </p>
+      <div id="lista-projetos-interior"></div>
+      <button type="button" class="entrar-btn" style="animation:none;opacity:1;margin-top:12px;width:100%;" onclick="abrirEditorProjeto()">+ Novo projeto</button>
+
       <p class="secao-label" style="margin-top:28px;">Dados privados</p>
       <div class="campo-grupo">
         <label class="campo-label">Nome completo</label>
@@ -1905,18 +1912,83 @@
 
       <p class="secao-label">Notícias do dia (Território)</p>
       <p style="font-size:12px;color:var(--osso-fraco);line-height:1.5;margin-bottom:10px;">
-        Uma por linha: <em>Título | Resumo</em>. O versículo se ajusta ao tom.
+        Uma por linha: <em>Título | Resumo</em>. O versículo se ajusta ao tom. Ao salvar no servidor, todos os usuários recebem a atualização do dia.
       </p>
       <div class="campo-grupo">
         <textarea id="painel-noticias" class="campo-input" style="min-height:110px;resize:vertical;" placeholder="Nepal: enchentes | Centenas de mortos..."></textarea>
       </div>
 
-      <button class="criar-conta-btn" onclick="salvarPainel()">Salvar alterações</button>
+      <button class="criar-conta-btn" onclick="salvarPainel()">Salvar neste aparelho</button>
+      <button class="continuar-btn pronto" style="width:100%;margin-top:10px;" onclick="publicarConteudoDiarioServidor()">Publicar para todos (hoje)</button>
 
       <div class="aviso-privacidade" style="margin-top:20px;">
         <span>◐</span>
-        <span>Área restrita ao fundador. Suas mudanças ficam salvas neste aparelho por enquanto — quando o Ecossistema tiver um servidor central, elas se tornam visíveis para todos automaticamente.</span>
+        <span>Salvar neste aparelho = só você. Publicar para todos = grava o versículo e as notícias do dia no Supabase; cada pessoa vê ao abrir o Território.</span>
       </div>
+    </div>
+  </div>
+
+  <!-- EDITOR DE PROJETO / CARD -->
+  <div class="tela" id="tela-projeto-editor">
+    <div class="cadastro-topo">
+      <button class="voltar-simples" onclick="irPara('tela-interior')">‹ voltar</button>
+    </div>
+    <div class="cadastro-conteudo" style="padding-bottom:48px;">
+      <h2 class="cadastro-titulo" id="titulo-editor-projeto">Novo projeto</h2>
+      <p class="cadastro-subtitulo">Privado até você marcar como pronto.</p>
+
+      <div class="campo-grupo">
+        <label class="campo-label" for="proj-titulo">Título</label>
+        <input type="text" id="proj-titulo" class="campo-input" placeholder="Nome do projeto ou ideia" maxlength="80">
+      </div>
+      <div class="campo-grupo">
+        <label class="campo-label" for="proj-resumo">O que é (resumo)</label>
+        <textarea id="proj-resumo" class="campo-input" style="min-height:90px;resize:vertical;" placeholder="Descreva o projeto em andamento..."></textarea>
+      </div>
+      <div class="campo-grupo">
+        <label class="campo-label" for="proj-video">Link de vídeo (opcional)</label>
+        <input type="url" id="proj-video" class="campo-input" placeholder="https://... YouTube, Vimeo ou arquivo">
+      </div>
+      <div class="campo-grupo">
+        <label class="campo-label" for="proj-pdf">Link de PDF (opcional)</label>
+        <input type="url" id="proj-pdf" class="campo-input" placeholder="https://... arquivo PDF">
+      </div>
+      <div class="campo-grupo">
+        <label class="campo-label" for="proj-acesso">Link longo / acesso externo (opcional)</label>
+        <input type="url" id="proj-acesso" class="campo-input" placeholder="https://... página, formulário, drive">
+      </div>
+
+      <p class="secao-label">Visibilidade</p>
+      <div class="editor-opcao-comunidade" style="margin-bottom:16px;" onclick="document.getElementById('proj-publico').classList.toggle('ligado')">
+        <div class="editor-opcao-comunidade-texto">
+          <h4>Pronto para o público</h4>
+          <p>Desligado = só você vê. Ligado = gera link e pode aparecer.</p>
+        </div>
+        <div class="toggle" id="proj-publico"></div>
+      </div>
+
+      <div id="proj-link-publico-box" style="display:none;margin-bottom:16px;">
+        <label class="campo-label">Link deste card</label>
+        <p id="proj-link-publico" class="interior-valor" style="font-size:12px;word-break:break-all;line-height:1.5;"></p>
+        <button type="button" class="entrar-btn" style="animation:none;opacity:1;margin-top:8px;width:100%;" onclick="copiarLinkProjeto()">Copiar link</button>
+      </div>
+
+      <button type="button" class="continuar-btn pronto" style="width:100%;" onclick="salvarProjeto()">Guardar projeto</button>
+      <button type="button" id="btn-apagar-projeto" class="criar-conta-btn" style="display:none;background:transparent;border:1px solid var(--linha);color:var(--osso);margin-top:12px;" onclick="apagarProjeto()">Apagar projeto</button>
+    </div>
+  </div>
+
+  <!-- VISUALIZAÇÃO PÚBLICA DE UM CARD (via ?p=id) -->
+  <div class="tela" id="tela-projeto-publico">
+    <div class="cadastro-topo">
+      <button class="voltar-simples" onclick="irPara(dadosConta && dadosConta.nome ? 'tela-territorio' : 'tela-entrada')">‹ voltar</button>
+    </div>
+    <div class="cadastro-conteudo" style="padding-bottom:48px;">
+      <p class="secao-label">Projeto</p>
+      <h2 class="cadastro-titulo" id="pub-proj-titulo">—</h2>
+      <p class="cadastro-subtitulo" id="pub-proj-autor"></p>
+      <p class="interior-valor" id="pub-proj-resumo" style="line-height:1.7;margin-bottom:20px;"></p>
+      <div id="pub-proj-midias"></div>
     </div>
   </div>
 
@@ -2025,6 +2097,45 @@ const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 // -- Perfil público (@ e nome de exibição):
 // alter table perfis add column if not exists handle text;
 // alter table perfis add column if not exists nome_exibicao text;
+//
+// -- Conteúdo diário (versículo + notícias para todos):
+// create table if not exists conteudo_diario (
+//   data date primary key,
+//   versiculo text,
+//   fonte text,
+//   noticias jsonb default '[]'::jsonb,
+//   atualizado_em timestamptz default now(),
+//   publicado_por uuid references auth.users(id)
+// );
+// alter table conteudo_diario enable row level security;
+// create policy "todos autenticados leem conteudo do dia"
+//   on conteudo_diario for select using (auth.role() = 'authenticated');
+// create policy "fundador publica conteudo do dia"
+//   on conteudo_diario for all using (auth.uid() = publicado_por) with check (auth.uid() = publicado_por);
+// -- Se preferir qualquer autenticado publicar (teste):
+// -- create policy "autenticado escreve conteudo diario"
+// --   on conteudo_diario for insert with check (auth.role() = 'authenticated');
+// -- create policy "autenticado atualiza conteudo diario"
+// --   on conteudo_diario for update using (auth.role() = 'authenticated');
+//
+// -- Projetos / cards do perfil:
+// create table if not exists projetos (
+//   id text primary key,
+//   user_id uuid not null references auth.users(id) on delete cascade,
+//   titulo text not null,
+//   resumo text,
+//   video_url text,
+//   pdf_url text,
+//   acesso_url text,
+//   publico boolean default false,
+//   criado_em timestamptz default now(),
+//   atualizado_em timestamptz default now()
+// );
+// alter table projetos enable row level security;
+// create policy "dono gerencia seus projetos"
+//   on projetos for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+// create policy "publico le projetos publicados"
+//   on projetos for select using (publico = true);
 //
 // create table reflexoes (
 //   id uuid primary key default gen_random_uuid(),
@@ -2245,6 +2356,7 @@ function preencherInterior() {
 
   atualizarFotoPerfilUI();
   atualizarAvatarTopo();
+  renderizarProjetosInterior();
   verificarAcessoPainel();
 }
 
@@ -2348,11 +2460,299 @@ async function sincronizarPerfilNoServidor() {
     await supabaseClient.from('perfis').update({
       nome: dadosConta.nomeExibicao || dadosConta.nome || null,
       handle: dadosConta.handle || null,
-      // foto fica local por enquanto se a coluna não existir
     }).eq('id', session.user.id);
+  } catch (e) {}
+}
+
+// ============================================================
+// PROJETOS / CARDS DO PERFIL
+// Privados por padrão; públicos só quando o usuário marca "pronto".
+// Link longo: ?p=ID
+// ============================================================
+let projetosPerfil = [];
+let editandoProjetoId = null;
+
+function chaveProjetos() {
+  return 'ecossistema_projetos_' + (dadosConta.email || 'anon');
+}
+
+function carregarProjetosLocais() {
+  try {
+    const salvo = localStorage.getItem(chaveProjetos());
+    if (salvo) {
+      const dados = JSON.parse(salvo);
+      if (Array.isArray(dados)) projetosPerfil = dados;
+    }
   } catch (e) {
-    // silencioso — localStorage já salvou
+    projetosPerfil = [];
   }
+}
+
+function salvarProjetosLocais() {
+  try {
+    localStorage.setItem(chaveProjetos(), JSON.stringify(projetosPerfil));
+  } catch (e) {}
+}
+
+function renderizarProjetosInterior() {
+  const box = document.getElementById('lista-projetos-interior');
+  if (!box) return;
+  carregarProjetosLocais();
+
+  if (!projetosPerfil.length) {
+    box.innerHTML = `<p style="font-size:13px;color:var(--osso-fraco);">Nenhum projeto ainda. Crie um card e deixe privado até estar pronto.</p>`;
+    return;
+  }
+
+  box.innerHTML = projetosPerfil.map(p => `
+    <div class="caminho-card" style="margin-bottom:10px;" onclick="abrirEditorProjeto('${p.id}')">
+      <div class="caminho-icone" style="background:rgba(184,147,90,0.12)">${p.publico ? '◈' : '◌'}</div>
+      <div class="caminho-textos" style="flex:1;">
+        <h3>${p.titulo || 'Sem título'}</h3>
+        <p>${p.publico ? 'Público' : 'Privado · em andamento'}${p.videoUrl || p.pdfUrl ? ' · mídia' : ''}</p>
+      </div>
+    </div>
+  `).join('');
+}
+
+function abrirEditorProjeto(id) {
+  editandoProjetoId = id || null;
+  const p = id ? projetosPerfil.find(x => x.id === id) : null;
+  document.getElementById('titulo-editor-projeto').textContent = p ? 'Editar projeto' : 'Novo projeto';
+  document.getElementById('proj-titulo').value = p?.titulo || '';
+  document.getElementById('proj-resumo').value = p?.resumo || '';
+  document.getElementById('proj-video').value = p?.videoUrl || '';
+  document.getElementById('proj-pdf').value = p?.pdfUrl || '';
+  document.getElementById('proj-acesso').value = p?.acessoUrl || '';
+  const tog = document.getElementById('proj-publico');
+  if (tog) tog.classList.toggle('ligado', !!(p && p.publico));
+  const btnApagar = document.getElementById('btn-apagar-projeto');
+  if (btnApagar) btnApagar.style.display = p ? 'block' : 'none';
+  atualizarBoxLinkProjeto(p);
+  irPara('tela-projeto-editor');
+}
+
+function atualizarBoxLinkProjeto(p) {
+  const box = document.getElementById('proj-link-publico-box');
+  const el = document.getElementById('proj-link-publico');
+  if (!box || !el) return;
+  if (p && p.publico && p.id) {
+    const url = `${location.origin}${location.pathname}?p=${encodeURIComponent(p.id)}`;
+    el.textContent = url;
+    box.style.display = 'block';
+  } else {
+    box.style.display = 'none';
+  }
+}
+
+function copiarLinkProjeto() {
+  const el = document.getElementById('proj-link-publico');
+  if (!el || !el.textContent) return;
+  navigator.clipboard.writeText(el.textContent).then(() => {
+    mostrarConfirmacao('Link copiado');
+  }).catch(() => {
+    mostrarConfirmacao(el.textContent);
+  });
+}
+
+async function salvarProjeto() {
+  const titulo = (document.getElementById('proj-titulo').value || '').trim();
+  if (!titulo) {
+    mostrarConfirmacao('Escreva um título');
+    return;
+  }
+  const resumo = (document.getElementById('proj-resumo').value || '').trim();
+  const videoUrl = (document.getElementById('proj-video').value || '').trim();
+  const pdfUrl = (document.getElementById('proj-pdf').value || '').trim();
+  const acessoUrl = (document.getElementById('proj-acesso').value || '').trim();
+  const publico = document.getElementById('proj-publico').classList.contains('ligado');
+
+  carregarProjetosLocais();
+  let projeto;
+  if (editandoProjetoId) {
+    projeto = projetosPerfil.find(x => x.id === editandoProjetoId);
+    if (projeto) {
+      Object.assign(projeto, { titulo, resumo, videoUrl, pdfUrl, acessoUrl, publico, atualizadoEm: new Date().toISOString() });
+    }
+  } else {
+    projeto = {
+      id: 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8),
+      titulo, resumo, videoUrl, pdfUrl, acessoUrl, publico,
+      criadoEm: new Date().toISOString(),
+      atualizadoEm: new Date().toISOString()
+    };
+    projetosPerfil.unshift(projeto);
+    editandoProjetoId = projeto.id;
+  }
+  salvarProjetosLocais();
+  await sincronizarProjetoNoServidor(projeto);
+  atualizarBoxLinkProjeto(projeto);
+  renderizarProjetosInterior();
+  document.getElementById('btn-apagar-projeto').style.display = 'block';
+  mostrarConfirmacao(publico ? 'Projeto público — link disponível' : 'Projeto guardado em privado');
+}
+
+async function apagarProjeto() {
+  if (!editandoProjetoId) return;
+  if (!confirm('Apagar este projeto?')) return;
+  const id = editandoProjetoId;
+  projetosPerfil = projetosPerfil.filter(x => x.id !== id);
+  salvarProjetosLocais();
+  try {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (session) {
+      await supabaseClient.from('projetos').delete().eq('id', id).eq('user_id', session.user.id);
+    }
+  } catch (e) {}
+  editandoProjetoId = null;
+  renderizarProjetosInterior();
+  irPara('tela-interior');
+  mostrarConfirmacao('Projeto apagado');
+}
+
+async function sincronizarProjetoNoServidor(projeto) {
+  try {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session || !projeto) return;
+    await supabaseClient.from('projetos').upsert({
+      id: projeto.id,
+      user_id: session.user.id,
+      titulo: projeto.titulo,
+      resumo: projeto.resumo || '',
+      video_url: projeto.videoUrl || null,
+      pdf_url: projeto.pdfUrl || null,
+      acesso_url: projeto.acessoUrl || null,
+      publico: !!projeto.publico,
+      atualizado_em: projeto.atualizadoEm || new Date().toISOString()
+    });
+  } catch (e) {
+    // tabela pode ainda não existir
+  }
+}
+
+async function carregarProjetosDoServidor() {
+  try {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) return;
+    const { data, error } = await supabaseClient
+      .from('projetos')
+      .select('*')
+      .eq('user_id', session.user.id)
+      .order('atualizado_em', { ascending: false });
+    if (error || !data) return;
+    const mapa = Object.fromEntries(projetosPerfil.map(p => [p.id, p]));
+    data.forEach(row => {
+      mapa[row.id] = {
+        id: row.id,
+        titulo: row.titulo,
+        resumo: row.resumo || '',
+        videoUrl: row.video_url || '',
+        pdfUrl: row.pdf_url || '',
+        acessoUrl: row.acesso_url || '',
+        publico: !!row.publico,
+        criadoEm: row.criado_em,
+        atualizadoEm: row.atualizado_em
+      };
+    });
+    projetosPerfil = Object.values(mapa).sort((a, b) =>
+      String(b.atualizadoEm || '').localeCompare(String(a.atualizadoEm || ''))
+    );
+    salvarProjetosLocais();
+    renderizarProjetosInterior();
+  } catch (e) {}
+}
+
+async function abrirProjetoPublicoPorId(id) {
+  if (!id) return;
+  irPara('tela-projeto-publico');
+  document.getElementById('pub-proj-titulo').textContent = 'Carregando...';
+  document.getElementById('pub-proj-autor').textContent = '';
+  document.getElementById('pub-proj-resumo').textContent = '';
+  document.getElementById('pub-proj-midias').innerHTML = '';
+
+  let projeto = null;
+  let autor = '';
+
+  // Local (dono)
+  carregarProjetosLocais();
+  projeto = projetosPerfil.find(x => x.id === id && x.publico) || null;
+  if (projeto) {
+    autor = dadosConta.nomeExibicao || dadosConta.nome || (dadosConta.handle ? '@' + dadosConta.handle : '');
+  }
+
+  // Servidor
+  if (!projeto) {
+    try {
+      const { data } = await supabaseClient
+        .from('projetos')
+        .select('*, perfis(nome, handle)')
+        .eq('id', id)
+        .eq('publico', true)
+        .maybeSingle();
+      if (data) {
+        projeto = {
+          id: data.id,
+          titulo: data.titulo,
+          resumo: data.resumo,
+          videoUrl: data.video_url,
+          pdfUrl: data.pdf_url,
+          acessoUrl: data.acesso_url,
+          publico: true
+        };
+        const pe = data.perfis;
+        autor = (pe && (pe.nome || (pe.handle ? '@' + pe.handle : ''))) || 'Alguém do espaço';
+      }
+    } catch (e) {
+      try {
+        const { data } = await supabaseClient.from('projetos').select('*').eq('id', id).eq('publico', true).maybeSingle();
+        if (data) {
+          projeto = {
+            id: data.id,
+            titulo: data.titulo,
+            resumo: data.resumo,
+            videoUrl: data.video_url,
+            pdfUrl: data.pdf_url,
+            acessoUrl: data.acesso_url,
+            publico: true
+          };
+        }
+      } catch (e2) {}
+    }
+  }
+
+  if (!projeto) {
+    document.getElementById('pub-proj-titulo').textContent = 'Projeto indisponível';
+    document.getElementById('pub-proj-resumo').textContent = 'Este card não existe, não é público ou ainda não foi sincronizado.';
+    return;
+  }
+
+  document.getElementById('pub-proj-titulo').textContent = projeto.titulo || 'Projeto';
+  document.getElementById('pub-proj-autor').textContent = autor ? `por ${autor}` : '';
+  document.getElementById('pub-proj-resumo').textContent = projeto.resumo || '';
+
+  const midias = [];
+  if (projeto.videoUrl) {
+    midias.push(`<a class="continuar-btn pronto" style="display:block;text-align:center;margin-bottom:10px;text-decoration:none;" href="${projeto.videoUrl}" target="_blank" rel="noopener">Assistir vídeo</a>`);
+  }
+  if (projeto.pdfUrl) {
+    midias.push(`<a class="entrar-btn" style="display:block;text-align:center;margin-bottom:10px;text-decoration:none;animation:none;opacity:1;" href="${projeto.pdfUrl}" target="_blank" rel="noopener">Abrir PDF</a>`);
+  }
+  if (projeto.acessoUrl) {
+    midias.push(`<a class="entrar-btn" style="display:block;text-align:center;margin-bottom:10px;text-decoration:none;animation:none;opacity:1;" href="${projeto.acessoUrl}" target="_blank" rel="noopener">Acessar link do projeto</a>`);
+  }
+  document.getElementById('pub-proj-midias').innerHTML = midias.join('') || '<p style="font-size:13px;color:var(--osso-fraco);">Sem mídia adicional.</p>';
+}
+
+function verificarDeepLinkProjeto() {
+  try {
+    const params = new URLSearchParams(location.search);
+    const pid = params.get('p');
+    if (pid) {
+      abrirProjetoPublicoPorId(pid);
+      return true;
+    }
+  } catch (e) {}
+  return false;
 }
 
 // ============================================================
@@ -2484,6 +2884,90 @@ function temaDominante(noticias) {
   let melhor = 'padrao', max = 0;
   Object.entries(contagem).forEach(([t, c]) => { if (c > max) { max = c; melhor = t; } });
   return melhor;
+}
+
+function dataHojeISO() {
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+}
+
+async function carregarConteudoDiarioDoServidor() {
+  try {
+    const hoje = dataHojeISO();
+    const { data, error } = await supabaseClient
+      .from('conteudo_diario')
+      .select('*')
+      .eq('data', hoje)
+      .maybeSingle();
+    if (error || !data) return false;
+
+    if (data.versiculo) {
+      const cfg = carregarConfiguracoes();
+      cfg.fraseCitacao = data.versiculo;
+      cfg.fraseFonte = data.fonte || '';
+      try { localStorage.setItem('ecossistema_config', JSON.stringify(cfg)); } catch (e) {}
+    }
+    if (Array.isArray(data.noticias) && data.noticias.length) {
+      salvarNoticiasDoDia(data.noticias);
+    } else if (typeof data.noticias === 'string') {
+      try {
+        const parsed = JSON.parse(data.noticias);
+        if (Array.isArray(parsed)) salvarNoticiasDoDia(parsed);
+      } catch (e) {}
+    }
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+async function publicarConteudoDiarioServidor() {
+  const cfg = {
+    fraseCitacao: (document.getElementById('painel-frase-citacao') || {}).value || '',
+    fraseFonte: (document.getElementById('painel-frase-fonte') || {}).value || ''
+  };
+  const textoNoticias = (document.getElementById('painel-noticias') || {}).value || '';
+  const noticias = typeof parseNoticiasDoPainel === 'function'
+    ? parseNoticiasDoPainel(textoNoticias)
+    : [];
+
+  // salva local primeiro
+  try {
+    const novaConfig = {
+      ...carregarConfiguracoes(),
+      fraseCitacao: cfg.fraseCitacao.trim(),
+      fraseFonte: cfg.fraseFonte.trim()
+    };
+    localStorage.setItem('ecossistema_config', JSON.stringify(novaConfig));
+    if (noticias.length) salvarNoticiasDoDia(noticias);
+  } catch (e) {}
+
+  try {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) {
+      mostrarConfirmacao('Entre na conta de fundador para publicar');
+      return;
+    }
+    const payload = {
+      data: dataHojeISO(),
+      versiculo: cfg.fraseCitacao.trim(),
+      fonte: cfg.fraseFonte.trim(),
+      noticias: noticias.length ? noticias : carregarNoticiasDoDia(),
+      atualizado_em: new Date().toISOString(),
+      publicado_por: session.user.id
+    };
+    const { error } = await supabaseClient.from('conteudo_diario').upsert(payload, { onConflict: 'data' });
+    if (error) {
+      console.error(error);
+      mostrarConfirmacao('Não foi possível publicar. Confira a tabela conteudo_diario no Supabase.');
+      return;
+    }
+    aplicarConfiguracoes();
+    mostrarConfirmacao('Publicado para todos — dia ' + dataHojeISO());
+  } catch (e) {
+    console.error(e);
+    mostrarConfirmacao('Erro ao publicar no servidor');
+  }
 }
 
 function aplicarVersiculoENoticias(cfg) {
@@ -2671,19 +3155,22 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Primeiro: se já existir uma sessão salva no aparelho (com ou sem
   // internet), entra direto no Território sem passar por login/cadastro.
   // Isso dá uma entrada instantânea mesmo offline.
+  const veioDeLinkProjeto = verificarDeepLinkProjeto();
+
   if (carregarSessaoSalva()) {
     preencherInterior();
     atualizarAvatarTopo();
-    irPara('tela-territorio');
+    if (!veioDeLinkProjeto) irPara('tela-territorio');
   }
 
-  aplicarConfiguracoes(); // aplica textos personalizados pelo fundador, se houver
+  aplicarConfiguracoes();
   atualizarIndicadorOffline();
   renderizarComunidade();
 
-  // Depois, se estiver online, confirma com o servidor se a conta ainda
-  // é válida e traz os dados mais recentes (podem vir de outro aparelho).
   if (estaOnline()) {
+    await carregarConteudoDiarioDoServidor();
+    aplicarConfiguracoes();
+
     const { data: { session } } = await supabaseClient.auth.getSession();
     if (session) {
       const { data: perfil } = await supabaseClient
@@ -2691,10 +3178,13 @@ document.addEventListener('DOMContentLoaded', async () => {
       dadosConta.email = session.user.email;
       dadosConta.nome = perfil?.nome || dadosConta.nome;
       dadosConta.cpf = perfil?.cpf || dadosConta.cpf;
+      if (perfil?.handle) dadosConta.handle = perfil.handle;
+      if (perfil?.nome_exibicao) dadosConta.nomeExibicao = perfil.nome_exibicao;
       preencherInterior();
       salvarSessao();
       await carregarDadosDoServidor();
-      if (!document.getElementById('tela-territorio').classList.contains('ativa')) {
+      await carregarProjetosDoServidor();
+      if (!veioDeLinkProjeto && !document.getElementById('tela-territorio').classList.contains('ativa')) {
         irPara('tela-territorio');
       }
     } else if (dadosConta.email) {
