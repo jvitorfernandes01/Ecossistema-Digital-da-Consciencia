@@ -1616,6 +1616,7 @@
     <div class="frase-dia">
       <p id="frase-dia-citacao">"O Reino de Deus não vem com aparência visível... porque o Reino de Deus está entre vós."</p>
       <p class="fonte" id="frase-dia-fonte">LUCAS 17:20-21</p>
+      <p id="frase-dia-reflexao" style="display:none;font-family:'Inter',sans-serif;font-style:normal;font-size:13px;line-height:1.65;color:var(--osso-fraco);margin-top:14px;"></p>
     </div>
 
     <div class="noticias-dia" id="bloco-noticias-dia">
@@ -1635,13 +1636,6 @@
         <div class="caminho-textos">
           <h3>Reconhecimento</h3>
           <p>Perguntas para se ver com mais clareza</p>
-        </div>
-      </div>
-      <div class="caminho-card" onclick="irPara('tela-criacao')">
-        <div class="caminho-icone" style="background:rgba(107,50,38,0.15)">✎</div>
-        <div class="caminho-textos">
-          <h3>Sua criação</h3>
-          <p>O espaço em branco é seu</p>
         </div>
       </div>
     </div>
@@ -1878,14 +1872,18 @@
       <h2 class="cadastro-titulo">Painel</h2>
       <p class="cadastro-subtitulo">O que você mudar aqui, todo mundo vê no Ecossistema.</p>
 
-      <p class="secao-label" style="margin-top:8px;">Frase do dia</p>
+      <p class="secao-label" style="margin-top:8px;">Versículo do dia</p>
       <div class="campo-grupo">
         <label class="campo-label">Citação</label>
         <textarea id="painel-frase-citacao" class="campo-input" style="min-height:70px; font-family:'Fraunces',serif; resize:vertical;"></textarea>
       </div>
       <div class="campo-grupo">
-        <label class="campo-label">Fonte (ex: LUCAS 17:20-21)</label>
+        <label class="campo-label">Fonte (ex: 2 CORÍNTIOS 10:13)</label>
         <input type="text" id="painel-frase-fonte" class="campo-input">
+      </div>
+      <div class="campo-grupo">
+        <label class="campo-label">Reflexão (como o versículo fala com o dia de hoje)</label>
+        <textarea id="painel-frase-reflexao" class="campo-input" style="min-height:120px;resize:vertical;" placeholder="Texto que liga o versículo à vida, redes, coração..."></textarea>
       </div>
 
       <p class="secao-label">Nomes das seções</p>
@@ -2450,7 +2448,8 @@ function salvarPerfilPublico() {
   atualizarFotoPerfilUI();
   atualizarAvatarTopo();
   sincronizarPerfilNoServidor();
-  mostrarConfirmacao('Perfil guardado');
+  // Só este botão deve mostrar essa mensagem
+  mostrarConfirmacao('Perfil atualizado');
 }
 
 async function sincronizarPerfilNoServidor() {
@@ -2769,8 +2768,9 @@ function verificarAcessoPainel() {
 
 // Valores padrão — usados se o fundador ainda não personalizou nada
 const configuracoesPadrao = {
-  fraseCitacao: '"O Reino de Deus não vem com aparência visível... porque o Reino de Deus está entre vós."',
-  fraseFonte: 'LUCAS 17:20-21',
+  fraseCitacao: '"Porém não nos gloriaremos fora de medida, mas conforme a reta medida que Deus nos deu, para chegarmos até vós."',
+  fraseFonte: '2 CORÍNTIOS 10:13',
+  fraseReflexao: 'As redes sociais costumam ser uma plataforma para a vanglória, e devemos cuidar dos nossos corações atentamente, pedindo a Deus paz e orientação. A amargura surge quando vemos como os corruptos obtêm sucesso. Muitas vezes, sem intenção, comparamos as nossas vidas e começamos a nos achar — ou, pelo contrário, perdemos a confiança. O Diabo gosta de testar os nossos sentimentos desta maneira. Gabar-se é algo que as pessoas fazem em qualquer cenário, seja no trabalho, na escola, na igreja ou mesmo na quitanda. Devemos nos apegar a Deus quando nos virmos em tais situações, pedindo proteção para não sermos vítimas da inveja ou da condenação desnecessária dos outros.',
   nomeTerritorio: 'Território',
   nomeCriacao: 'Sua criação',
   nomeComunidade: 'Comunidade',
@@ -2816,10 +2816,18 @@ function aplicarConfiguracoes() {
 }
 
 const noticiasPadrao = [
-  { titulo: 'Nepal e Tibete: enchentes e avalanche de lama', resumo: 'Centenas de mortos e milhares de desaparecidos após colapso glacial.', temas: ['desastre', 'sofrimento', 'clima'] },
-  { titulo: 'EUA e Irã voltam a trocar ataques', resumo: 'Ação no Estreito de Ormuz e respostas na região após semanas de trégua.', temas: ['guerra', 'conflito', 'medo'] },
-  { titulo: 'Acordo de petróleo EUA–Venezuela em debate', resumo: 'Acesso a reservas enormes gera críticas sobre o impacto real no curto prazo.', temas: ['poder', 'economia'] },
-  { titulo: 'Islândia rejeita retomar entrada na UE', resumo: 'Referendo recusa reabrir negociações de adesão à União Europeia.', temas: ['nacoes', 'direcao'] }
+  {
+    titulo: 'Atenção e comparação nas redes',
+    resumo: 'Enquanto o mundo disputa cliques e aparência, o coração é testado pela comparação e pela vanglória.',
+    descricao: 'As plataformas ampliam o que já existe em nós: o desejo de ser visto e o medo de não bastar. O versículo do dia pede medida — não glória fora do que Deus deu.',
+    temas: ['direcao', 'poder']
+  },
+  {
+    titulo: 'Conflitos e ruído no noticiário',
+    resumo: 'Guerras, acordos e crises seguem no centro das manchetes.',
+    descricao: 'Informar-se não é o mesmo que entregar o dia ao medo. Leia o necessário; guarde o coração.',
+    temas: ['guerra', 'medo']
+  }
 ];
 
 const versiculosPorTema = {
@@ -2905,6 +2913,7 @@ async function carregarConteudoDiarioDoServidor() {
       const cfg = carregarConfiguracoes();
       cfg.fraseCitacao = data.versiculo;
       cfg.fraseFonte = data.fonte || '';
+      if (data.reflexao) cfg.fraseReflexao = data.reflexao;
       try { localStorage.setItem('ecossistema_config', JSON.stringify(cfg)); } catch (e) {}
     }
     if (Array.isArray(data.noticias) && data.noticias.length) {
@@ -2924,19 +2933,20 @@ async function carregarConteudoDiarioDoServidor() {
 async function publicarConteudoDiarioServidor() {
   const cfg = {
     fraseCitacao: (document.getElementById('painel-frase-citacao') || {}).value || '',
-    fraseFonte: (document.getElementById('painel-frase-fonte') || {}).value || ''
+    fraseFonte: (document.getElementById('painel-frase-fonte') || {}).value || '',
+    fraseReflexao: (document.getElementById('painel-frase-reflexao') || {}).value || ''
   };
   const textoNoticias = (document.getElementById('painel-noticias') || {}).value || '';
   const noticias = typeof parseNoticiasDoPainel === 'function'
     ? parseNoticiasDoPainel(textoNoticias)
     : [];
 
-  // salva local primeiro
   try {
     const novaConfig = {
       ...carregarConfiguracoes(),
       fraseCitacao: cfg.fraseCitacao.trim(),
-      fraseFonte: cfg.fraseFonte.trim()
+      fraseFonte: cfg.fraseFonte.trim(),
+      fraseReflexao: cfg.fraseReflexao.trim()
     };
     localStorage.setItem('ecossistema_config', JSON.stringify(novaConfig));
     if (noticias.length) salvarNoticiasDoDia(noticias);
@@ -2952,6 +2962,7 @@ async function publicarConteudoDiarioServidor() {
       data: dataHojeISO(),
       versiculo: cfg.fraseCitacao.trim(),
       fonte: cfg.fraseFonte.trim(),
+      reflexao: cfg.fraseReflexao.trim(),
       noticias: noticias.length ? noticias : carregarNoticiasDoDia(),
       atualizado_em: new Date().toISOString(),
       publicado_por: session.user.id
@@ -2975,7 +2986,13 @@ function aplicarVersiculoENoticias(cfg) {
   const lista = document.getElementById('lista-noticias-dia');
   const toggleTexto = document.getElementById('noticias-toggle-texto');
   if (lista) {
-    lista.innerHTML = noticias.map(n => `<div class="noticia-item"><h4>${n.titulo}</h4><p>${n.resumo || ''}</p></div>`).join('');
+    lista.innerHTML = noticias.map(n => `
+      <div class="noticia-item">
+        <h4>${n.titulo}</h4>
+        <p>${n.resumo || ''}</p>
+        ${n.descricao ? `<p style="margin-top:8px;color:var(--osso);font-size:12.5px;line-height:1.55;">${n.descricao}</p>` : ''}
+      </div>
+    `).join('');
   }
   if (toggleTexto) {
     toggleTexto.textContent = noticias.length
@@ -2984,11 +3001,25 @@ function aplicarVersiculoENoticias(cfg) {
   }
   const elCitacao = document.getElementById('frase-dia-citacao');
   const elFonte = document.getElementById('frase-dia-fonte');
+  const elReflexao = document.getElementById('frase-dia-reflexao');
   if (!elCitacao || !elFonte) return;
-  const padrao = configuracoesPadrao.fraseCitacao;
-  if (cfg && cfg.fraseCitacao && cfg.fraseCitacao !== padrao) {
+
+  function aplicarReflexao(texto) {
+    if (!elReflexao) return;
+    if (texto && String(texto).trim()) {
+      elReflexao.textContent = String(texto).trim();
+      elReflexao.style.display = 'block';
+    } else {
+      elReflexao.textContent = '';
+      elReflexao.style.display = 'none';
+    }
+  }
+
+  // Se há versículo no painel/servidor (qualquer conteúdo salvo), usa ele + reflexão
+  if (cfg && cfg.fraseCitacao) {
     elCitacao.textContent = cfg.fraseCitacao;
     elFonte.textContent = cfg.fraseFonte || '';
+    aplicarReflexao(cfg.fraseReflexao || configuracoesPadrao.fraseReflexao || '');
     return;
   }
   const tema = temaDominante(noticias);
@@ -2998,6 +3029,7 @@ function aplicarVersiculoENoticias(cfg) {
   const v = pool[diaDoAno % pool.length];
   elCitacao.textContent = v.citacao;
   elFonte.textContent = v.fonte;
+  aplicarReflexao(configuracoesPadrao.fraseReflexao || '');
 }
 
 function alternarNoticiasDia() {
@@ -3010,8 +3042,10 @@ function alternarNoticiasDia() {
 
 function renderizarPainel() {
   const cfg = carregarConfiguracoes();
-  document.getElementById('painel-frase-citacao').value = cfg.fraseCitacao;
-  document.getElementById('painel-frase-fonte').value = cfg.fraseFonte;
+  document.getElementById('painel-frase-citacao').value = cfg.fraseCitacao || '';
+  document.getElementById('painel-frase-fonte').value = cfg.fraseFonte || '';
+  const elRefl = document.getElementById('painel-frase-reflexao');
+  if (elRefl) elRefl.value = cfg.fraseReflexao || '';
   document.getElementById('painel-nome-territorio').value = cfg.nomeTerritorio;
   document.getElementById('painel-nome-criacao').value = cfg.nomeCriacao;
   document.getElementById('painel-nome-comunidade').value = cfg.nomeComunidade;
@@ -3019,30 +3053,36 @@ function renderizarPainel() {
   document.getElementById('painel-nome-anotacoes').value = cfg.nomeAnotacoes;
   const elNoticias = document.getElementById('painel-noticias');
   if (elNoticias) {
-    elNoticias.value = carregarNoticiasDoDia().map(n => `${n.titulo} | ${n.resumo || ''}`).join('\n');
+    elNoticias.value = carregarNoticiasDoDia().map(n => {
+      const base = `${n.titulo} | ${n.resumo || ''}`;
+      return n.descricao ? `${base} | ${n.descricao}` : base;
+    }).join('\n');
   }
 }
 
 function parseNoticiasDoPainel(texto) {
   return (texto || '').split('\n').map(l => l.trim()).filter(Boolean).map(l => {
-    const partes = l.split('|');
-    const titulo = (partes[0] || '').trim();
-    const resumo = (partes.slice(1).join('|') || '').trim();
-    const t = (titulo + ' ' + resumo).toLowerCase();
+    const partes = l.split('|').map(p => p.trim());
+    const titulo = partes[0] || '';
+    const resumo = partes[1] || '';
+    const descricao = partes.slice(2).join(' | ') || '';
+    const t = (titulo + ' ' + resumo + ' ' + descricao).toLowerCase();
     const temas = [];
     if (/enchente|inunda|desastre|terremoto|mortos|nepal|clima/.test(t)) temas.push('desastre', 'sofrimento', 'clima');
     if (/guerra|ataque|míssil|irã|ucrânia|conflito/.test(t)) temas.push('guerra', 'conflito', 'medo');
-    if (/petróleo|economia|mercado|dívida/.test(t)) temas.push('economia', 'poder');
+    if (/petróleo|economia|mercado|dívida|rede|vanglória|compar/.test(t)) temas.push('economia', 'poder', 'direcao');
     if (/paz|acordo|negocia/.test(t)) temas.push('direcao', 'nacoes');
     if (!temas.length) temas.push('padrao');
-    return { titulo, resumo, temas };
+    return { titulo, resumo, descricao, temas };
   }).filter(n => n.titulo.length > 0);
 }
 
 function salvarPainel() {
   const novaConfig = {
+    ...carregarConfiguracoes(),
     fraseCitacao: document.getElementById('painel-frase-citacao').value.trim(),
     fraseFonte: document.getElementById('painel-frase-fonte').value.trim(),
+    fraseReflexao: ((document.getElementById('painel-frase-reflexao') || {}).value || '').trim(),
     nomeTerritorio: document.getElementById('painel-nome-territorio').value.trim(),
     nomeCriacao: document.getElementById('painel-nome-criacao').value.trim(),
     nomeComunidade: document.getElementById('painel-nome-comunidade').value.trim(),
@@ -3062,7 +3102,7 @@ function salvarPainel() {
   }
 
   aplicarConfiguracoes();
-  mostrarConfirmacao('Alterações salvas');
+  mostrarConfirmacao('Painel atualizado');
 }
 
 // ============================================================
@@ -3560,30 +3600,41 @@ function enviarPerguntaPropria() {
 
   input.value = '';
   document.getElementById('toggle-guardar-pergunta').classList.remove('ligado');
-  // Pergunta criada pela própria pessoa nunca tem página de informação associada.
-  // A resposta permanece fixa na tela — só sai quando a pessoa navegar para outro lugar.
-  responderEstrategica({ texto, temInformacao: false });
+
+  // Não inventa resposta automática. Só devolve a pergunta à pessoa.
+  const container = document.getElementById('resposta-estrategica');
+  if (container) {
+    container.innerHTML = `
+      <h4>${texto}</h4>
+      <p style="font-family:'Fraunces',serif;font-size:15px;color:var(--osso);line-height:1.55;">
+        Sua pergunta ficou registrada aqui. Não há resposta automática — o próximo passo é o seu reconhecimento, no seu tempo.
+      </p>
+    `;
+    container.style.display = 'block';
+  }
 }
 
 function responderEstrategica(perguntaOuIndice) {
   const pergunta = typeof perguntaOuIndice === 'number'
     ? perguntasEstrategicas[perguntaOuIndice]
     : perguntaOuIndice;
+  if (!pergunta) return;
 
-  // Perguntas com página de informação associada levam para lá automaticamente —
-  // a pessoa não precisa tocar em nada além da própria pergunta.
+  // Só as perguntas oficiais com destino levam a uma tela de conteúdo —
+  // e só quando a pessoa escolhe explicitamente essa pergunta.
   if (pergunta.temInformacao) {
     const telaDestino = pergunta.destino || 'tela-sobre';
     irPara(telaDestino);
     return;
   }
 
-  // Perguntas sem informação associada (incluindo a pergunta própria da pessoa)
-  // mostram a confirmação na tela, sem navegar para lugar nenhum.
   const container = document.getElementById('resposta-estrategica');
+  if (!container) return;
   container.innerHTML = `
     <h4>${pergunta.texto}</h4>
-    <p style="font-family:'Fraunces', serif; font-size:15px; color:var(--osso);">Reconheça isso.</p>
+    <p style="font-family:'Fraunces',serif;font-size:15px;color:var(--osso);line-height:1.55;">
+      Permaneça com essa pergunta. Não há resposta automática.
+    </p>
   `;
   container.style.display = 'block';
 }
@@ -4247,16 +4298,20 @@ async function removerPostAtual() {
 }
 
 function mostrarConfirmacao(mensagem) {
-  const indicador = document.getElementById('indicador-offline');
-  if (!indicador) return;
-  indicador.textContent = `✓ ${mensagem}`;
-  indicador.classList.add('visivel');
-  setTimeout(() => {
-    // Só esconde se ainda for essa mesma mensagem (evita cortar um aviso mais novo)
-    if (indicador.textContent === `✓ ${mensagem}`) {
-      indicador.classList.remove('visivel');
-    }
-  }, 2500);
+  // Toast próprio — não reutiliza o indicador de offline (evitava parecer "Perfil salvo" em ações erradas)
+  let toast = document.getElementById('toast-confirmacao');
+  if (!toast) {
+    toast = document.createElement('div');
+    toast.id = 'toast-confirmacao';
+    toast.style.cssText = 'position:fixed;bottom:88px;left:50%;transform:translateX(-50%);z-index:80;background:rgba(19,18,17,0.96);border:1px solid rgba(184,147,90,0.35);color:#EDEAE3;padding:12px 18px;border-radius:12px;font-size:13px;max-width:90%;text-align:center;opacity:0;pointer-events:none;transition:opacity 0.25s ease;';
+    document.body.appendChild(toast);
+  }
+  toast.textContent = mensagem;
+  toast.style.opacity = '1';
+  clearTimeout(toast._timer);
+  toast._timer = setTimeout(() => {
+    toast.style.opacity = '0';
+  }, 2200);
 }
 
 // ============================================================
