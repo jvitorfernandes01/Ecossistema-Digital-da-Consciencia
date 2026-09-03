@@ -840,6 +840,11 @@
   .noticias-dia.aberto .noticias-toggle span.chevron { transform: rotate(90deg); }
   .noticias-corpo { display: none; padding: 0 16px 16px; border-top: 1px solid var(--linha); }
   .noticias-dia.aberto .noticias-corpo { display: block; }
+  .noticias-toggle {
+    -webkit-tap-highlight-color: transparent;
+    position: relative;
+    z-index: 3;
+  }
   .noticia-item { padding: 12px 0; border-bottom: 1px solid var(--linha); }
   .noticia-item:last-child { border-bottom: none; padding-bottom: 4px; }
   .noticia-item h4 {
@@ -1616,11 +1621,18 @@
     <div class="frase-dia">
       <p id="frase-dia-citacao">"O Reino de Deus não vem com aparência visível... porque o Reino de Deus está entre vós."</p>
       <p class="fonte" id="frase-dia-fonte">LUCAS 17:20-21</p>
-      <p id="frase-dia-reflexao" style="display:none;font-family:'Inter',sans-serif;font-style:normal;font-size:13px;line-height:1.65;color:var(--osso-fraco);margin-top:14px;"></p>
+      <button type="button" class="noticias-toggle" id="btn-toggle-meditacao" aria-expanded="false"
+              style="margin-top:14px;padding:10px 0;border-top:1px solid var(--linha);">
+        <span id="meditacao-toggle-texto">Meditação — tocar para ler</span>
+        <span class="chevron">›</span>
+      </button>
+      <div id="bloco-meditacao" style="display:none;padding-top:10px;">
+        <p id="frase-dia-reflexao" style="font-family:'Inter',sans-serif;font-style:normal;font-size:13px;line-height:1.65;color:var(--osso-fraco);margin:0;"></p>
+      </div>
     </div>
 
     <div class="noticias-dia" id="bloco-noticias-dia">
-      <button type="button" class="noticias-toggle" onclick="alternarNoticiasDia()" aria-expanded="false">
+      <button type="button" class="noticias-toggle" id="btn-toggle-noticias" aria-expanded="false">
         <span id="noticias-toggle-texto">Notícias do dia — tocar para ver</span>
         <span class="chevron">›</span>
       </button>
@@ -2310,14 +2322,19 @@ async function sairDaConta() {
 let dadosConta = { nome: '', cpf: '', email: '', nomeExibicao: '', handle: '', foto: '' };
 
 function salvarSessao() {
+  // Mínimo no aparelho: só o necessário para reabrir a UI.
+  // Histórico de identidade, projetos e conteúdo do dia vivem no Supabase.
   try {
     localStorage.setItem('ecossistema_sessao', JSON.stringify({
-      conta: dadosConta,
-      identidade: identidadeRespostas
+      conta: {
+        nome: dadosConta.nome || '',
+        email: dadosConta.email || '',
+        nomeExibicao: dadosConta.nomeExibicao || '',
+        handle: dadosConta.handle || ''
+        // sem cpf, sem foto base64 — não ficam no histórico local do telefone
+      }
     }));
-  } catch (e) {
-    // Armazenamento indisponível (ex: modo privado) — a sessão simplesmente não persiste
-  }
+  } catch (e) {}
 }
 
 function carregarSessaoSalva() {
@@ -2325,21 +2342,23 @@ function carregarSessaoSalva() {
     const salvo = localStorage.getItem('ecossistema_sessao');
     if (salvo) {
       const dados = JSON.parse(salvo);
-      // Compatível com o formato antigo (só dadosConta, sem identidade)
       if (dados && dados.conta) {
-        dadosConta = dados.conta;
-        if (Array.isArray(dados.identidade) && dados.identidade.length === perguntas.length) {
-          identidadeRespostas = dados.identidade;
-        }
-      } else {
-        dadosConta = dados;
+        dadosConta = { ...dadosConta, ...dados.conta, cpf: '', foto: '' };
+      } else if (dados && dados.email) {
+        dadosConta = { ...dadosConta, ...dados, cpf: '', foto: '' };
       }
-      return true;
+      // identidade não é mais restaurada do telefone — vem do servidor
+      return !!(dadosConta.email || dadosConta.nome);
     }
-  } catch (e) {
-    // Dado corrompido ou armazenamento indisponível — trata como se não houvesse sessão
-  }
+  } catch (e) {}
   return false;
+}
+
+function limparCacheLocalDesnecessario() {
+  try {
+    localStorage.removeItem('ecossistema_projetos_' + (dadosConta.email || 'anon'));
+    // mantém só sessão mínima e, se fundador quiser rascunho local do painel, config
+  } catch (e) {}
 }
 
 function preencherInterior() {
@@ -2422,12 +2441,11 @@ function aoEscolherFotoPerfil(event) {
       canvas.height = h;
       const ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0, w, h);
+      // Foto só em memória nesta sessão — não grava base64 no histórico do telefone
       dadosConta.foto = canvas.toDataURL('image/jpeg', 0.82);
-      salvarSessao();
       atualizarFotoPerfilUI();
       atualizarAvatarTopo();
       sincronizarPerfilNoServidor();
-      mostrarConfirmacao('Foto atualizada');
     };
     img.src = reader.result;
   };
@@ -2448,8 +2466,7 @@ function salvarPerfilPublico() {
   atualizarFotoPerfilUI();
   atualizarAvatarTopo();
   sincronizarPerfilNoServidor();
-  // Só este botão deve mostrar essa mensagem
-  mostrarConfirmacao('Perfil atualizado');
+  // Sem toast genérico — evitava aparecer em outras ações (ex.: link longo)
 }
 
 async function sincronizarPerfilNoServidor() {
@@ -2588,7 +2605,10 @@ async function salvarProjeto() {
   atualizarBoxLinkProjeto(projeto);
   renderizarProjetosInterior();
   document.getElementById('btn-apagar-projeto').style.display = 'block';
-  mostrarConfirmacao(publico ? 'Projeto público — link disponível' : 'Projeto guardado em privado');
+  if (publico) {
+    atualizarBoxLinkProjeto(projeto);
+    mostrarConfirmacao('Link do projeto pronto para copiar');
+  }
 }
 
 async function apagarProjeto() {
@@ -3005,13 +3025,16 @@ function aplicarVersiculoENoticias(cfg) {
   if (!elCitacao || !elFonte) return;
 
   function aplicarReflexao(texto) {
+    const bloco = document.getElementById('bloco-meditacao');
+    const btnMed = document.getElementById('btn-toggle-meditacao');
     if (!elReflexao) return;
     if (texto && String(texto).trim()) {
       elReflexao.textContent = String(texto).trim();
-      elReflexao.style.display = 'block';
+      if (btnMed) btnMed.style.display = 'flex';
     } else {
       elReflexao.textContent = '';
-      elReflexao.style.display = 'none';
+      if (bloco) bloco.style.display = 'none';
+      if (btnMed) btnMed.style.display = 'none';
     }
   }
 
@@ -3032,12 +3055,55 @@ function aplicarVersiculoENoticias(cfg) {
   aplicarReflexao(configuracoesPadrao.fraseReflexao || '');
 }
 
-function alternarNoticiasDia() {
+function alternarNoticiasDia(ev) {
+  if (ev) {
+    ev.preventDefault();
+    ev.stopPropagation();
+  }
   const bloco = document.getElementById('bloco-noticias-dia');
   if (!bloco) return;
   const aberto = bloco.classList.toggle('aberto');
-  const btn = bloco.querySelector('.noticias-toggle');
+  const btn = document.getElementById('btn-toggle-noticias') || bloco.querySelector('.noticias-toggle');
   if (btn) btn.setAttribute('aria-expanded', aberto ? 'true' : 'false');
+  const texto = document.getElementById('noticias-toggle-texto');
+  if (texto) {
+    const n = (document.querySelectorAll('#lista-noticias-dia .noticia-item') || []).length;
+    texto.textContent = aberto
+      ? `Notícias do dia${n ? ' (' + n + ')' : ''} — tocar para esconder`
+      : `Notícias do dia${n ? ' (' + n + ')' : ''} — tocar para ver`;
+  }
+}
+
+function alternarMeditacao(ev) {
+  if (ev) {
+    ev.preventDefault();
+    ev.stopPropagation();
+  }
+  const bloco = document.getElementById('bloco-meditacao');
+  const btn = document.getElementById('btn-toggle-meditacao');
+  const label = document.getElementById('meditacao-toggle-texto');
+  if (!bloco) return;
+  const aberto = bloco.style.display !== 'block';
+  bloco.style.display = aberto ? 'block' : 'none';
+  if (btn) btn.setAttribute('aria-expanded', aberto ? 'true' : 'false');
+  if (label) label.textContent = aberto ? 'Meditação — tocar para esconder' : 'Meditação — tocar para ler';
+  if (btn) {
+    const chev = btn.querySelector('.chevron');
+    if (chev) chev.style.transform = aberto ? 'rotate(90deg)' : '';
+  }
+}
+
+function ligarTogglesTerritorio() {
+  const btnN = document.getElementById('btn-toggle-noticias');
+  const btnM = document.getElementById('btn-toggle-meditacao');
+  if (btnN) {
+    btnN.onclick = null;
+    btnN.addEventListener('click', alternarNoticiasDia, { passive: false });
+  }
+  if (btnM) {
+    btnM.onclick = null;
+    btnM.addEventListener('click', alternarMeditacao, { passive: false });
+  }
 }
 
 function renderizarPainel() {
@@ -3196,6 +3262,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   // internet), entra direto no Território sem passar por login/cadastro.
   // Isso dá uma entrada instantânea mesmo offline.
   const veioDeLinkProjeto = verificarDeepLinkProjeto();
+  ligarTogglesTerritorio();
 
   if (carregarSessaoSalva()) {
     preencherInterior();
@@ -3206,6 +3273,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   aplicarConfiguracoes();
   atualizarIndicadorOffline();
   renderizarComunidade();
+  limparCacheLocalDesnecessario();
 
   if (estaOnline()) {
     await carregarConteudoDiarioDoServidor();
