@@ -1641,13 +1641,18 @@
       </div>
     </div>
 
+    <button type="button" id="btn-atualizar-dia" onclick="atualizarDiaAgora()"
+            style="width:100%;margin:-8px 0 24px;padding:12px 14px;background:none;border:1px solid var(--linha);border-radius:12px;color:var(--osso-fraco);font-family:'Inter',sans-serif;font-size:12.5px;letter-spacing:0.04em;cursor:pointer;">
+      Atualizar o dia
+    </button>
+
     <p class="secao-label">Caminhos</p>
     <div class="caminhos-grid">
       <div class="caminho-card" onclick="mostrarReconhecimentoInicio()">
         <div class="caminho-icone" style="background:rgba(184,147,90,0.12)">🕯️</div>
         <div class="caminho-textos">
           <h3>Reconhecimento</h3>
-          <p>Perguntas para se ver com mais clareza</p>
+          <p>Um caminho por vez — comece aqui</p>
         </div>
       </div>
     </div>
@@ -3106,6 +3111,30 @@ function ligarTogglesTerritorio() {
   }
 }
 
+async function atualizarDiaAgora() {
+  const btn = document.getElementById('btn-atualizar-dia');
+  if (btn) {
+    btn.textContent = 'Buscando…';
+    btn.disabled = true;
+  }
+  try {
+    if (!estaOnline()) {
+      mostrarConfirmacao('Sem conexão — o dia fica como está neste aparelho');
+      return;
+    }
+    const ok = await carregarConteudoDiarioDoServidor();
+    aplicarConfiguracoes();
+    mostrarConfirmacao(ok ? 'Dia atualizado' : 'Nenhum conteúdo novo no servidor para hoje');
+  } catch (e) {
+    mostrarConfirmacao('Não foi possível atualizar agora');
+  } finally {
+    if (btn) {
+      btn.textContent = 'Atualizar o dia';
+      btn.disabled = false;
+    }
+  }
+}
+
 function renderizarPainel() {
   const cfg = carregarConfiguracoes();
   document.getElementById('painel-frase-citacao').value = cfg.fraseCitacao || '';
@@ -4197,7 +4226,7 @@ async function renderizarComunidade() {
   if (error || !reflexoes || reflexoes.length === 0) {
     container.innerHTML = `
       <div class="comunidade-crescimento">
-        <p>Aqui nascem ideias e inícios de projetos.<br>Compartilhe algo em Sua criação — o Ecossistema amadurece com o que cada um adiciona.</p>
+        <p>Ainda não há partilhas.<br>Seja o primeiro fio: escreva em Criação e envie à Comunidade.</p>
       </div>
     `;
     comunidadeCache = [];
