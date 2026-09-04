@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
 <title>Ecossistema Digital da Consciência</title>
 <meta name="description" content="Um espaço de presença, reconhecimento e consciência — fora do algoritmo.">
+<meta name="application-version" content="movimento-01">
 <meta name="theme-color" content="#0B0B0A">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -908,6 +909,102 @@
     line-height: 1.4;
   }
 
+  /* ---------- TELA MOVIMENTO — expansão consciente ---------- */
+  #tela-movimento {
+    z-index: 2;
+    padding: 26px 24px 54px;
+    overflow-y: auto;
+  }
+  .movimento-topo {
+    padding-bottom: 24px;
+    border-bottom: 1px solid var(--linha);
+  }
+  .movimento-topo h2 {
+    font-family: 'Fraunces', serif;
+    font-size: 24px;
+    font-weight: 400;
+    line-height: 1.25;
+    margin-top: 20px;
+  }
+  .movimento-topo p {
+    color: var(--osso-fraco);
+    font-size: 13px;
+    line-height: 1.6;
+    margin-top: 8px;
+  }
+  .movimento-intro {
+    margin: 24px 0;
+    padding: 18px;
+    border-left: 2px solid var(--dourado-fraco);
+    background: rgba(184,147,90,0.035);
+    border-radius: 0 12px 12px 0;
+  }
+  .movimento-intro p {
+    font-family: 'Fraunces', serif;
+    font-size: 15px;
+    line-height: 1.65;
+  }
+  .movimento-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 10px;
+  }
+  .movimento-card {
+    background: var(--preto-suave);
+    border: 1px solid var(--linha);
+    border-radius: 14px;
+    padding: 16px;
+  }
+  .movimento-card .numero {
+    color: var(--dourado);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    margin-bottom: 7px;
+  }
+  .movimento-card h3 {
+    font-family: 'Fraunces', serif;
+    font-size: 15px;
+    font-weight: 500;
+    margin-bottom: 5px;
+  }
+  .movimento-card p {
+    color: var(--osso-fraco);
+    font-size: 12.5px;
+    line-height: 1.55;
+  }
+  .movimento-perfis {
+    margin-top: 26px;
+  }
+  .movimento-perfil {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--linha);
+  }
+  .movimento-perfil:last-child { border-bottom: none; }
+  .movimento-perfil strong {
+    font-size: 12.5px;
+    font-weight: 500;
+  }
+  .movimento-perfil span {
+    color: var(--osso-fraco);
+    font-size: 11.5px;
+    text-align: right;
+    line-height: 1.45;
+  }
+  .movimento-fecho {
+    margin-top: 28px;
+    padding: 18px 0 8px;
+    color: var(--osso-fraco);
+    font-family: 'Fraunces', serif;
+    font-size: 15px;
+    font-style: italic;
+    line-height: 1.7;
+    text-align: center;
+  }
+
+
   /* ---------- Navegação inferior ---------- */
   #nav-inferior {
     position: fixed;
@@ -1655,6 +1752,72 @@
           <p>Um caminho por vez — comece aqui</p>
         </div>
       </div>
+
+      <div class="caminho-card" onclick="irPara('tela-movimento')">
+        <div class="caminho-icone" style="background:rgba(107,50,38,0.18)">↗</div>
+        <div class="caminho-textos">
+          <h3>Movimento</h3>
+          <p>Da percepção à multiplicação — redes, pessoas e projetos</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TELA MOVIMENTO — plano vivo do ecossistema -->
+  <div class="tela" id="tela-movimento">
+    <div class="movimento-topo">
+      <button class="voltar-simples" onclick="irPara('tela-territorio')">‹ voltar</button>
+      <h2>O movimento</h2>
+      <p>O que estamos construindo e como o digital entra nisso.</p>
+    </div>
+
+    <div class="movimento-intro">
+      <p>O Ecossistema não cresce para ocupar mais espaço na internet. Cresce para levar mais consciência ao espaço que já existe.</p>
+    </div>
+
+    <p class="secao-label">Caminho de expansão</p>
+    <div class="movimento-grid">
+      <div class="movimento-card">
+        <div class="numero">01 — PRESENÇA</div>
+        <h3>Interromper o automático</h3>
+        <p>Usar redes sociais para criar uma pausa, uma pergunta ou uma percepção que faça a pessoa se reconhecer.</p>
+      </div>
+      <div class="movimento-card">
+        <div class="numero">02 — RECONHECIMENTO</div>
+        <h3>Dar nome ao que já existe</h3>
+        <p>O conteúdo não precisa explicar tudo. Ele precisa encontrar quem já está procurando.</p>
+      </div>
+      <div class="movimento-card">
+        <div class="numero">03 — APROFUNDAMENTO</div>
+        <h3>Levar para o ambiente certo</h3>
+        <p>Quem demonstra interesse encontra leitura, comunidade, criação e pessoas com intenção semelhante.</p>
+      </div>
+      <div class="movimento-card">
+        <div class="numero">04 — MULTIPLICAÇÃO</div>
+        <h3>Transformar presença em ação</h3>
+        <p>Projetos, afiliados e colaboradores passam a construir juntos — sem depender de um único perfil ou canal.</p>
+      </div>
+    </div>
+
+    <div class="movimento-perfis">
+      <p class="secao-label">Arquitetura dos perfis</p>
+      <div class="movimento-perfil"><strong>@sociedadedainternet</strong><span>Percepção<br>Interromper</span></div>
+      <div class="movimento-perfil"><strong>@odigitalcitou</strong><span>Comportamento<br>Nomear</span></div>
+      <div class="movimento-perfil"><strong>@ocriadorfilosofico</strong><span>Princípios<br>Expandir</span></div>
+      <div class="movimento-perfil"><strong>@ocriadordesperto</strong><span>Decisão<br>Ação</span></div>
+      <div class="movimento-perfil"><strong>@apresentevidamilionaria</strong><span>Presença<br>Demonstrar</span></div>
+      <div class="movimento-perfil"><strong>@umsernodigital</strong><span>Transição<br>Integrar</span></div>
+    </div>
+
+    <p class="secao-label">Três camadas</p>
+    <div class="movimento-grid">
+      <div class="movimento-card"><h3>Perfis</h3><p>Alcançam, interrompem e despertam a atenção no ambiente digital.</p></div>
+      <div class="movimento-card"><h3>Núcleo de Afiliados</h3><p>Troca experiências, testa formas de divulgação e aprende com resultados reais.</p></div>
+      <div class="movimento-card"><h3>Ecossistema</h3><p>Organiza o movimento, preserva o eixo e cria espaço para novos projetos e colaboradores.</p></div>
+    </div>
+
+    <div class="movimento-fecho">
+      “A pessoa entra por identificação, continua por curiosidade, aprofunda por necessidade e permanece por transformação.”
     </div>
   </div>
 
@@ -1697,6 +1860,11 @@
     </div>
     <div class="aviso-suave">
       Aqui nascem ideias e projetos em estágio inicial. Com os recursos que cada um adiciona, o Ecossistema Digital da Consciência amadurece. Nada do que você escreve em "Sua criação" aparece aqui, a menos que você escolha partilhar.
+    </div>
+
+    <div class="aviso-suave" style="border-color:rgba(107,50,38,0.35);background:rgba(107,50,38,0.07);">
+      <span>↗</span>
+      <span><strong style="color:var(--osso);font-weight:500;">Aviso do movimento.</strong> Estamos preparando uma nova etapa de expansão pelas redes sociais e pela Internet. A ideia não é produzir mais ruído, mas fazer cada canal cumprir uma função e trazer as pessoas certas para o ambiente certo.</span>
     </div>
 
     <div id="partilhas-reais"></div>
