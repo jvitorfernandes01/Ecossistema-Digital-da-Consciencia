@@ -1466,33 +1466,11 @@
 
   ::-webkit-scrollbar { display: none; }
 
-  #indicador-offline {
-    position: fixed;
-    top: 14px;
-    left: 50%;
-    transform: translateX(-50%) translateY(-10px);
-    background: var(--preto-suave);
-    border: 1px solid var(--dourado-fraco);
-    color: var(--osso);
-    font-size: 11.5px;
-    padding: 9px 16px;
-    border-radius: 100px;
-    z-index: 50;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.4s ease, transform 0.4s ease;
-    white-space: nowrap;
-  }
-  #indicador-offline.visivel {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
 </style>
 </head>
 <body>
 
 <canvas id="constelacao"></canvas>
-<div id="indicador-offline"></div>
 
 <div id="app">
 
@@ -1613,28 +1591,21 @@
               <p>O que você já reconheceu sobre si até agora</p>
             </div>
           </div>
-          <div class="caminho-card" onclick="mostrarVistaReconhecimento('comecar')">
-            <div class="caminho-icone" style="background:rgba(107,50,38,0.15)">🕯️</div>
-            <div class="caminho-textos">
-              <h3>Começar</h3>
-              <p>Novas perguntas para se reconhecer</p>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- VISTA: Começar — escolher entre História e Novo -->
-      <div class="reconhecimento-vista" id="vista-comecar">
-        <p class="reconhecimento-intro">Por onde você quer começar?</p>
-        <div class="caminhos-grid">
           <div class="caminho-card" onclick="irPara('tela-historia')">
-            <div class="caminho-icone" style="background:rgba(184,147,90,0.12)">📜</div>
+            <div class="caminho-icone" style="background:rgba(107,50,38,0.15)">📜</div>
             <div class="caminho-textos">
               <h3>História</h3>
               <p>O ser humano nas Escrituras, antes da segunda vinda</p>
             </div>
           </div>
-          <div class="caminho-card" onclick="abrirPerguntasEstrategicas()">
+        </div>
+      </div>
+
+      <!-- VISTA LEGADA: Começar — mantida apenas para compatibilidade de navegação -->
+      <div class="reconhecimento-vista" id="vista-comecar">
+        <p class="reconhecimento-intro">Por onde você quer começar?</p>
+        <div class="caminhos-grid">
+          <div class="caminho-card" onclick="abrirNovoReconhecimento()">
             <div class="caminho-icone" style="background:rgba(107,50,38,0.15)">🕯️</div>
             <div class="caminho-textos">
               <h3>Novo</h3>
@@ -1829,8 +1800,21 @@
     </div>
 
     <div class="criacao-abas">
-      <button class="criacao-aba ativa" data-aba="anotacoes" onclick="trocarAbaCriacao('anotacoes')"><span id="rotulo-anotacoes">Anotações</span></button>
+      <button class="criacao-aba" data-aba="comecar" onclick="trocarAbaCriacao('comecar')"><span id="rotulo-comecar">Começar</span></button>
       <button class="criacao-aba" data-aba="agenda" onclick="trocarAbaCriacao('agenda')"><span id="rotulo-agenda">Agenda</span></button>
+      <button class="criacao-aba ativa" data-aba="anotacoes" onclick="trocarAbaCriacao('anotacoes')"><span id="rotulo-anotacoes">Anotações</span></button>
+    </div>
+
+    <div id="painel-comecar" class="painel-aba">
+      <div class="caminhos-grid">
+        <div class="caminho-card" onclick="abrirNovoReconhecimento()">
+          <div class="caminho-icone" style="background:rgba(107,50,38,0.15)">🕯️</div>
+          <div class="caminho-textos">
+            <h3>Novo</h3>
+            <p>Perguntas para se reconhecer, do zero</p>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div id="painel-anotacoes" class="painel-aba ativo">
@@ -2967,6 +2951,7 @@ const configuracoesPadrao = {
   nomeTerritorio: 'Território',
   nomeCriacao: 'Sua criação',
   nomeComunidade: 'Comunidade',
+  nomeComecar: 'Começar',
   nomeAgenda: 'Agenda',
   nomeAnotacoes: 'Anotações'
 };
@@ -2987,6 +2972,7 @@ function aplicarConfiguracoes() {
   const mapaTitulos = {
     'titulo-criacao': cfg.nomeCriacao,
     'titulo-comunidade': cfg.nomeComunidade,
+    'rotulo-comecar': cfg.nomeComecar || 'Começar',
     'rotulo-anotacoes': cfg.nomeAnotacoes,
     'rotulo-agenda': cfg.nomeAgenda
   };
@@ -3421,30 +3407,11 @@ async function sincronizarFila() {
 }
 
 function atualizarIndicadorOffline() {
-  const indicador = document.getElementById('indicador-offline');
-  if (!indicador) return;
-  const pendentes = filaSincronizacao.filter(i => !i.sincronizado).length;
-
-  if (!estaOnline()) {
-    indicador.textContent = pendentes > 0
-      ? `◐ Offline — ${pendentes} item(ns) aguardando envio`
-      : '◐ Offline — tudo salvo neste aparelho';
-    indicador.classList.add('visivel');
-  } else if (pendentes > 0) {
-    indicador.textContent = `◐ Enviando ${pendentes} item(ns)...`;
-    indicador.classList.add('visivel');
-    sincronizarFila();
-  } else {
-    indicador.classList.remove('visivel');
-  }
+  // Indicador visual removido nesta versão. A sincronização continua silenciosa.
 }
 
 function mostrarAvisoSincronizado(quantidade) {
-  const indicador = document.getElementById('indicador-offline');
-  if (!indicador) return;
-  indicador.textContent = `✓ ${quantidade} item(ns) enviado(s)`;
-  indicador.classList.add('visivel');
-  setTimeout(() => indicador.classList.remove('visivel'), 3000);
+  // Notificação visual removida nesta versão.
 }
 
 window.addEventListener('online', () => {
@@ -3468,6 +3435,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   aplicarConfiguracoes();
+  trocarAbaCriacao('anotacoes');
   atualizarIndicadorOffline();
   renderizarComunidade();
   limparCacheLocalDesnecessario();
@@ -3723,6 +3691,9 @@ const perguntas = [
 
 // identidadeRespostas[i] = null (ainda não respondida) ou { resposta, partilhada }
 let identidadeRespostas = perguntas.map(() => null);
+// Respostas do caminho Novo vivem apenas durante esse percurso.
+// Elas não são adicionadas à Identidade.
+let respostasNovo = perguntas.map(() => null);
 let perguntaAtual = 0;
 let respostaTemp = null;
 let vistaReconhecimentoAtual = 'inicio'; // 'inicio' | 'comecar' | 'identidade' | 'estrategicas' | 'perguntas'
@@ -3753,7 +3724,7 @@ function voltarReconhecimento() {
     inicio: null, // já está no topo — voltar sai para o Território
     comecar: 'inicio',
     identidade: 'inicio',
-    estrategicas: 'comecar',
+    estrategicas: 'inicio',
     perguntas: 'estrategicas'
   };
 
@@ -3831,6 +3802,13 @@ const perguntasEstrategicas = [
   { texto: "Como faço algo assim?", temInformacao: true },
   { texto: "Isso vai mudar alguma coisa em mim?", temInformacao: true, destino: 'tela-leitura' }
 ];
+
+function abrirNovoReconhecimento() {
+  respostasNovo = perguntas.map(() => null);
+  perguntaAtual = 0;
+  respostaTemp = null;
+  abrirPerguntasEstrategicas();
+}
 
 function abrirPerguntasEstrategicas() {
   renderizarPerguntasEstrategicas();
@@ -3911,17 +3889,18 @@ function continuarParaPerguntas() {
 
 function proximoIndiceNaoRespondido(apartirDe) {
   for (let i = apartirDe; i < perguntas.length; i++) {
-    if (!identidadeRespostas[i]) return i;
+    if (!respostasNovo[i]) return i;
   }
   return -1;
 }
 
 function iniciarPerguntas() {
+  respostasNovo = respostasNovo || perguntas.map(() => null);
   const indice = proximoIndiceNaoRespondido(0);
   if (indice === -1) {
     // Todas já foram respondidas alguma vez — não repete sozinho.
-    mostrarConfirmacao('Você já percorreu essas perguntas — reveja em Identidade');
-    abrirIdentidade();
+    mostrarConfirmacao('Você já percorreu essas perguntas — comece um novo percurso quando quiser.');
+    mostrarVistaReconhecimento('inicio');
     return;
   }
   perguntaAtual = indice;
@@ -3933,10 +3912,10 @@ function iniciarPerguntas() {
 function renderizarPergunta() {
   const palco = document.getElementById('palco-pergunta');
   const p = perguntas[perguntaAtual];
-  const respostaExistente = identidadeRespostas[perguntaAtual]?.resposta || '';
+  const respostaExistente = respostasNovo[perguntaAtual]?.resposta || '';
 
   let html = `
-    <div class="pergunta-numero">história · capítulo ${perguntaAtual + 1} de ${perguntas.length}</div>
+    <div class="pergunta-numero">novo · capítulo ${perguntaAtual + 1} de ${perguntas.length}</div>
     <div class="pergunta-texto">${p.texto}</div>
   `;
 
@@ -3987,16 +3966,9 @@ function verificarCampoLivre(input) {
 }
 
 function salvarRespostaAtual(resposta) {
-  const partilhadaAnterior = identidadeRespostas[perguntaAtual]?.partilhada || false;
-  identidadeRespostas[perguntaAtual] = { resposta, partilhada: partilhadaAnterior, criadoEm: new Date().toISOString() };
-  salvarSessao(); // cache local imediato — a pergunta não volta a aparecer, mesmo offline
-  adicionarNaFila('identidade', {
-    perguntaIndex: perguntaAtual,
-    pergunta: perguntas[perguntaAtual].texto,
-    resposta,
-    partilhada: partilhadaAnterior
-  });
-  if (estaOnline()) sincronizarFila();
+  // O percurso Novo não alimenta mais a Identidade.
+  // A resposta permanece disponível somente enquanto este percurso está aberto.
+  respostasNovo[perguntaAtual] = { resposta, criadoEm: new Date().toISOString() };
 }
 
 function proximaPergunta(pulou = false) {
@@ -4018,7 +3990,7 @@ function proximaPergunta(pulou = false) {
 
 // ---------- Fim da história — compartilhar ou guardar ----------
 function finalizarHistoria() {
-  const partes = identidadeRespostas.filter(Boolean).map(r => r.resposta);
+  const partes = respostasNovo.filter(Boolean).map(r => r.resposta);
   const textoHistoria = partes.join(' ');
 
   const palco = document.getElementById('palco-pergunta');
@@ -4032,14 +4004,13 @@ function finalizarHistoria() {
       <div class="historia-final-acoes">
         <button class="continuar-btn pronto" onclick="guardarHistoriaComo(true)">Compartilhar na comunidade</button>
         <button class="entrar-btn" style="animation:none;opacity:1;" onclick="guardarHistoriaComo(false)">Guardar em anotações</button>
-        <button class="pular-link" onclick="abrirIdentidade()">ver na Identidade</button>
       </div>
     </div>
   `;
 }
 
 function guardarHistoriaComo(partilhar) {
-  const partes = identidadeRespostas.filter(Boolean).map(r => r.resposta);
+  const partes = respostasNovo.filter(Boolean).map(r => r.resposta);
   const texto = partes.join(' ');
   const agora = new Date();
   const dataFormatada = agora.toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' });
@@ -4131,7 +4102,7 @@ function renderizarAnotacoes() {
 }
 
 // ============================================================
-// ABAS DA TELA DE CRIAÇÃO (Anotações / Agenda)
+// ABAS DA TELA DE CRIAÇÃO (Começar / Agenda / Anotações)
 // ============================================================
 let abaCriacaoAtiva = 'anotacoes';
 
@@ -4141,12 +4112,14 @@ function trocarAbaCriacao(aba) {
   document.querySelectorAll('.criacao-aba').forEach(btn => {
     btn.classList.toggle('ativa', btn.dataset.aba === aba);
   });
+  document.getElementById('painel-comecar').classList.toggle('ativo', aba === 'comecar');
   document.getElementById('painel-anotacoes').classList.toggle('ativo', aba === 'anotacoes');
   document.getElementById('painel-agenda').classList.toggle('ativo', aba === 'agenda');
 
-  // O botão "+" abre o editor certo dependendo da aba visível
+  // Em Começar não existe criação manual; o único caminho é o card Novo.
   const btnNovo = document.getElementById('btn-novo-item');
-  btnNovo.setAttribute('onclick', aba === 'anotacoes' ? 'abrirEditor()' : 'abrirEditorAgenda()');
+  btnNovo.style.visibility = aba === 'comecar' ? 'hidden' : 'visible';
+  btnNovo.setAttribute('onclick', aba === 'agenda' ? 'abrirEditorAgenda()' : 'abrirEditor()');
 }
 
 // ============================================================
