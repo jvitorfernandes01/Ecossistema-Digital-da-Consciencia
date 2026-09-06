@@ -1754,7 +1754,7 @@
   <!-- TELA MOVIMENTO — plano vivo do ecossistema -->
   <div class="tela" id="tela-movimento">
     <div class="movimento-topo">
-      <button class="voltar-simples" onclick="irPara('tela-territorio')">‹ voltar</button>
+      <button class="voltar-simples" onclick="voltarTela('tela-territorio')">‹ voltar</button>
       <h2>O movimento</h2>
       <p>O que estamos construindo e como o digital entra nisso.</p>
     </div>
@@ -1863,7 +1863,7 @@
   <!-- GUIA — PRIMEIRO APLICATIVO -->
   <div class="tela" id="tela-guia-aplicativo">
     <div class="cadastro-topo">
-      <button class="voltar-simples" onclick="irPara('tela-criacao'); trocarAbaCriacao('comecar')">‹ voltar</button>
+      <button class="voltar-simples" onclick="voltarTela('tela-criacao'); try{trocarAbaCriacao('comecar')}catch(e){}">‹ voltar</button>
     </div>
     <div class="cadastro-conteudo" style="padding-bottom:56px;">
       <h2 class="cadastro-titulo">Primeiro aplicativo</h2>
@@ -1986,7 +1986,7 @@
   <div class="tela" id="tela-livro">
     <div class="livro-pagina">
       <div class="livro-topo-fixo">
-        <button class="voltar-simples voltar-clara" onclick="irPara('tela-territorio')">‹ voltar</button>
+        <button class="voltar-simples voltar-clara" onclick="voltarTela('tela-territorio')">‹ voltar</button>
       </div>
 
       <div class="livro-citacoes-fundo">
@@ -2022,7 +2022,7 @@
   <!-- TELA SOBRE — informações sobre o espaço -->
   <div class="tela" id="tela-sobre">
     <div class="cadastro-topo">
-      <button class="voltar-simples" onclick="mostrarReconhecimentoInicio()">‹ voltar</button>
+      <button class="voltar-simples" onclick="voltarTela('tela-territorio')">‹ voltar</button>
     </div>
     <div class="cadastro-conteudo">
       <h2 class="cadastro-titulo">Sobre</h2>
@@ -2041,7 +2041,7 @@
 
   <div class="tela" id="tela-leitura">
     <div class="cadastro-topo">
-      <button class="voltar-simples" onclick="mostrarReconhecimentoInicio()">‹ voltar</button>
+      <button class="voltar-simples" onclick="voltarTela('tela-territorio')">‹ voltar</button>
     </div>
     <div class="cadastro-conteudo">
       <h2 class="cadastro-titulo">A leitura muda o corpo</h2>
@@ -2068,7 +2068,7 @@
 
   <div class="tela" id="tela-historia">
     <div class="cadastro-topo">
-      <button class="voltar-simples" onclick="mostrarReconhecimentoInicio()">‹ voltar</button>
+      <button class="voltar-simples" onclick="voltarTela('tela-reconhecimento')">‹ voltar</button>
     </div>
     <div class="cadastro-conteudo">
       <h2 class="cadastro-titulo">História</h2>
@@ -2094,7 +2094,7 @@
 
   <div class="tela" id="tela-interior">
     <div class="cadastro-topo">
-      <button class="voltar-simples" onclick="irPara('tela-territorio')">‹ voltar</button>
+      <button class="voltar-simples" onclick="voltarTela('tela-territorio')">‹ voltar</button>
     </div>
     <div class="cadastro-conteudo" style="padding-bottom:48px;">
       <h2 class="cadastro-titulo">Interior</h2>
@@ -2163,7 +2163,7 @@
   <!-- TELA PAINEL — direção do Criador -->
   <div class="tela" id="tela-painel">
     <div class="cadastro-topo">
-      <button class="voltar-simples" onclick="irPara('tela-territorio')">‹ voltar</button>
+      <button class="voltar-simples" onclick="voltarTela('tela-territorio')">‹ voltar</button>
     </div>
     <div class="cadastro-conteudo">
       <h2 class="cadastro-titulo">Painel do Criador</h2>
@@ -2203,7 +2203,7 @@
   <!-- EDITOR DE PROJETO / CARD -->
   <div class="tela" id="tela-projeto-editor">
     <div class="cadastro-topo">
-      <button class="voltar-simples" onclick="irPara('tela-interior')">‹ voltar</button>
+      <button class="voltar-simples" onclick="voltarTela('tela-interior')">‹ voltar</button>
     </div>
     <div class="cadastro-conteudo" style="padding-bottom:48px;">
       <h2 class="cadastro-titulo" id="titulo-editor-projeto">Novo projeto</h2>
@@ -2253,7 +2253,7 @@
   <!-- VISUALIZAÇÃO PÚBLICA DE UM CARD (via ?p=id) -->
   <div class="tela" id="tela-projeto-publico">
     <div class="cadastro-topo">
-      <button class="voltar-simples" onclick="irPara(dadosConta && dadosConta.nome ? 'tela-territorio' : 'tela-entrada')">‹ voltar</button>
+      <button class="voltar-simples" onclick="voltarTela(dadosConta && dadosConta.nome ? 'tela-territorio' : 'tela-entrada')">‹ voltar</button>
     </div>
     <div class="cadastro-conteudo" style="padding-bottom:48px;">
       <p class="secao-label">Projeto</p>
@@ -2515,11 +2515,30 @@ async function carregarDadosDoServidor() {
 }
 
 // ============================================================
-// NAVEGAÇÃO ENTRE TELAS
+// NAVEGAÇÃO ENTRE TELAS + histórico do Voltar
 // ============================================================
-function irPara(idTela) {
+let historicoTelas = [];
+let telaAtualId = 'tela-entrada';
+
+function irPara(idTela, opcoes) {
+  opcoes = opcoes || {};
+  const el = document.getElementById(idTela);
+  if (!el) return;
+
+  // Empilha a tela atual para o Voltar (exceto abas principais e substituição)
+  if (!opcoes.substituir && telaAtualId && telaAtualId !== idTela) {
+    const telasBase = ['tela-territorio', 'tela-criacao', 'tela-comunidade', 'tela-entrada'];
+    if (telasBase.includes(idTela)) {
+      historicoTelas = [];
+    } else {
+      historicoTelas.push(telaAtualId);
+      if (historicoTelas.length > 40) historicoTelas.shift();
+    }
+  }
+
   document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'));
-  document.getElementById(idTela).classList.add('ativa');
+  el.classList.add('ativa');
+  telaAtualId = idTela;
 
   const navInferior = document.getElementById('nav-inferior');
   const telasComNav = ['tela-territorio', 'tela-criacao', 'tela-comunidade'];
@@ -2532,6 +2551,16 @@ function irPara(idTela) {
   } else {
     navInferior.classList.remove('visivel');
   }
+}
+
+/** Volta para a tela de onde a pessoa veio (histórico real). */
+function voltarTela(fallback) {
+  const anterior = historicoTelas.pop();
+  if (anterior && document.getElementById(anterior)) {
+    irPara(anterior, { substituir: true });
+    return;
+  }
+  irPara(fallback || 'tela-territorio', { substituir: true });
 }
 
 // Data de hoje formatada
@@ -3266,24 +3295,46 @@ async function publicarConteudoDiarioServidor() {
 }
 
 let ultimoConteudoDiarioAtualizado = null;
+let ultimoFetchConteudoDiario = 0;
+let assinaturaConteudoDiario = null;
 
-async function atualizarConteudoDiarioAutomaticamente() {
-  const hoje = dataHojeISO();
-  if (ultimoConteudoDiarioAtualizado === hoje) return;
+async function atualizarConteudoDiarioAutomaticamente(forcar) {
+  if (!estaOnline()) return false;
+  const agora = Date.now();
+  // Evita rajada de requests; forçar ignora o throttle curto
+  if (!forcar && agora - ultimoFetchConteudoDiario < 45 * 1000) return false;
+  ultimoFetchConteudoDiario = agora;
+
   const ok = await carregarConteudoDiarioDoServidor();
   if (ok) {
-    ultimoConteudoDiarioAtualizado = hoje;
+    ultimoConteudoDiarioAtualizado = dataHojeISO();
     aplicarVersiculoENoticias(carregarConfiguracoes());
   }
+  return ok;
 }
 
 function iniciarAtualizacaoDiariaAutomatica() {
-  // O Território não depende do Criador para trocar o conteúdo do dia.
-  atualizarConteudoDiarioAutomaticamente();
-  setInterval(() => atualizarConteudoDiarioAutomaticamente(), 5 * 60 * 1000);
+  // Alimenta sozinho: ao abrir, a cada 5 min, ao voltar ao app, e via Realtime se disponível
+  atualizarConteudoDiarioAutomaticamente(true);
+  setInterval(() => atualizarConteudoDiarioAutomaticamente(true), 5 * 60 * 1000);
   document.addEventListener('visibilitychange', () => {
-    if (!document.hidden) atualizarConteudoDiarioAutomaticamente();
+    if (!document.hidden) atualizarConteudoDiarioAutomaticamente(true);
   });
+  window.addEventListener('online', () => atualizarConteudoDiarioAutomaticamente(true));
+
+  try {
+    if (assinaturaConteudoDiario) {
+      supabaseClient.removeChannel(assinaturaConteudoDiario);
+    }
+    assinaturaConteudoDiario = supabaseClient
+      .channel('conteudo_diario_live')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'conteudo_diario' }, () => {
+        atualizarConteudoDiarioAutomaticamente(true);
+      })
+      .subscribe();
+  } catch (e) {
+    // Realtime opcional — o intervalo já cobre
+  }
 }
 
 
@@ -3358,6 +3409,17 @@ function alternarNoticiasDia(ev) {
       ? `Notícias do dia${n ? ' (' + n + ')' : ''} — tocar para esconder`
       : `Notícias do dia${n ? ' (' + n + ')' : ''} — tocar para ver`;
   }
+  // Ao abrir, busca o dia no servidor (alimenta sozinha)
+  if (aberto) {
+    atualizarConteudoDiarioAutomaticamente(true).then((ok) => {
+      if (ok) {
+        const n2 = (document.querySelectorAll('#lista-noticias-dia .noticia-item') || []).length;
+        if (texto) {
+          texto.textContent = `Notícias do dia${n2 ? ' (' + n2 + ')' : ''} — tocar para esconder`;
+        }
+      }
+    });
+  }
 }
 
 function alternarMeditacao(ev) {
@@ -3382,6 +3444,7 @@ function alternarMeditacao(ev) {
 function ligarTogglesTerritorio() {
   const btnN = document.getElementById('btn-toggle-noticias');
   const btnM = document.getElementById('btn-toggle-meditacao');
+  const blocoN = document.getElementById('bloco-noticias-dia');
   if (btnN) {
     btnN.onclick = null;
     btnN.addEventListener('click', alternarNoticiasDia, { passive: false });
@@ -3389,6 +3452,31 @@ function ligarTogglesTerritorio() {
   if (btnM) {
     btnM.onclick = null;
     btnM.addEventListener('click', alternarMeditacao, { passive: false });
+  }
+  // Toque longo nas notícias: força alimentação do servidor
+  if (blocoN && !blocoN._longPressBound) {
+    blocoN._longPressBound = true;
+    let timerLong = null;
+    const iniciaLong = (e) => {
+      timerLong = setTimeout(async () => {
+        timerLong = null;
+        if (navigator.vibrate) try { navigator.vibrate(12); } catch (err) {}
+        const ok = await atualizarConteudoDiarioAutomaticamente(true);
+        mostrarConfirmacao(ok ? 'Notícias atualizadas' : 'Sem novidade no servidor');
+      }, 550);
+    };
+    const cancelaLong = () => {
+      if (timerLong) {
+        clearTimeout(timerLong);
+        timerLong = null;
+      }
+    };
+    blocoN.addEventListener('touchstart', iniciaLong, { passive: true });
+    blocoN.addEventListener('touchend', cancelaLong);
+    blocoN.addEventListener('touchmove', cancelaLong);
+    blocoN.addEventListener('mousedown', iniciaLong);
+    blocoN.addEventListener('mouseup', cancelaLong);
+    blocoN.addEventListener('mouseleave', cancelaLong);
   }
 }
 
@@ -3403,7 +3491,8 @@ async function atualizarDiaAgora() {
       mostrarConfirmacao('Sem conexão — o dia fica como está neste aparelho');
       return;
     }
-    const ok = await carregarConteudoDiarioDoServidor();
+    ultimoFetchConteudoDiario = 0;
+    const ok = await atualizarConteudoDiarioAutomaticamente(true);
     aplicarConfiguracoes();
     mostrarConfirmacao(ok ? 'Dia atualizado' : 'Nenhum conteúdo novo no servidor para hoje');
   } catch (e) {
