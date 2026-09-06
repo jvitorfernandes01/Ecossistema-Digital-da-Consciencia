@@ -1466,6 +1466,23 @@
 
   ::-webkit-scrollbar { display: none; }
 
+
+  /* ---------- GUIA DE CRIAÇÃO DE APLICATIVOS ---------- */
+  .codigo-card { background:rgba(255,255,255,.025); border:1px solid var(--linha); border-radius:18px; padding:16px; margin-bottom:12px; }
+  .codigo-card h3 { font-family:'Fraunces',serif; font-size:20px; font-weight:400; margin-bottom:7px; }
+  .codigo-card p { font-size:12.5px; color:var(--osso-fraco); line-height:1.6; }
+  .codigo-bloco { margin-top:12px; background:#090908; border:1px solid rgba(184,147,90,.18); border-radius:12px; overflow:hidden; }
+  .codigo-topo { display:flex; justify-content:space-between; align-items:center; padding:9px 11px; border-bottom:1px solid var(--linha); color:var(--dourado-fraco); font-size:10px; letter-spacing:.08em; text-transform:uppercase; }
+  .codigo-topo button { border:0; background:transparent; color:var(--osso-fraco); font-size:11px; cursor:pointer; }
+  .codigo-pre { margin:0; padding:13px; overflow:auto; color:var(--osso); font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:11px; line-height:1.65; white-space:pre; }
+  .passos-criacao { counter-reset:passo; display:grid; gap:9px; margin-top:12px; }
+  .passo-criacao { display:flex; gap:11px; align-items:flex-start; padding:11px 12px; border:1px solid var(--linha); border-radius:13px; }
+  .passo-criacao::before { counter-increment:passo; content:counter(passo); width:24px; height:24px; flex:0 0 24px; border:1px solid var(--dourado-fraco); border-radius:50%; display:flex; align-items:center; justify-content:center; color:var(--dourado); font-size:11px; }
+  .passo-criacao strong { display:block; font-size:13px; font-weight:500; margin-bottom:3px; }
+  .passo-criacao span { display:block; font-size:11.5px; line-height:1.5; color:var(--osso-fraco); }
+  .mini-status { display:inline-flex; align-items:center; gap:6px; border:1px solid rgba(184,147,90,.2); border-radius:999px; padding:6px 9px; color:var(--dourado); font-size:10px; margin:6px 0 12px; }
+  .mini-status::before { content:''; width:6px; height:6px; border-radius:50%; background:currentColor; }
+
 </style>
 </head>
 <body>
@@ -1814,6 +1831,13 @@
             <p>Perguntas para se reconhecer, do zero</p>
           </div>
         </div>
+        <div class="caminho-card" onclick="abrirGuiaAplicativo()">
+          <div class="caminho-icone" style="background:rgba(184,147,90,0.12)">⌘</div>
+          <div class="caminho-textos">
+            <h3>Primeiro aplicativo</h3>
+            <p>Do primeiro código ao primeiro link — comece por uma ideia pequena.</p>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -1832,6 +1856,110 @@
           <p>Nenhuma intenção ou compromisso ainda.<br>O tempo também é espaço.</p>
           <button class="entrar-btn" onclick="abrirEditorAgenda()" style="animation:none;opacity:1;">Adicionar algo</button>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GUIA — PRIMEIRO APLICATIVO -->
+  <div class="tela" id="tela-guia-aplicativo">
+    <div class="cadastro-topo">
+      <button class="voltar-simples" onclick="irPara('tela-criacao'); trocarAbaCriacao('comecar')">‹ voltar</button>
+    </div>
+    <div class="cadastro-conteudo" style="padding-bottom:56px;">
+      <h2 class="cadastro-titulo">Primeiro aplicativo</h2>
+      <p class="cadastro-subtitulo">Você não precisa saber construir tudo. Precisa entender como uma ideia começa a ganhar forma.</p>
+      <div class="mini-status">modo de aprendizagem · do zero ao primeiro link</div>
+
+      <div class="aviso-suave" style="margin-top:14px;">
+        <span>⌘</span>
+        <span>A proposta aqui não é formar programadores em uma página. É dar ao usuário uma primeira visão: código é uma forma de transformar uma ideia em algo que pode ser testado, guardado e compartilhado.</span>
+      </div>
+
+      <div class="codigo-card">
+        <h3>1. Comece com um arquivo</h3>
+        <p>Um aplicativo web pode começar com um simples <strong>index.html</strong>. Nele você coloca a primeira estrutura da sua ideia.</p>
+        <div class="codigo-bloco">
+          <div class="codigo-topo"><span>index.html</span><button onclick="copiarCodigo('codigo-html-inicial')">copiar</button></div>
+          <pre class="codigo-pre" id="codigo-html-inicial">&lt;!doctype html&gt;
+&lt;html lang="pt-BR"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"&gt;
+  &lt;meta name="viewport" content="width=device-width, initial-scale=1"&gt;
+  &lt;title&gt;Minha ideia&lt;/title&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;h1&gt;Minha primeira ideia&lt;/h1&gt;
+  &lt;p&gt;Ela começa aqui.&lt;/p&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+        </div>
+      </div>
+
+      <div class="codigo-card">
+        <h3>2. Transforme a ideia em um card</h3>
+        <p>Um card já é uma pequena unidade de produto: tem título, explicação e uma ação. Começar assim ajuda a pensar antes de tentar criar uma plataforma inteira.</p>
+        <div class="codigo-bloco">
+          <div class="codigo-topo"><span>HTML + CSS</span><button onclick="copiarCodigo('codigo-card-inicial')">copiar</button></div>
+          <pre class="codigo-pre" id="codigo-card-inicial">&lt;div class="card"&gt;
+  &lt;h2&gt;Minha ideia&lt;/h2&gt;
+  &lt;p&gt;Uma coisa que quero testar.&lt;/p&gt;
+  &lt;button onclick="guardarIdeia()"&gt;Guardar&lt;/button&gt;
+&lt;/div&gt;
+
+&lt;style&gt;
+.card {
+  padding: 24px;
+  border: 1px solid #333;
+  border-radius: 18px;
+  max-width: 420px;
+}
+&lt;/style&gt;</pre>
+        </div>
+      </div>
+
+      <div class="codigo-card">
+        <h3>3. Faça alguma coisa acontecer</h3>
+        <p>JavaScript entra quando você quer que a página reaja a uma ação. O importante neste estágio é perceber a relação entre <strong>ação → código → resultado</strong>.</p>
+        <div class="codigo-bloco">
+          <div class="codigo-topo"><span>script.js</span><button onclick="copiarCodigo('codigo-js-inicial')">copiar</button></div>
+          <pre class="codigo-pre" id="codigo-js-inicial">function guardarIdeia() {
+  localStorage.setItem(
+    'minha_ideia',
+    'Minha primeira ideia'
+  );
+
+  alert('Ideia guardada neste aparelho.');
+}</pre>
+        </div>
+      </div>
+
+      <div class="codigo-card">
+        <h3>4. Entenda onde a ideia fica guardada</h3>
+        <p>Nem tudo precisa ir para um banco de dados imediatamente. Primeiro entenda as camadas.</p>
+        <div class="passos-criacao">
+          <div class="passo-criacao"><div><strong>LocalStorage</strong><span>Guarda pequenas informações no navegador. É ótimo para experimentar uma ideia sozinho.</span></div></div>
+          <div class="passo-criacao"><div><strong>Banco de dados</strong><span>Quando a informação precisa acompanhar uma conta, vários aparelhos ou várias pessoas, entra uma camada como o Supabase.</span></div></div>
+          <div class="passo-criacao"><div><strong>Armazenamento de arquivos</strong><span>Imagens, PDFs e outros arquivos precisam de um lugar próprio. O aplicativo guarda a referência e usa o arquivo quando necessário.</span></div></div>
+        </div>
+      </div>
+
+      <div class="codigo-card">
+        <h3>5. Transforme o projeto em um link</h3>
+        <p>Um arquivo no seu aparelho ainda não é um aplicativo público. Para outras pessoas acessarem, você precisa publicar o projeto na Internet.</p>
+        <div class="passos-criacao">
+          <div class="passo-criacao"><div><strong>1 — Arquivos</strong><span>Tenha seu index.html e os demais arquivos organizados em uma pasta.</span></div></div>
+          <div class="passo-criacao"><div><strong>2 — GitHub</strong><span>Coloque o projeto em um repositório para guardar versões e acompanhar a evolução do código.</span></div></div>
+          <div class="passo-criacao"><div><strong>3 — Vercel</strong><span>Conecte o repositório a uma hospedagem e publique uma versão acessível por endereço web.</span></div></div>
+          <div class="passo-criacao"><div><strong>4 — Depois</strong><span>Você pode evoluir para banco de dados, login, arquivos, domínio próprio e novas páginas.</span></div></div>
+        </div>
+      </div>
+
+      <div class="codigo-card">
+        <h3>6. O que amadurece uma ideia?</h3>
+        <p>Não é a quantidade de código. É o ciclo: <strong>imaginar → construir pequeno → testar → observar → corrigir → publicar → aprender</strong>.</p>
+        <p style="margin-top:12px;">O primeiro aplicativo pode ser só um card. Depois pode virar uma página. Depois uma ferramenta. E, se fizer sentido, uma plataforma.</p>
+        <button class="continuar-btn pronto" style="width:100%;margin-top:16px;" onclick="criarProjetoAposGuia()">Começar um projeto</button>
+        <button class="entrar-btn" style="width:100%;margin-top:10px;animation:none;opacity:1;" onclick="criarAnotacaoSobreApp()">Guardar esta ideia nas Anotações</button>
       </div>
     </div>
   </div>
@@ -1905,8 +2033,8 @@
         elas existem para que você perceba o que já está em você, antes de buscar fora.
       </p>
       <p class="interior-valor" style="line-height:1.7;">
-        Se você chegou aqui perguntando "como faço algo assim", a resposta começa por reconhecer:
-        você não precisa de um manual para começar. Volte para o Reconhecimento quando quiser continuar.
+        Se você chegou aqui perguntando "como faço algo assim", existe um caminho prático dentro de Criação → Começar → Primeiro aplicativo.
+        Você pode começar por um card, entender os primeiros códigos, aprender onde guardar os dados e descobrir como uma ideia pode virar um link.
       </p>
     </div>
   </div>
@@ -2032,65 +2160,42 @@
     </div>
   </div>
 
-  <!-- TELA PAINEL — edição do Ecossistema, acesso restrito ao fundador -->
+  <!-- TELA PAINEL — direção do Criador -->
   <div class="tela" id="tela-painel">
     <div class="cadastro-topo">
       <button class="voltar-simples" onclick="irPara('tela-territorio')">‹ voltar</button>
     </div>
     <div class="cadastro-conteudo">
-      <h2 class="cadastro-titulo">Painel</h2>
-      <p class="cadastro-subtitulo">O que você mudar aqui, todo mundo vê no Ecossistema.</p>
+      <h2 class="cadastro-titulo">Painel do Criador</h2>
+      <p class="cadastro-subtitulo">Observar, organizar, direcionar e autorizar o crescimento do Ecossistema.</p>
 
-      <p class="secao-label" style="margin-top:8px;">Versículo do dia</p>
-      <div class="campo-grupo">
-        <label class="campo-label">Citação</label>
-        <textarea id="painel-frase-citacao" class="campo-input" style="min-height:70px; font-family:'Fraunces',serif; resize:vertical;"></textarea>
-      </div>
-      <div class="campo-grupo">
-        <label class="campo-label">Fonte (ex: 2 CORÍNTIOS 10:13)</label>
-        <input type="text" id="painel-frase-fonte" class="campo-input">
-      </div>
-      <div class="campo-grupo">
-        <label class="campo-label">Reflexão (como o versículo fala com o dia de hoje)</label>
-        <textarea id="painel-frase-reflexao" class="campo-input" style="min-height:120px;resize:vertical;" placeholder="Texto que liga o versículo à vida, redes, coração..."></textarea>
-      </div>
-
-      <p class="secao-label">Nomes das seções</p>
-      <div class="campo-grupo">
-        <label class="campo-label">Território</label>
-        <input type="text" id="painel-nome-territorio" class="campo-input">
-      </div>
-      <div class="campo-grupo">
-        <label class="campo-label">Criação</label>
-        <input type="text" id="painel-nome-criacao" class="campo-input">
-      </div>
-      <div class="campo-grupo">
-        <label class="campo-label">Comunidade</label>
-        <input type="text" id="painel-nome-comunidade" class="campo-input">
-      </div>
-      <div class="campo-grupo">
-        <label class="campo-label">Agenda</label>
-        <input type="text" id="painel-nome-agenda" class="campo-input">
-      </div>
-      <div class="campo-grupo">
-        <label class="campo-label">Anotações</label>
-        <input type="text" id="painel-nome-anotacoes" class="campo-input">
-      </div>
-
-      <p class="secao-label">Notícias do dia (Território)</p>
-      <p style="font-size:12px;color:var(--osso-fraco);line-height:1.5;margin-bottom:10px;">
-        Uma por linha: <em>Título | Resumo</em>. O versículo se ajusta ao tom. Ao salvar no servidor, todos os usuários recebem a atualização do dia.
-      </p>
-      <div class="campo-grupo">
-        <textarea id="painel-noticias" class="campo-input" style="min-height:110px;resize:vertical;" placeholder="Nepal: enchentes | Centenas de mortos..."></textarea>
-      </div>
-
-      <button class="criar-conta-btn" onclick="salvarPainel()">Salvar neste aparelho</button>
-      <button class="continuar-btn pronto" style="width:100%;margin-top:10px;" onclick="publicarConteudoDiarioServidor()">Publicar para todos (hoje)</button>
-
-      <div class="aviso-privacidade" style="margin-top:20px;">
+      <div class="aviso-suave" style="margin-top:8px;">
         <span>◐</span>
-        <span>Salvar neste aparelho = só você. Publicar para todos = grava o versículo e as notícias do dia no Supabase; cada pessoa vê ao abrir o Território.</span>
+        <span>O conteúdo diário não é uma tarefa manual deste painel. Versículo, inspiração e notícias chegam automaticamente do conteúdo diário publicado no servidor. O Painel existe para o Criador administrar o Ecossistema.</span>
+      </div>
+
+      <p class="secao-label">Conteúdo</p>
+      <div class="caminhos-grid">
+        <div class="caminho-card"><div class="caminho-icone">◈</div><div class="caminho-textos"><h3>Cards</h3><p>Criar, editar, reorganizar e retirar cards do Ecossistema.</p></div></div>
+        <div class="caminho-card"><div class="caminho-icone">□</div><div class="caminho-textos"><h3>Páginas</h3><p>Editar textos, caminhos e experiências que fazem parte do ambiente.</p></div></div>
+        <div class="caminho-card"><div class="caminho-icone">◐</div><div class="caminho-textos"><h3>Conteúdo automático</h3><p>Acompanhar o que foi publicado para o dia e sua última atualização.</p></div></div>
+      </div>
+
+      <p class="secao-label" style="margin-top:26px;">Pessoas</p>
+      <div class="caminhos-grid">
+        <div class="caminho-card"><div class="caminho-icone">◎</div><div class="caminho-textos"><h3>Usuários cadastrados</h3><p>Observar quem entrou, suas criações e sua participação.</p></div></div>
+        <div class="caminho-card"><div class="caminho-icone">→</div><div class="caminho-textos"><h3>Direcionar</h3><p>Auxiliar pessoas e indicar próximos caminhos dentro do Ecossistema.</p></div></div>
+      </div>
+
+      <p class="secao-label" style="margin-top:26px;">Criações</p>
+      <div class="caminhos-grid">
+        <div class="caminho-card"><div class="caminho-icone">✦</div><div class="caminho-textos"><h3>Aguardando autorização</h3><p>Revisar ideias enviadas por participantes antes de entrarem no espaço coletivo.</p></div></div>
+        <div class="caminho-card"><div class="caminho-icone">✓</div><div class="caminho-textos"><h3>Aprovadas</h3><p>Decidir quais criações podem ganhar lugar dentro do Ecossistema.</p></div></div>
+      </div>
+
+      <div class="aviso-privacidade" style="margin-top:24px;">
+        <span>◐</span>
+        <span>Esta tela é a visão do Criador. A edição real de usuários, autorizações, cards e páginas será ligada às tabelas e permissões do Supabase.</span>
       </div>
     </div>
   </div>
@@ -2102,7 +2207,7 @@
     </div>
     <div class="cadastro-conteudo" style="padding-bottom:48px;">
       <h2 class="cadastro-titulo" id="titulo-editor-projeto">Novo projeto</h2>
-      <p class="cadastro-subtitulo">Privado até você marcar como pronto.</p>
+      <p class="cadastro-subtitulo">Privado até você decidir publicar. Você pode começar com uma ideia, adicionar código, arquivos ou links e evoluir aos poucos.</p>
 
       <div class="campo-grupo">
         <label class="campo-label" for="proj-titulo">Título</label>
@@ -3160,6 +3265,28 @@ async function publicarConteudoDiarioServidor() {
   }
 }
 
+let ultimoConteudoDiarioAtualizado = null;
+
+async function atualizarConteudoDiarioAutomaticamente() {
+  const hoje = dataHojeISO();
+  if (ultimoConteudoDiarioAtualizado === hoje) return;
+  const ok = await carregarConteudoDiarioDoServidor();
+  if (ok) {
+    ultimoConteudoDiarioAtualizado = hoje;
+    aplicarVersiculoENoticias(carregarConfiguracoes());
+  }
+}
+
+function iniciarAtualizacaoDiariaAutomatica() {
+  // O Território não depende do Criador para trocar o conteúdo do dia.
+  atualizarConteudoDiarioAutomaticamente();
+  setInterval(() => atualizarConteudoDiarioAutomaticamente(), 5 * 60 * 1000);
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) atualizarConteudoDiarioAutomaticamente();
+  });
+}
+
+
 function aplicarVersiculoENoticias(cfg) {
   const noticias = carregarNoticiasDoDia();
   const lista = document.getElementById('lista-noticias-dia');
@@ -3802,6 +3929,43 @@ const perguntasEstrategicas = [
   { texto: "Como faço algo assim?", temInformacao: true },
   { texto: "Isso vai mudar alguma coisa em mim?", temInformacao: true, destino: 'tela-leitura' }
 ];
+
+function abrirGuiaAplicativo() {
+  irPara('tela-guia-aplicativo');
+}
+
+function copiarCodigo(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  const texto = el.textContent || '';
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(texto).then(() => mostrarConfirmacao('Código copiado'))
+      .catch(() => mostrarConfirmacao('Selecione e copie o código'));
+  } else {
+    mostrarConfirmacao('Selecione e copie o código');
+  }
+}
+
+function criarAnotacaoSobreApp() {
+  const agora = new Date();
+  const dataFormatada = agora.toLocaleDateString('pt-BR', { day:'numeric', month:'short' });
+  const texto = 'Ideia de aplicativo: começar por uma página, fazer uma ação funcionar, aprender a guardar um dado e depois transformar o projeto em um link público.';
+  anotacoes.unshift({ id: proximoIdAnotacao++, texto, data:dataFormatada, criadoEm:agora.toISOString(), partilhada:false });
+  renderizarAnotacoes();
+  adicionarNaFila('anotacao', { texto, partilhada:false });
+  if (estaOnline()) sincronizarFila();
+  mostrarConfirmacao('Ideia guardada nas Anotações');
+  setTimeout(() => { irPara('tela-criacao'); trocarAbaCriacao('anotacoes'); }, 500);
+}
+
+function criarProjetoAposGuia() {
+  // A aprendizagem termina em uma ação real: abrir o espaço de projeto,
+  // sem publicar nada automaticamente. A pessoa continua dona da criação.
+  irPara('tela-interior');
+  setTimeout(() => {
+    if (typeof abrirEditorProjeto === 'function') abrirEditorProjeto();
+  }, 120);
+}
 
 function abrirNovoReconhecimento() {
   respostasNovo = perguntas.map(() => null);
@@ -4634,6 +4798,7 @@ animar();
 // PWA — registra service worker para instalação e uso offline
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
+  iniciarAtualizacaoDiariaAutomatica();
     navigator.serviceWorker.register('/sw.js').catch(() => {});
   });
 }
