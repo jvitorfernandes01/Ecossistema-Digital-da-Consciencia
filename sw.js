@@ -1,4 +1,4 @@
-const CACHE_NAME = 'ecossistema-v5';
+const CACHE_NAME = 'ecossistema-v6';
 const urlsToCache = [
   '/',
   '/index.html',

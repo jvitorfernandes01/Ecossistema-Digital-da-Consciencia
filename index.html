@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
 <title>Ecossistema Digital da Consciência</title>
 <meta name="description" content="Um espaço de presença, reconhecimento e consciência — fora do algoritmo.">
-<meta name="application-version" content="movimento-02">
+<meta name="application-version" content="movimento-01">
 <meta name="theme-color" content="#0B0B0A">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -1615,6 +1615,13 @@
               <p>O ser humano nas Escrituras, antes da segunda vinda</p>
             </div>
           </div>
+          <div class="caminho-card" onclick="abrirNovoReconhecimento()">
+            <div class="caminho-icone" style="background:rgba(184,147,90,0.1)">✨</div>
+            <div class="caminho-textos">
+              <h3>Novo</h3>
+              <p>Antes de seguir — perguntas e o seu próprio caminho</p>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -1741,11 +1748,11 @@
         </div>
       </div>
 
-      <div class="caminho-card" onclick="irPara('tela-movimento')">
+      <div class="caminho-card" id="card-movimento" onclick="abrirMovimento()">
         <div class="caminho-icone" style="background:rgba(107,50,38,0.18)">↗</div>
         <div class="caminho-textos">
-          <h3>Movimento</h3>
-          <p>Da percepção à multiplicação — redes, pessoas e projetos</p>
+          <h3>Movimento <span id="movimento-cadeado" style="font-size:12px;opacity:0.7;display:none;">🔒</span></h3>
+          <p id="movimento-card-desc">Da percepção à multiplicação — redes, pessoas e projetos</p>
         </div>
       </div>
     </div>
@@ -1824,11 +1831,11 @@
 
     <div id="painel-comecar" class="painel-aba">
       <div class="caminhos-grid">
-        <div class="caminho-card" onclick="abrirNovoCriacao()">
-          <div class="caminho-icone" style="background:rgba(107,50,38,0.15)">✦</div>
+        <div class="caminho-card" onclick="abrirGuiaAplicativo()">
+          <div class="caminho-icone" style="background:rgba(184,147,90,0.12)">⌘</div>
           <div class="caminho-textos">
-            <h3>Novo</h3>
-            <p>Comece uma criação, um percurso ou uma ideia de aplicativo.</p>
+            <h3>Primeiro aplicativo</h3>
+            <p>Do primeiro código ao primeiro link — comece por uma ideia pequena.</p>
           </div>
         </div>
       </div>
@@ -1853,40 +1860,6 @@
     </div>
   </div>
 
-  <!-- NOVO — ponto de partida das criações -->
-  <div class="tela" id="tela-novo-criacao">
-    <div class="cadastro-topo">
-      <button class="voltar-simples" onclick="voltarTela('tela-criacao'); try{trocarAbaCriacao('comecar')}catch(e){}">‹ voltar</button>
-    </div>
-    <div class="cadastro-conteudo" style="padding-bottom:56px;">
-      <h2 class="cadastro-titulo">Novo</h2>
-      <p class="cadastro-subtitulo">Escolha o que você quer colocar em movimento. O começo pode ser pequeno.</p>
-
-      <div class="caminhos-grid">
-        <div class="caminho-card" onclick="abrirNovoReconhecimento()">
-          <div class="caminho-icone" style="background:rgba(107,50,38,0.15)">🕯️</div>
-          <div class="caminho-textos">
-            <h3>Reconhecimento</h3>
-            <p>Perguntas para observar o que está acontecendo em você, sem transformar respostas em identidade permanente.</p>
-          </div>
-        </div>
-
-        <div class="caminho-card" onclick="abrirGuiaAplicativo()">
-          <div class="caminho-icone" style="background:rgba(184,147,90,0.12)">⌘</div>
-          <div class="caminho-textos">
-            <h3>Primeiro aplicativo</h3>
-            <p>Aprenda o começo: index.html, um card, uma ação, armazenamento e o caminho até um link.</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="aviso-suave" style="margin-top:18px;">
-        <span>◐</span>
-        <span>Você não precisa decidir o produto inteiro agora. Primeiro dê forma ao que existe. Depois teste. Depois decida o que merece crescer.</span>
-      </div>
-    </div>
-  </div>
-
   <!-- GUIA — PRIMEIRO APLICATIVO -->
   <div class="tela" id="tela-guia-aplicativo">
     <div class="cadastro-topo">
@@ -1894,7 +1867,7 @@
     </div>
     <div class="cadastro-conteudo" style="padding-bottom:56px;">
       <h2 class="cadastro-titulo">Primeiro aplicativo</h2>
-      <p class="cadastro-subtitulo">Você não precisa saber construir tudo. Precisa entender como uma ideia começa a ganhar forma e como pode chegar à Internet.</p>
+      <p class="cadastro-subtitulo">Você não precisa saber construir tudo. Precisa entender como uma ideia começa a ganhar forma.</p>
       <div class="mini-status">modo de aprendizagem · do zero ao primeiro link</div>
 
       <div class="aviso-suave" style="margin-top:14px;">
@@ -1978,7 +1951,6 @@
           <div class="passo-criacao"><div><strong>2 — GitHub</strong><span>Coloque o projeto em um repositório para guardar versões e acompanhar a evolução do código.</span></div></div>
           <div class="passo-criacao"><div><strong>3 — Vercel</strong><span>Conecte o repositório a uma hospedagem e publique uma versão acessível por endereço web.</span></div></div>
           <div class="passo-criacao"><div><strong>4 — Depois</strong><span>Você pode evoluir para banco de dados, login, arquivos, domínio próprio e novas páginas.</span></div></div>
-          <div class="passo-criacao"><div><strong>5 — Link longo</strong><span>Uma URL pode carregar a referência do seu projeto. O Ecossistema usa esse princípio para abrir um card específico sem exigir que você crie outro aplicativo.</span></div></div>
         </div>
       </div>
 
@@ -1987,7 +1959,7 @@
         <p>Não é a quantidade de código. É o ciclo: <strong>imaginar → construir pequeno → testar → observar → corrigir → publicar → aprender</strong>.</p>
         <p style="margin-top:12px;">O primeiro aplicativo pode ser só um card. Depois pode virar uma página. Depois uma ferramenta. E, se fizer sentido, uma plataforma.</p>
         <button class="continuar-btn pronto" style="width:100%;margin-top:16px;" onclick="criarProjetoAposGuia()">Começar um projeto</button>
-        <button class="entrar-btn" style="width:100%;margin-top:10px;animation:none;opacity:1;" onclick="criarAnotacaoSobreApp()">Guardar este aprendizado nas Anotações</button>
+        <button class="entrar-btn" style="width:100%;margin-top:10px;animation:none;opacity:1;" onclick="criarAnotacaoSobreApp()">Guardar esta ideia nas Anotações</button>
       </div>
     </div>
   </div>
@@ -2156,7 +2128,23 @@
         <input type="text" id="campo-handle" class="campo-input" placeholder="ex: 01jvitorfernandes" maxlength="30" autocomplete="username"
                oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9._]/g,'')">
       </div>
+      <div class="campo-grupo">
+        <label class="campo-label" for="campo-bio">Vitrine — o que outros veem</label>
+        <textarea id="campo-bio" class="campo-input" rows="3" maxlength="280"
+          placeholder="Uma frase ou duas sobre o que você carrega neste espaço…"
+          style="resize:vertical;min-height:72px;font-family:Inter,sans-serif;font-size:14px;line-height:1.5;"></textarea>
+        <p class="campo-ajuda">Aparece na página pública do seu perfil (até 280 caracteres).</p>
+      </div>
+      <div class="editor-opcao-comunidade" style="margin:8px 0 16px;">
+        <div class="editor-opcao-comunidade-texto">
+          <h4>Perfil visível por link</h4>
+          <p>Outros podem abrir sua vitrine e projetos públicos</p>
+        </div>
+        <div class="toggle" id="toggle-vitrine" onclick="this.classList.toggle('ligado')"></div>
+      </div>
       <button type="button" class="continuar-btn pronto" style="width:100%;margin-top:4px;" onclick="salvarPerfilPublico()">Guardar perfil</button>
+      <button type="button" class="entrar-btn" id="btn-copiar-perfil" style="animation:none;opacity:1;margin-top:10px;width:100%;display:none;" onclick="copiarLinkPerfil()">Copiar link do perfil</button>
+      <p id="perfil-link-hint" style="font-size:11px;color:var(--osso-fraco);margin-top:8px;line-height:1.45;display:none;"></p>
 
       <p class="secao-label" style="margin-top:28px;">Meus projetos / cards</p>
       <p style="font-size:12.5px;color:var(--osso-fraco);line-height:1.55;margin-bottom:12px;">
@@ -2223,13 +2211,7 @@
 
       <div class="aviso-privacidade" style="margin-top:24px;">
         <span>◐</span>
-        <span><strong>Visão do Criador:</strong> este painel não é o conteúdo diário do usuário. Ele é o lugar para administrar o que entra, o que cresce, quem participa e para onde cada criação pode seguir. A edição real será ligada às tabelas e permissões do Supabase.</span>
-      </div>
-
-      <div class="codigo-card" style="margin-top:14px;">
-        <h3>Próxima camada do painel</h3>
-        <p>Quando a estrutura do servidor estiver pronta, estes caminhos podem deixar de ser apenas visão e virar ferramentas reais: editar cards e páginas, acompanhar usuários, revisar criações, autorizar entradas, direcionar participantes e auxiliar quem está começando.</p>
-        <p style="margin-top:10px;color:var(--dourado-fraco);">Primeiro organizamos a experiência. Depois ligamos cada ação ao Supabase.</p>
+        <span>Esta tela é a visão do Criador. A edição real de usuários, autorizações, cards e páginas será ligada às tabelas e permissões do Supabase.</span>
       </div>
     </div>
   </div>
@@ -2295,6 +2277,26 @@
       <p class="cadastro-subtitulo" id="pub-proj-autor"></p>
       <p class="interior-valor" id="pub-proj-resumo" style="line-height:1.7;margin-bottom:20px;"></p>
       <div id="pub-proj-midias"></div>
+    </div>
+  </div>
+
+  <!-- PERFIL PÚBLICO / VITRINE (via ?u=handle) -->
+  <div class="tela" id="tela-perfil-publico">
+    <div class="cadastro-topo">
+      <button class="voltar-simples" onclick="voltarTela(dadosConta && (dadosConta.nome || dadosConta.email) ? 'tela-territorio' : 'tela-entrada')">‹ voltar</button>
+    </div>
+    <div class="cadastro-conteudo" style="padding-bottom:48px;">
+      <p class="secao-label">Perfil</p>
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:18px;">
+        <div id="pub-perfil-avatar" style="width:64px;height:64px;border-radius:50%;border:1px solid var(--linha);background:var(--preto-suave);display:flex;align-items:center;justify-content:center;font-family:'Fraunces',serif;font-size:24px;color:var(--dourado);flex-shrink:0;">—</div>
+        <div>
+          <h2 class="cadastro-titulo" id="pub-perfil-nome" style="margin:0;font-size:22px;">—</h2>
+          <p class="cadastro-subtitulo" id="pub-perfil-handle" style="margin:4px 0 0;"></p>
+        </div>
+      </div>
+      <p class="interior-valor" id="pub-perfil-bio" style="line-height:1.7;margin-bottom:24px;display:none;"></p>
+      <p class="secao-label">Projetos públicos</p>
+      <div id="pub-perfil-projetos"></div>
     </div>
   </div>
 
@@ -2514,9 +2516,7 @@ async function carregarDadosDoServidor() {
 
   anotacoes = [];
   agendaItens = [];
-  // Respostas do caminho Novo são transitórias e nunca entram em Identidade.
   identidadeRespostas = perguntas.map(() => null);
-  respostasNovo = perguntas.map(() => null);
 
   (data || []).forEach(linha => {
     if (linha.tipo === 'anotacao') {
@@ -2535,8 +2535,11 @@ async function carregarDadosDoServidor() {
         hora: linha.conteudo.hora || '',
         partilhada: linha.partilhada
       });
-    // `identidade` não é mais carregada: o caminho Novo não cria histórico permanente de respostas.
-    // Registros antigos desse tipo permanecem no banco, mas não são reintroduzidos na experiência.
+    } else if (linha.tipo === 'identidade') {
+      const indice = linha.conteudo.perguntaIndex;
+      if (typeof indice === 'number' && indice >= 0 && indice < identidadeRespostas.length) {
+        identidadeRespostas[indice] = { resposta: linha.conteudo.resposta, partilhada: linha.partilhada };
+      }
     }
   });
 
@@ -2649,18 +2652,20 @@ async function sairDaConta() {
 // ============================================================
 // DADOS DA CONTA (sessão persistida no aparelho — funciona online e offline)
 // ============================================================
-let dadosConta = { nome: '', cpf: '', email: '', nomeExibicao: '', handle: '', foto: '' };
+let dadosConta = { nome: '', cpf: '', email: '', nomeExibicao: '', handle: '', foto: '', bio: '', vitrinePublica: false };
 
 function salvarSessao() {
   // Mínimo no aparelho: só o necessário para reabrir a UI.
-  // A sessão guarda apenas o mínimo. Respostas do caminho Novo são transitórias e não viram identidade.
+  // Histórico de identidade, projetos e conteúdo do dia vivem no Supabase.
   try {
     localStorage.setItem('ecossistema_sessao', JSON.stringify({
       conta: {
         nome: dadosConta.nome || '',
         email: dadosConta.email || '',
         nomeExibicao: dadosConta.nomeExibicao || '',
-        handle: dadosConta.handle || ''
+        handle: dadosConta.handle || '',
+        bio: dadosConta.bio || '',
+        vitrinePublica: !!dadosConta.vitrinePublica
         // sem cpf, sem foto base64 — não ficam no histórico local do telefone
       }
     }));
@@ -2698,13 +2703,18 @@ function preencherInterior() {
 
   const elNomeEx = document.getElementById('campo-nome-exibicao');
   const elHandle = document.getElementById('campo-handle');
+  const elBio = document.getElementById('campo-bio');
+  const togVit = document.getElementById('toggle-vitrine');
   if (elNomeEx) elNomeEx.value = dadosConta.nomeExibicao || dadosConta.nome || '';
   if (elHandle) elHandle.value = dadosConta.handle || '';
+  if (elBio) elBio.value = dadosConta.bio || '';
+  if (togVit) togVit.classList.toggle('ligado', !!dadosConta.vitrinePublica);
 
   atualizarFotoPerfilUI();
   atualizarAvatarTopo();
   renderizarProjetosInterior();
   verificarAcessoPainel();
+  atualizarUILinkPerfil();
 }
 
 function inicialLetraPerfil() {
@@ -2789,25 +2799,136 @@ function salvarPerfilPublico() {
     .toLowerCase()
     .replace(/[^a-z0-9._]/g, '')
     .slice(0, 30);
+  const bio = ((document.getElementById('campo-bio') || {}).value || '').trim().slice(0, 280);
+  const vitrine = !!(document.getElementById('toggle-vitrine') || {}).classList?.contains?.('ligado')
+    || document.getElementById('toggle-vitrine')?.classList.contains('ligado');
 
   dadosConta.nomeExibicao = nomeEx.trim().slice(0, 40);
   dadosConta.handle = handle;
+  dadosConta.bio = bio;
+  dadosConta.vitrinePublica = vitrine;
   salvarSessao();
   atualizarFotoPerfilUI();
   atualizarAvatarTopo();
-  sincronizarPerfilNoServidor();
-  // Sem toast genérico — evitava aparecer em outras ações (ex.: link longo)
+  atualizarUILinkPerfil();
+  sincronizarPerfilNoServidor().then((ok) => {
+    mostrarConfirmacao(ok ? 'Perfil atualizado no servidor' : 'Perfil guardado neste aparelho');
+  });
+}
+
+function atualizarUILinkPerfil() {
+  const btn = document.getElementById('btn-copiar-perfil');
+  const hint = document.getElementById('perfil-link-hint');
+  if (!btn || !hint) return;
+  if (dadosConta.vitrinePublica && dadosConta.handle) {
+    btn.style.display = 'block';
+    const url = `${location.origin}${location.pathname}?u=${encodeURIComponent(dadosConta.handle)}`;
+    hint.style.display = 'block';
+    hint.textContent = url;
+  } else {
+    btn.style.display = 'none';
+    hint.style.display = 'none';
+  }
+}
+
+function copiarLinkPerfil() {
+  if (!dadosConta.handle) {
+    mostrarConfirmacao('Defina um @ antes de compartilhar');
+    return;
+  }
+  const url = `${location.origin}${location.pathname}?u=${encodeURIComponent(dadosConta.handle)}`;
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(url).then(() => mostrarConfirmacao('Link do perfil copiado')).catch(() => {
+      prompt('Copie o link:', url);
+    });
+  } else {
+    prompt('Copie o link:', url);
+  }
 }
 
 async function sincronizarPerfilNoServidor() {
   try {
     const { data: { session } } = await supabaseClient.auth.getSession();
-    if (!session) return;
-    await supabaseClient.from('perfis').update({
+    if (!session) return false;
+    const payload = {
       nome: dadosConta.nomeExibicao || dadosConta.nome || null,
+      nome_exibicao: dadosConta.nomeExibicao || null,
       handle: dadosConta.handle || null,
-    }).eq('id', session.user.id);
-  } catch (e) {}
+      bio: dadosConta.bio || null,
+      vitrine_publica: !!dadosConta.vitrinePublica
+    };
+    const { error } = await supabaseClient.from('perfis').update(payload).eq('id', session.user.id);
+    if (error) {
+      // tenta sem colunas novas se o SQL ainda não rodou
+      await supabaseClient.from('perfis').update({
+        nome: payload.nome,
+        handle: payload.handle
+      }).eq('id', session.user.id);
+      return false;
+    }
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+async function abrirPerfilPublicoPorHandle(handle) {
+  const h = (handle || '').toLowerCase().replace(/[^a-z0-9._]/g, '');
+  if (!h) return;
+  irPara('tela-perfil-publico');
+  document.getElementById('pub-perfil-nome').textContent = '…';
+  document.getElementById('pub-perfil-handle').textContent = '@' + h;
+  document.getElementById('pub-perfil-bio').style.display = 'none';
+  document.getElementById('pub-perfil-projetos').innerHTML = '<p style="font-size:13px;color:var(--osso-fraco);">Carregando…</p>';
+  document.getElementById('pub-perfil-avatar').textContent = (h.charAt(0) || 'E').toUpperCase();
+
+  try {
+    const { data: perfil } = await supabaseClient
+      .from('perfis')
+      .select('*')
+      .eq('handle', h)
+      .maybeSingle();
+
+    if (!perfil || perfil.vitrine_publica === false) {
+      document.getElementById('pub-perfil-nome').textContent = 'Perfil indisponível';
+      document.getElementById('pub-perfil-projetos').innerHTML =
+        '<p style="font-size:13px;color:var(--osso-fraco);">Este perfil não está público ou não existe.</p>';
+      return;
+    }
+
+    const nome = perfil.nome_exibicao || perfil.nome || h;
+    document.getElementById('pub-perfil-nome').textContent = nome;
+    document.getElementById('pub-perfil-avatar').textContent = (nome.charAt(0) || 'E').toUpperCase();
+    if (perfil.bio) {
+      const bioEl = document.getElementById('pub-perfil-bio');
+      bioEl.style.display = 'block';
+      bioEl.textContent = perfil.bio;
+    }
+
+    const { data: projs } = await supabaseClient
+      .from('projetos')
+      .select('*')
+      .eq('user_id', perfil.id)
+      .eq('publico', true)
+      .order('atualizado_em', { ascending: false });
+
+    const box = document.getElementById('pub-perfil-projetos');
+    if (!projs || !projs.length) {
+      box.innerHTML = '<p style="font-size:13px;color:var(--osso-fraco);">Nenhum projeto público ainda.</p>';
+    } else {
+      box.innerHTML = projs.map(p => `
+        <div class="caminho-card" style="margin-bottom:10px;" onclick="abrirProjetoPublicoPorId('${p.id}')">
+          <div class="caminho-textos">
+            <h3>${(p.titulo || 'Projeto').replace(/</g, '&lt;')}</h3>
+            <p>${(p.resumo || 'Abrir projeto').replace(/</g, '&lt;').slice(0, 120)}</p>
+          </div>
+        </div>
+      `).join('');
+    }
+  } catch (e) {
+    document.getElementById('pub-perfil-nome').textContent = 'Não foi possível carregar';
+    document.getElementById('pub-perfil-projetos').innerHTML = '';
+  }
 }
 
 // ============================================================
@@ -3096,9 +3217,14 @@ function verificarDeepLinkProjeto() {
   try {
     const params = new URLSearchParams(location.search);
     const pid = params.get('p');
+    const u = params.get('u');
     if (pid) {
-      // Link longo: abre o card e já alimenta versículo/notícias em segundo plano
       abrirProjetoPublicoPorId(pid);
+      setTimeout(() => atualizarConteudoDiarioAutomaticamente(true), 300);
+      return true;
+    }
+    if (u) {
+      abrirPerfilPublicoPorHandle(u);
       setTimeout(() => atualizarConteudoDiarioAutomaticamente(true), 300);
       return true;
     }
@@ -3111,11 +3237,36 @@ function verificarDeepLinkProjeto() {
 // ============================================================
 const EMAIL_FUNDADOR = 'sociedadedainternet@gmail.com';
 
+function ehCriador() {
+  return !!(dadosConta.email && dadosConta.email.toLowerCase() === EMAIL_FUNDADOR.toLowerCase());
+}
+
 function verificarAcessoPainel() {
   const btnPainel = document.getElementById('btn-menu-painel');
   if (!btnPainel) return;
-  const ehFundador = dadosConta.email && dadosConta.email.toLowerCase() === EMAIL_FUNDADOR;
-  btnPainel.style.display = ehFundador ? 'block' : 'none';
+  btnPainel.style.display = ehCriador() ? 'block' : 'none';
+  atualizarCardMovimento();
+}
+
+function atualizarCardMovimento() {
+  const cadeado = document.getElementById('movimento-cadeado');
+  const desc = document.getElementById('movimento-card-desc');
+  if (!cadeado) return;
+  if (ehCriador()) {
+    cadeado.style.display = 'none';
+    if (desc) desc.textContent = 'Da percepção à multiplicação — redes, pessoas e projetos';
+  } else {
+    cadeado.style.display = 'inline';
+    if (desc) desc.textContent = 'Acesso reservado ao Criador — em breve se abrirá no tempo certo';
+  }
+}
+
+function abrirMovimento() {
+  if (!ehCriador()) {
+    mostrarConfirmacao('O Movimento está reservado ao Criador por enquanto.');
+    return;
+  }
+  irPara('tela-movimento');
 }
 
 // Valores padrão — usados se o fundador ainda não personalizou nada
@@ -3667,6 +3818,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       dadosConta.cpf = perfil?.cpf || dadosConta.cpf;
       if (perfil?.handle) dadosConta.handle = perfil.handle;
       if (perfil?.nome_exibicao) dadosConta.nomeExibicao = perfil.nome_exibicao;
+      if (perfil?.bio != null) dadosConta.bio = perfil.bio || '';
+      if (perfil?.vitrine_publica != null) dadosConta.vitrinePublica = !!perfil.vitrine_publica;
       preencherInterior();
       salvarSessao();
       await carregarDadosDoServidor();
@@ -3988,9 +4141,17 @@ function renderizarIdentidade() {
 }
 
 function alternarPartilhaIdentidade(indice) {
-  // Compatibilidade com versões antigas: respostas do caminho Novo não são persistidas nem partilhadas.
-  return;
+  const item = identidadeRespostas[indice];
+  if (!item) return;
+  item.partilhada = !item.partilhada;
+  salvarSessao();
+  renderizarIdentidade();
+  renderizarComunidade();
+  adicionarNaFila('identidade', { perguntaIndex: indice, pergunta: perguntas[indice].texto, resposta: item.resposta, partilhada: item.partilhada });
+  if (estaOnline()) sincronizarFila();
+  mostrarConfirmacao(item.partilhada ? 'Enviado à comunidade' : 'Removido da comunidade');
 }
+
 // Única forma de "repetir" uma pergunta já respondida — a pessoa escolhe
 // explicitamente reescrever aquela resposta a partir da Identidade.
 function reescreverResposta(indice) {
@@ -4008,10 +4169,6 @@ const perguntasEstrategicas = [
   { texto: "Como faço algo assim?", temInformacao: true },
   { texto: "Isso vai mudar alguma coisa em mim?", temInformacao: true, destino: 'tela-leitura' }
 ];
-
-function abrirNovoCriacao() {
-  irPara('tela-novo-criacao');
-}
 
 function abrirGuiaAplicativo() {
   irPara('tela-guia-aplicativo');
@@ -4744,6 +4901,9 @@ function sincronizarPartilhaLocal(item) {
   } else if (item.tipo === 'agenda') {
     const local = agendaItens.find(a => a.texto === item.texto);
     if (local) { local.partilhada = false; renderizarAgenda(); }
+  } else if (item.tipo === 'identidade') {
+    const local = identidadeRespostas.find(r => r && r.resposta === item.texto);
+    if (local) { local.partilhada = false; salvarSessao(); renderizarIdentidade(); }
   }
 }
 
