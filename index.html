@@ -909,6 +909,51 @@
     line-height: 1.4;
   }
 
+  /* Vitrines = destaques (estilo Instagram highlights) */
+  .vitrines-row {
+    display: flex;
+    gap: 14px;
+    overflow-x: auto;
+    padding: 4px 2px 16px;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .vitrines-row::-webkit-scrollbar { display: none; }
+  .vitrine-bolha {
+    flex-shrink: 0;
+    width: 72px;
+    text-align: center;
+    cursor: pointer;
+  }
+  .vitrine-bolha-circulo {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    border: 1.5px solid var(--dourado-fraco);
+    margin: 0 auto 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--preto-suave);
+    font-size: 20px;
+    color: var(--dourado);
+    overflow: hidden;
+  }
+  .vitrine-bolha-circulo.nova {
+    border-style: dashed;
+    border-color: var(--linha);
+    color: var(--osso-fraco);
+  }
+  .vitrine-bolha span {
+    display: block;
+    font-size: 10.5px;
+    color: var(--osso-fraco);
+    max-width: 72px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
   /* ---------- TELA MOVIMENTO — expansão consciente ---------- */
   #tela-movimento {
     z-index: 2;
@@ -2095,84 +2140,93 @@
   <div class="tela" id="tela-interior">
     <div class="cadastro-topo">
       <button class="voltar-simples" onclick="voltarTela('tela-territorio')">‹ voltar</button>
+      <span class="marca-mini" id="interior-topo-handle">interior</span>
+      <span style="width:50px"></span>
     </div>
-    <div class="cadastro-conteudo" style="padding-bottom:48px;">
-      <h2 class="cadastro-titulo">Interior</h2>
-      <p class="cadastro-subtitulo">Presença pública e dados que só você vê.</p>
+    <div class="cadastro-conteudo" style="padding-bottom:56px;">
 
-      <p class="secao-label">Perfil público</p>
-      <p style="font-size:12.5px;color:var(--osso-fraco);line-height:1.55;margin-bottom:14px;">
-        Como você aparece na Comunidade e quando alguém te reconhece pelo nome.
-      </p>
-
-      <div style="display:flex;align-items:center;gap:16px;margin-bottom:20px;">
-        <div id="interior-foto-wrap" onclick="document.getElementById('input-foto-perfil').click()"
-             style="width:72px;height:72px;border-radius:50%;border:1px solid var(--linha);background:var(--preto-suave);overflow:hidden;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
-          <img id="interior-foto" alt="" style="width:100%;height:100%;object-fit:cover;display:none;">
-          <span id="interior-foto-letra" style="font-family:'Fraunces',serif;font-size:28px;color:var(--dourado);">—</span>
-        </div>
-        <div style="flex:1;">
-          <button type="button" class="entrar-btn" style="animation:none;opacity:1;margin:0;padding:10px 14px;width:auto;"
-                  onclick="document.getElementById('input-foto-perfil').click()">Trocar foto</button>
-          <p style="font-size:11px;color:var(--osso-fraco);margin-top:8px;">Toque para escolher uma imagem do aparelho.</p>
+      <!-- Vista perfil (estilo Instagram: sem feed, só presença + vitrines) -->
+      <div id="interior-vista-perfil">
+        <div style="display:flex;align-items:center;gap:18px;margin-bottom:14px;">
+          <div id="interior-foto-wrap" onclick="document.getElementById('input-foto-perfil').click()"
+               style="width:86px;height:86px;border-radius:50%;border:1.5px solid var(--dourado-fraco);background:var(--preto-suave);overflow:hidden;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;">
+            <img id="interior-foto" alt="" style="width:100%;height:100%;object-fit:cover;display:none;">
+            <span id="interior-foto-letra" style="font-family:'Fraunces',serif;font-size:32px;color:var(--dourado);">—</span>
+          </div>
+          <div style="flex:1;min-width:0;">
+            <p id="interior-nome-exibicao-view" style="font-family:'Fraunces',serif;font-size:20px;margin:0 0 4px;line-height:1.2;">—</p>
+            <p id="interior-handle-view" style="font-size:13px;color:var(--dourado-fraco);margin:0 0 10px;">@</p>
+            <p id="interior-bio-view" style="font-size:13px;color:var(--osso);line-height:1.55;margin:0;"></p>
+          </div>
         </div>
         <input type="file" id="input-foto-perfil" accept="image/*" style="display:none;" onchange="aoEscolherFotoPerfil(event)">
-      </div>
 
-      <div class="campo-grupo">
-        <label class="campo-label" for="campo-nome-exibicao">Como quer ser chamado</label>
-        <input type="text" id="campo-nome-exibicao" class="campo-input" placeholder="Nome ou apelido visível" maxlength="40" autocomplete="nickname">
-      </div>
-      <div class="campo-grupo">
-        <label class="campo-label" for="campo-handle">@ no Ecossistema</label>
-        <input type="text" id="campo-handle" class="campo-input" placeholder="ex: 01jvitorfernandes" maxlength="30" autocomplete="username"
-               oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9._]/g,'')">
-      </div>
-      <div class="campo-grupo">
-        <label class="campo-label" for="campo-bio">Vitrine — o que outros veem</label>
-        <textarea id="campo-bio" class="campo-input" rows="3" maxlength="280"
-          placeholder="Uma frase ou duas sobre o que você carrega neste espaço…"
-          style="resize:vertical;min-height:72px;font-family:Inter,sans-serif;font-size:14px;line-height:1.5;"></textarea>
-        <p class="campo-ajuda">Aparece na página pública do seu perfil (até 280 caracteres).</p>
-      </div>
-      <div class="editor-opcao-comunidade" style="margin:8px 0 16px;">
-        <div class="editor-opcao-comunidade-texto">
-          <h4>Perfil visível por link</h4>
-          <p>Outros podem abrir sua vitrine e projetos públicos</p>
+        <div style="display:flex;gap:10px;margin:16px 0 20px;">
+          <button type="button" class="entrar-btn" style="animation:none;opacity:1;flex:1;margin:0;padding:12px;" onclick="abrirEditarPerfil()">Editar perfil</button>
+          <button type="button" class="entrar-btn" style="animation:none;opacity:1;flex:1;margin:0;padding:12px;" onclick="copiarLinkPerfil()">Compartilhar perfil</button>
         </div>
-        <div class="toggle" id="toggle-vitrine" onclick="this.classList.toggle('ligado')"></div>
-      </div>
-      <button type="button" class="continuar-btn pronto" style="width:100%;margin-top:4px;" onclick="salvarPerfilPublico()">Guardar perfil</button>
-      <button type="button" class="entrar-btn" id="btn-copiar-perfil" style="animation:none;opacity:1;margin-top:10px;width:100%;display:none;" onclick="copiarLinkPerfil()">Copiar link do perfil</button>
-      <p id="perfil-link-hint" style="font-size:11px;color:var(--osso-fraco);margin-top:8px;line-height:1.45;display:none;"></p>
 
-      <p class="secao-label" style="margin-top:28px;">Meus projetos / cards</p>
-      <p style="font-size:12.5px;color:var(--osso-fraco);line-height:1.55;margin-bottom:12px;">
-        Projetos pessoais em andamento. Ficam privados até você decidir que estão prontos para o público. Podem ter texto, link de vídeo, PDF e um link longo para compartilhar.
-      </p>
-      <div id="lista-projetos-interior"></div>
-      <button type="button" class="entrar-btn" style="animation:none;opacity:1;margin-top:12px;width:100%;" onclick="abrirEditorProjeto()">+ Novo projeto</button>
+        <p class="secao-label">Vitrines</p>
+        <p style="font-size:12px;color:var(--osso-fraco);line-height:1.5;margin:-4px 0 14px;">
+          Como destaques: páginas compartilháveis. Sem feed — só o que você escolhe mostrar.
+        </p>
+        <div id="vitrines-destaques" class="vitrines-row"></div>
+        <div id="lista-projetos-interior" style="margin-top:8px;"></div>
+        <button type="button" class="entrar-btn" style="animation:none;opacity:1;margin-top:14px;width:100%;" onclick="abrirEditorProjeto()">+ Nova vitrine</button>
 
-      <p class="secao-label" style="margin-top:28px;">Dados privados</p>
-      <div class="campo-grupo">
-        <label class="campo-label">Nome completo</label>
-        <p class="interior-valor" id="interior-nome">—</p>
-      </div>
-      <div class="campo-grupo">
-        <label class="campo-label">CPF</label>
-        <p class="interior-valor" id="interior-cpf">—</p>
-      </div>
-      <div class="campo-grupo">
-        <label class="campo-label">E-mail</label>
-        <p class="interior-valor" id="interior-email">—</p>
+        <div class="aviso-privacidade" style="margin-top:28px;">
+          <span>◐</span>
+          <span>Vitrines e perfil ficam no servidor. Limpar dados do telefone não apaga o que já foi guardado online.</span>
+        </div>
+        <button class="criar-conta-btn" onclick="sairDaConta()" style="background:transparent; border:1px solid var(--linha); color:var(--osso); margin-top:16px;">Sair da conta</button>
       </div>
 
-      <div class="aviso-privacidade">
-        <span>◐</span>
-        <span>CPF e e-mail só você vê. Nome de exibição, @ e foto podem aparecer na Comunidade.</span>
-      </div>
+      <!-- Vista editar perfil -->
+      <div id="interior-vista-editar" style="display:none;">
+        <p class="secao-label">Editar perfil</p>
+        <p style="font-size:12.5px;color:var(--osso-fraco);margin-bottom:16px;">Nome, @ e texto público. A foto ainda é só nesta sessão até o Storage.</p>
 
-      <button class="criar-conta-btn" onclick="sairDaConta()" style="background:transparent; border:1px solid var(--linha); color:var(--osso); margin-top:20px;">Sair da conta</button>
+        <div class="campo-grupo">
+          <label class="campo-label" for="campo-nome-exibicao">Como quer ser chamado</label>
+          <input type="text" id="campo-nome-exibicao" class="campo-input" placeholder="Nome ou apelido visível" maxlength="40" autocomplete="nickname">
+        </div>
+        <div class="campo-grupo">
+          <label class="campo-label" for="campo-handle">@ no Ecossistema</label>
+          <input type="text" id="campo-handle" class="campo-input" placeholder="ex: 01jvitorfernandes" maxlength="30" autocomplete="username"
+                 oninput="this.value=this.value.toLowerCase().replace(/[^a-z0-9._]/g,'')">
+        </div>
+        <div class="campo-grupo">
+          <label class="campo-label" for="campo-bio">Bio / apresentação</label>
+          <textarea id="campo-bio" class="campo-input" rows="3" maxlength="280"
+            placeholder="Ex.: Alguém que transforma percepção em estrutura…"
+            style="resize:vertical;min-height:72px;font-family:Inter,sans-serif;font-size:14px;line-height:1.5;"></textarea>
+        </div>
+        <div class="editor-opcao-comunidade" style="margin:8px 0 16px;">
+          <div class="editor-opcao-comunidade-texto">
+            <h4>Perfil visível por link</h4>
+            <p>Outros abrem sua vitrine com ?u=seu@</p>
+          </div>
+          <div class="toggle" id="toggle-vitrine" onclick="this.classList.toggle('ligado')"></div>
+        </div>
+        <button type="button" class="continuar-btn pronto" style="width:100%;" onclick="salvarPerfilPublico(); fecharEditarPerfil();">Guardar</button>
+        <button type="button" class="entrar-btn" style="animation:none;opacity:1;width:100%;margin-top:10px;" onclick="fecharEditarPerfil()">Cancelar</button>
+
+        <p class="secao-label" style="margin-top:32px;">Dados privados</p>
+        <div class="campo-grupo">
+          <label class="campo-label">Nome completo</label>
+          <p class="interior-valor" id="interior-nome">—</p>
+        </div>
+        <div class="campo-grupo">
+          <label class="campo-label">CPF</label>
+          <p class="interior-valor" id="interior-cpf">—</p>
+        </div>
+        <div class="campo-grupo">
+          <label class="campo-label">E-mail</label>
+          <p class="interior-valor" id="interior-email">—</p>
+        </div>
+        <p id="perfil-link-hint" style="font-size:11px;color:var(--osso-fraco);margin-top:12px;line-height:1.45;display:none;"></p>
+        <button type="button" class="entrar-btn" id="btn-copiar-perfil" style="animation:none;opacity:1;margin-top:8px;width:100%;display:none;" onclick="copiarLinkPerfil()">Copiar link do perfil</button>
+      </div>
     </div>
   </div>
 
@@ -2222,47 +2276,47 @@
       <button class="voltar-simples" onclick="voltarTela('tela-interior')">‹ voltar</button>
     </div>
     <div class="cadastro-conteudo" style="padding-bottom:48px;">
-      <h2 class="cadastro-titulo" id="titulo-editor-projeto">Novo projeto</h2>
-      <p class="cadastro-subtitulo">Privado até você decidir publicar. Você pode começar com uma ideia, adicionar código, arquivos ou links e evoluir aos poucos.</p>
+      <h2 class="cadastro-titulo" id="titulo-editor-projeto">Nova vitrine</h2>
+      <p class="cadastro-subtitulo">Como um destaque: página compartilhável (livro, curso, projeto). Privada até você publicar.</p>
 
       <div class="campo-grupo">
         <label class="campo-label" for="proj-titulo">Título</label>
-        <input type="text" id="proj-titulo" class="campo-input" placeholder="Nome do projeto ou ideia" maxlength="80">
+        <input type="text" id="proj-titulo" class="campo-input" placeholder="Ex.: Além do Algoritmo" maxlength="80">
       </div>
       <div class="campo-grupo">
         <label class="campo-label" for="proj-resumo">O que é (resumo)</label>
-        <textarea id="proj-resumo" class="campo-input" style="min-height:90px;resize:vertical;" placeholder="Descreva o projeto em andamento..."></textarea>
+        <textarea id="proj-resumo" class="campo-input" style="min-height:90px;resize:vertical;" placeholder="Reino: o poder que vive em ti…"></textarea>
       </div>
       <div class="campo-grupo">
         <label class="campo-label" for="proj-video">Link de vídeo (opcional)</label>
-        <input type="url" id="proj-video" class="campo-input" placeholder="https://... YouTube, Vimeo ou arquivo">
+        <input type="url" id="proj-video" class="campo-input" placeholder="https://... YouTube, Vimeo">
       </div>
       <div class="campo-grupo">
         <label class="campo-label" for="proj-pdf">Link de PDF (opcional)</label>
         <input type="url" id="proj-pdf" class="campo-input" placeholder="https://... arquivo PDF">
       </div>
       <div class="campo-grupo">
-        <label class="campo-label" for="proj-acesso">Link longo / acesso externo (opcional)</label>
-        <input type="url" id="proj-acesso" class="campo-input" placeholder="https://... página, formulário, drive">
+        <label class="campo-label" for="proj-acesso">Link da página / área de membros (opcional)</label>
+        <input type="url" id="proj-acesso" class="campo-input" placeholder="https://... Cakto, site, drive">
       </div>
 
       <p class="secao-label">Visibilidade</p>
       <div class="editor-opcao-comunidade" style="margin-bottom:16px;" onclick="document.getElementById('proj-publico').classList.toggle('ligado')">
         <div class="editor-opcao-comunidade-texto">
-          <h4>Pronto para o público</h4>
-          <p>Desligado = só você vê. Ligado = gera link e pode aparecer.</p>
+          <h4>Vitrine pública</h4>
+          <p>Desligado = só você. Ligado = link ?p= e aparece no perfil.</p>
         </div>
         <div class="toggle" id="proj-publico"></div>
       </div>
 
       <div id="proj-link-publico-box" style="display:none;margin-bottom:16px;">
-        <label class="campo-label">Link deste card</label>
+        <label class="campo-label">Link desta vitrine</label>
         <p id="proj-link-publico" class="interior-valor" style="font-size:12px;word-break:break-all;line-height:1.5;"></p>
         <button type="button" class="entrar-btn" style="animation:none;opacity:1;margin-top:8px;width:100%;" onclick="copiarLinkProjeto()">Copiar link</button>
       </div>
 
-      <button type="button" class="continuar-btn pronto" style="width:100%;" onclick="salvarProjeto()">Guardar projeto</button>
-      <button type="button" id="btn-apagar-projeto" class="criar-conta-btn" style="display:none;background:transparent;border:1px solid var(--linha);color:var(--osso);margin-top:12px;" onclick="apagarProjeto()">Apagar projeto</button>
+      <button type="button" class="continuar-btn pronto" style="width:100%;" onclick="salvarProjeto()">Guardar vitrine</button>
+      <button type="button" id="btn-apagar-projeto" class="criar-conta-btn" style="display:none;background:transparent;border:1px solid var(--linha);color:var(--osso);margin-top:12px;" onclick="apagarProjeto()">Apagar vitrine</button>
     </div>
   </div>
 
@@ -2697,9 +2751,25 @@ function limparCacheLocalDesnecessario() {
 }
 
 function preencherInterior() {
-  document.getElementById('interior-nome').textContent = dadosConta.nome || '—';
-  document.getElementById('interior-cpf').textContent = dadosConta.cpf || '—';
-  document.getElementById('interior-email').textContent = dadosConta.email || '—';
+  const nome = dadosConta.nomeExibicao || dadosConta.nome || '—';
+  const handle = dadosConta.handle ? '@' + dadosConta.handle : '@';
+  const bio = dadosConta.bio || '';
+
+  const elNomeView = document.getElementById('interior-nome-exibicao-view');
+  const elHandleView = document.getElementById('interior-handle-view');
+  const elBioView = document.getElementById('interior-bio-view');
+  const elTopo = document.getElementById('interior-topo-handle');
+  if (elNomeView) elNomeView.textContent = nome;
+  if (elHandleView) elHandleView.textContent = handle;
+  if (elBioView) elBioView.textContent = bio || 'Toque em Editar perfil para escrever sua apresentação.';
+  if (elTopo) elTopo.textContent = dadosConta.handle || 'interior';
+
+  const elNomePriv = document.getElementById('interior-nome');
+  const elCpf = document.getElementById('interior-cpf');
+  const elEmail = document.getElementById('interior-email');
+  if (elNomePriv) elNomePriv.textContent = dadosConta.nome || '—';
+  if (elCpf) elCpf.textContent = dadosConta.cpf || '—';
+  if (elEmail) elEmail.textContent = dadosConta.email || '—';
 
   const elNomeEx = document.getElementById('campo-nome-exibicao');
   const elHandle = document.getElementById('campo-handle');
@@ -2715,6 +2785,33 @@ function preencherInterior() {
   renderizarProjetosInterior();
   verificarAcessoPainel();
   atualizarUILinkPerfil();
+  fecharEditarPerfil();
+}
+
+function abrirEditarPerfil() {
+  const vistaP = document.getElementById('interior-vista-perfil');
+  const vistaE = document.getElementById('interior-vista-editar');
+  if (vistaP) vistaP.style.display = 'none';
+  if (vistaE) vistaE.style.display = 'block';
+}
+
+function fecharEditarPerfil() {
+  const vistaP = document.getElementById('interior-vista-perfil');
+  const vistaE = document.getElementById('interior-vista-editar');
+  if (vistaP) vistaP.style.display = 'block';
+  if (vistaE) vistaE.style.display = 'none';
+  preencherInteriorViewsOnly();
+}
+
+function preencherInteriorViewsOnly() {
+  const nome = dadosConta.nomeExibicao || dadosConta.nome || '—';
+  const elNomeView = document.getElementById('interior-nome-exibicao-view');
+  const elHandleView = document.getElementById('interior-handle-view');
+  const elBioView = document.getElementById('interior-bio-view');
+  if (elNomeView) elNomeView.textContent = nome;
+  if (elHandleView) elHandleView.textContent = dadosConta.handle ? '@' + dadosConta.handle : '@';
+  if (elBioView) elBioView.textContent = dadosConta.bio || 'Toque em Editar perfil para escrever sua apresentação.';
+  atualizarFotoPerfilUI();
 }
 
 function inicialLetraPerfil() {
@@ -2944,48 +3041,71 @@ function chaveProjetos() {
 }
 
 function carregarProjetosLocais() {
+  // Legado: só lê se ainda existir cache antigo; fonte da verdade é o servidor
   try {
     const salvo = localStorage.getItem(chaveProjetos());
-    if (salvo) {
+    if (salvo && !projetosPerfil.length) {
       const dados = JSON.parse(salvo);
       if (Array.isArray(dados)) projetosPerfil = dados;
     }
-  } catch (e) {
-    projetosPerfil = [];
-  }
+  } catch (e) {}
 }
 
 function salvarProjetosLocais() {
-  try {
-    localStorage.setItem(chaveProjetos(), JSON.stringify(projetosPerfil));
-  } catch (e) {}
+  // Não grava mais no telefone — evita perda ao limpar dados do site
+  try { localStorage.removeItem(chaveProjetos()); } catch (e) {}
 }
 
 function renderizarProjetosInterior() {
   const box = document.getElementById('lista-projetos-interior');
+  const destaques = document.getElementById('vitrines-destaques');
   if (!box) return;
-  carregarProjetosLocais();
+
+  const publicos = projetosPerfil.filter(p => p.publico);
+  const privados = projetosPerfil.filter(p => !p.publico);
+
+  if (destaques) {
+    let html = `
+      <div class="vitrine-bolha" onclick="abrirEditorProjeto()">
+        <div class="vitrine-bolha-circulo nova">+</div>
+        <span>Nova</span>
+      </div>`;
+    publicos.forEach(p => {
+      const letra = (p.titulo || 'V').charAt(0).toUpperCase();
+      html += `
+        <div class="vitrine-bolha" onclick="abrirEditorProjeto('${p.id}')">
+          <div class="vitrine-bolha-circulo">${letra}</div>
+          <span>${(p.titulo || 'Vitrine').slice(0, 12)}</span>
+        </div>`;
+    });
+    destaques.innerHTML = html;
+  }
 
   if (!projetosPerfil.length) {
-    box.innerHTML = `<p style="font-size:13px;color:var(--osso-fraco);">Nenhum projeto ainda. Crie um card e deixe privado até estar pronto.</p>`;
+    box.innerHTML = `<p style="font-size:13px;color:var(--osso-fraco);">Nenhuma vitrine ainda. Crie uma página compartilhável — livro, curso, projeto.</p>`;
     return;
   }
 
-  box.innerHTML = projetosPerfil.map(p => `
-    <div class="caminho-card" style="margin-bottom:10px;" onclick="abrirEditorProjeto('${p.id}')">
-      <div class="caminho-icone" style="background:rgba(184,147,90,0.12)">${p.publico ? '◈' : '◌'}</div>
-      <div class="caminho-textos" style="flex:1;">
-        <h3>${p.titulo || 'Sem título'}</h3>
-        <p>${p.publico ? 'Público' : 'Privado · em andamento'}${p.videoUrl || p.pdfUrl ? ' · mídia' : ''}</p>
+  const bloco = (lista, titulo) => {
+    if (!lista.length) return '';
+    return `<p class="secao-label" style="margin-top:18px;">${titulo}</p>` + lista.map(p => `
+      <div class="caminho-card" style="margin-bottom:10px;" onclick="abrirEditorProjeto('${p.id}')">
+        <div class="caminho-icone" style="background:rgba(184,147,90,0.12)">${p.publico ? '◈' : '◌'}</div>
+        <div class="caminho-textos" style="flex:1;">
+          <h3>${(p.titulo || 'Sem título').replace(/</g,'&lt;')}</h3>
+          <p>${p.publico ? 'Pública · link compartilhável' : 'Privada · só você'}${p.acessoUrl ? ' · link externo' : ''}</p>
+        </div>
       </div>
-    </div>
-  `).join('');
+    `).join('');
+  };
+
+  box.innerHTML = bloco(publicos, 'Públicas') + bloco(privados, 'Em construção');
 }
 
 function abrirEditorProjeto(id) {
   editandoProjetoId = id || null;
   const p = id ? projetosPerfil.find(x => x.id === id) : null;
-  document.getElementById('titulo-editor-projeto').textContent = p ? 'Editar projeto' : 'Novo projeto';
+  document.getElementById('titulo-editor-projeto').textContent = p ? 'Editar vitrine' : 'Nova vitrine';
   document.getElementById('proj-titulo').value = p?.titulo || '';
   document.getElementById('proj-resumo').value = p?.resumo || '';
   document.getElementById('proj-video').value = p?.videoUrl || '';
@@ -3109,27 +3229,29 @@ async function carregarProjetosDoServidor() {
       .select('*')
       .eq('user_id', session.user.id)
       .order('atualizado_em', { ascending: false });
-    if (error || !data) return;
-    const mapa = Object.fromEntries(projetosPerfil.map(p => [p.id, p]));
-    data.forEach(row => {
-      mapa[row.id] = {
-        id: row.id,
-        titulo: row.titulo,
-        resumo: row.resumo || '',
-        videoUrl: row.video_url || '',
-        pdfUrl: row.pdf_url || '',
-        acessoUrl: row.acesso_url || '',
-        publico: !!row.publico,
-        criadoEm: row.criado_em,
-        atualizadoEm: row.atualizado_em
-      };
-    });
-    projetosPerfil = Object.values(mapa).sort((a, b) =>
-      String(b.atualizadoEm || '').localeCompare(String(a.atualizadoEm || ''))
-    );
-    salvarProjetosLocais();
+    if (error || !data) {
+      carregarProjetosLocais();
+      renderizarProjetosInterior();
+      return;
+    }
+    // Servidor é a fonte da verdade — substitui lista local
+    projetosPerfil = data.map(row => ({
+      id: row.id,
+      titulo: row.titulo,
+      resumo: row.resumo || '',
+      videoUrl: row.video_url || '',
+      pdfUrl: row.pdf_url || '',
+      acessoUrl: row.acesso_url || '',
+      publico: !!row.publico,
+      criadoEm: row.criado_em,
+      atualizadoEm: row.atualizado_em
+    }));
+    salvarProjetosLocais(); // limpa cache antigo do telefone
     renderizarProjetosInterior();
-  } catch (e) {}
+  } catch (e) {
+    carregarProjetosLocais();
+    renderizarProjetosInterior();
+  }
 }
 
 async function abrirProjetoPublicoPorId(id) {
