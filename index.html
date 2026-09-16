@@ -2281,11 +2281,16 @@
 
       <div class="campo-grupo">
         <label class="campo-label" for="proj-titulo">Título</label>
-        <input type="text" id="proj-titulo" class="campo-input" placeholder="Ex.: Além do Algoritmo" maxlength="80">
+        <input type="text" id="proj-titulo" class="campo-input" placeholder="Ex.: Além do Algoritmo" maxlength="80" oninput="atualizarPreviewVitrineLive()">
       </div>
       <div class="campo-grupo">
         <label class="campo-label" for="proj-resumo">O que é (resumo)</label>
-        <textarea id="proj-resumo" class="campo-input" style="min-height:90px;resize:vertical;" placeholder="Reino: o poder que vive em ti…"></textarea>
+        <textarea id="proj-resumo" class="campo-input" style="min-height:90px;resize:vertical;" placeholder="Reino: o poder que vive em ti…" oninput="atualizarPreviewVitrineLive()"></textarea>
+      </div>
+      <div class="campo-grupo">
+        <label class="campo-label" for="proj-capa">Capa / foto (URL da imagem)</label>
+        <input type="url" id="proj-capa" class="campo-input" placeholder="https://... imagem da capa" oninput="atualizarPreviewVitrineLive()">
+        <p class="campo-ajuda">Cole o link de uma imagem (capa do livro, foto). Proporção ideal ~ 2:3 ou quadrada.</p>
       </div>
       <div class="campo-grupo">
         <label class="campo-label" for="proj-video">Link de vídeo (opcional)</label>
@@ -2297,7 +2302,14 @@
       </div>
       <div class="campo-grupo">
         <label class="campo-label" for="proj-acesso">Link da página / área de membros (opcional)</label>
-        <input type="url" id="proj-acesso" class="campo-input" placeholder="https://... Cakto, site, drive">
+        <input type="url" id="proj-acesso" class="campo-input" placeholder="https://... Cakto, site, WhatsApp">
+      </div>
+
+      <p class="secao-label">Como fica a vitrine</p>
+      <div id="proj-preview-box" style="border:1px solid var(--linha);border-radius:16px;padding:16px;background:var(--preto-suave);margin-bottom:18px;">
+        <img id="proj-preview-capa" alt="" style="width:100%;max-width:200px;border-radius:12px;margin:0 auto 12px;display:none;aspect-ratio:2/3;object-fit:cover;">
+        <p id="proj-preview-titulo" style="font-family:'Fraunces',serif;font-size:18px;text-align:center;margin:0 0 6px;">—</p>
+        <p id="proj-preview-resumo" style="font-size:13px;color:var(--osso-fraco);text-align:center;line-height:1.5;margin:0;">Resumo aparece aqui</p>
       </div>
 
       <p class="secao-label">Visibilidade</p>
@@ -2980,16 +2992,36 @@ async function abrirPerfilPublicoPorHandle(handle) {
   document.getElementById('pub-perfil-avatar').textContent = (h.charAt(0) || 'E').toUpperCase();
 
   try {
-    const { data: perfil } = await supabaseClient
+    // 1) perfil com vitrine pública
+    let { data: perfil, error } = await supabaseClient
       .from('perfis')
       .select('*')
       .eq('handle', h)
+      .eq('vitrine_publica', true)
       .maybeSingle();
 
-    if (!perfil || perfil.vitrine_publica === false) {
+    // 2) fallback: qualquer handle (se RLS autenticado permitir)
+    if ((!perfil || error) && dadosConta.email) {
+      const r2 = await supabaseClient.from('perfis').select('*').eq('handle', h).maybeSingle();
+      if (r2.data) perfil = r2.data;
+    }
+
+    // 3) se for o próprio usuário logado
+    if (!perfil && dadosConta.handle && dadosConta.handle.toLowerCase() === h) {
+      perfil = {
+        nome: dadosConta.nomeExibicao || dadosConta.nome,
+        nome_exibicao: dadosConta.nomeExibicao,
+        handle: dadosConta.handle,
+        bio: dadosConta.bio,
+        vitrine_publica: true,
+        id: null
+      };
+    }
+
+    if (!perfil) {
       document.getElementById('pub-perfil-nome').textContent = 'Perfil indisponível';
       document.getElementById('pub-perfil-projetos').innerHTML =
-        '<p style="font-size:13px;color:var(--osso-fraco);">Este perfil não está público ou não existe.</p>';
+        '<p style="font-size:13px;color:var(--osso-fraco);">Defina um @, ative “Perfil visível por link” e toque Guardar. Rode o SQL de vitrine_publica no Supabase se ainda não rodou.</p>';
       return;
     }
 
@@ -3002,29 +3034,39 @@ async function abrirPerfilPublicoPorHandle(handle) {
       bioEl.textContent = perfil.bio;
     }
 
-    const { data: projs } = await supabaseClient
-      .from('projetos')
-      .select('*')
-      .eq('user_id', perfil.id)
-      .eq('publico', true)
-      .order('atualizado_em', { ascending: false });
+    let projs = [];
+    if (perfil.id) {
+      const r = await supabaseClient
+        .from('projetos')
+        .select('*')
+        .eq('user_id', perfil.id)
+        .eq('publico', true)
+        .order('atualizado_em', { ascending: false });
+      projs = r.data || [];
+    }
+    if (!projs.length && dadosConta.handle && dadosConta.handle.toLowerCase() === h) {
+      projs = projetosPerfil.filter(p => p.publico).map(p => ({
+        id: p.id, titulo: p.titulo, resumo: p.resumo
+      }));
+    }
 
     const box = document.getElementById('pub-perfil-projetos');
-    if (!projs || !projs.length) {
-      box.innerHTML = '<p style="font-size:13px;color:var(--osso-fraco);">Nenhum projeto público ainda.</p>';
+    if (!projs.length) {
+      box.innerHTML = '<p style="font-size:13px;color:var(--osso-fraco);">Nenhuma vitrine pública ainda.</p>';
     } else {
       box.innerHTML = projs.map(p => `
         <div class="caminho-card" style="margin-bottom:10px;" onclick="abrirProjetoPublicoPorId('${p.id}')">
           <div class="caminho-textos">
-            <h3>${(p.titulo || 'Projeto').replace(/</g, '&lt;')}</h3>
-            <p>${(p.resumo || 'Abrir projeto').replace(/</g, '&lt;').slice(0, 120)}</p>
+            <h3>${(p.titulo || 'Vitrine').replace(/</g, '&lt;')}</h3>
+            <p>${(p.resumo || 'Abrir').replace(/</g, '&lt;').slice(0, 120)}</p>
           </div>
         </div>
       `).join('');
     }
   } catch (e) {
     document.getElementById('pub-perfil-nome').textContent = 'Não foi possível carregar';
-    document.getElementById('pub-perfil-projetos').innerHTML = '';
+    document.getElementById('pub-perfil-projetos').innerHTML =
+      '<p style="font-size:13px;color:var(--osso-fraco);">Confira o SQL de perfis (handle, vitrine_publica) e a policy pública.</p>';
   }
 }
 
@@ -3108,6 +3150,8 @@ function abrirEditorProjeto(id) {
   document.getElementById('titulo-editor-projeto').textContent = p ? 'Editar vitrine' : 'Nova vitrine';
   document.getElementById('proj-titulo').value = p?.titulo || '';
   document.getElementById('proj-resumo').value = p?.resumo || '';
+  const elCapa = document.getElementById('proj-capa');
+  if (elCapa) elCapa.value = p?.capaUrl || '';
   document.getElementById('proj-video').value = p?.videoUrl || '';
   document.getElementById('proj-pdf').value = p?.pdfUrl || '';
   document.getElementById('proj-acesso').value = p?.acessoUrl || '';
@@ -3116,7 +3160,34 @@ function abrirEditorProjeto(id) {
   const btnApagar = document.getElementById('btn-apagar-projeto');
   if (btnApagar) btnApagar.style.display = p ? 'block' : 'none';
   atualizarBoxLinkProjeto(p);
+  atualizarPreviewVitrine(p);
   irPara('tela-projeto-editor');
+}
+
+function atualizarPreviewVitrineLive() {
+  atualizarPreviewVitrine({
+    titulo: (document.getElementById('proj-titulo') || {}).value,
+    resumo: (document.getElementById('proj-resumo') || {}).value,
+    capaUrl: (document.getElementById('proj-capa') || {}).value
+  });
+}
+
+function atualizarPreviewVitrine(p) {
+  const tit = document.getElementById('proj-preview-titulo');
+  const res = document.getElementById('proj-preview-resumo');
+  const img = document.getElementById('proj-preview-capa');
+  if (!tit) return;
+  tit.textContent = (p && p.titulo) || '—';
+  if (res) res.textContent = (p && p.resumo) || 'Resumo aparece aqui';
+  if (img) {
+    if (p && p.capaUrl) {
+      img.src = p.capaUrl;
+      img.style.display = 'block';
+    } else {
+      img.removeAttribute('src');
+      img.style.display = 'none';
+    }
+  }
 }
 
 function atualizarBoxLinkProjeto(p) {
@@ -3152,33 +3223,39 @@ async function salvarProjeto() {
   const videoUrl = (document.getElementById('proj-video').value || '').trim();
   const pdfUrl = (document.getElementById('proj-pdf').value || '').trim();
   const acessoUrl = (document.getElementById('proj-acesso').value || '').trim();
+  const capaUrl = ((document.getElementById('proj-capa') || {}).value || '').trim();
   const publico = document.getElementById('proj-publico').classList.contains('ligado');
 
-  carregarProjetosLocais();
   let projeto;
   if (editandoProjetoId) {
     projeto = projetosPerfil.find(x => x.id === editandoProjetoId);
     if (projeto) {
-      Object.assign(projeto, { titulo, resumo, videoUrl, pdfUrl, acessoUrl, publico, atualizadoEm: new Date().toISOString() });
+      Object.assign(projeto, { titulo, resumo, videoUrl, pdfUrl, acessoUrl, capaUrl, publico, atualizadoEm: new Date().toISOString() });
     }
-  } else {
+  }
+  if (!projeto) {
     projeto = {
       id: 'p_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8),
-      titulo, resumo, videoUrl, pdfUrl, acessoUrl, publico,
+      titulo, resumo, videoUrl, pdfUrl, acessoUrl, capaUrl, publico,
       criadoEm: new Date().toISOString(),
       atualizadoEm: new Date().toISOString()
     };
     projetosPerfil.unshift(projeto);
     editandoProjetoId = projeto.id;
   }
-  salvarProjetosLocais();
-  await sincronizarProjetoNoServidor(projeto);
+  const sync = await sincronizarProjetoNoServidor(projeto);
+  if (!sync.ok) {
+    mostrarConfirmacao('Não gravou no servidor: ' + (sync.msg || 'tente de novo'));
+    // ainda mostra link local para o dono testar depois de corrigir SQL
+  }
   atualizarBoxLinkProjeto(projeto);
+  atualizarPreviewVitrine(projeto);
   renderizarProjetosInterior();
   document.getElementById('btn-apagar-projeto').style.display = 'block';
-  if (publico) {
-    atualizarBoxLinkProjeto(projeto);
-    mostrarConfirmacao('Link do projeto pronto para copiar');
+  if (sync.ok && publico) {
+    mostrarConfirmacao('Vitrine no servidor — link pronto');
+  } else if (sync.ok) {
+    mostrarConfirmacao('Vitrine guardada (privada)');
   }
 }
 
@@ -3203,20 +3280,31 @@ async function apagarProjeto() {
 async function sincronizarProjetoNoServidor(projeto) {
   try {
     const { data: { session } } = await supabaseClient.auth.getSession();
-    if (!session || !projeto) return;
-    await supabaseClient.from('projetos').upsert({
-      id: projeto.id,
+    if (!session || !projeto) return { ok: false, msg: 'Entre na conta para guardar no servidor' };
+    const payload = {
+      id: String(projeto.id),
       user_id: session.user.id,
       titulo: projeto.titulo,
       resumo: projeto.resumo || '',
       video_url: projeto.videoUrl || null,
       pdf_url: projeto.pdfUrl || null,
       acesso_url: projeto.acessoUrl || null,
+      capa_url: projeto.capaUrl || null,
       publico: !!projeto.publico,
       atualizado_em: projeto.atualizadoEm || new Date().toISOString()
-    });
+    };
+    let { error } = await supabaseClient.from('projetos').upsert(payload);
+    if (error && /capa_url/i.test(error.message || '')) {
+      delete payload.capa_url;
+      ({ error } = await supabaseClient.from('projetos').upsert(payload));
+    }
+    if (error) {
+      console.error('sync projeto', error);
+      return { ok: false, msg: error.message || 'Erro ao guardar no servidor' };
+    }
+    return { ok: true };
   } catch (e) {
-    // tabela pode ainda não existir
+    return { ok: false, msg: (e && e.message) || 'Falha de rede' };
   }
 }
 
@@ -3242,6 +3330,7 @@ async function carregarProjetosDoServidor() {
       videoUrl: row.video_url || '',
       pdfUrl: row.pdf_url || '',
       acessoUrl: row.acesso_url || '',
+      capaUrl: row.capa_url || '',
       publico: !!row.publico,
       criadoEm: row.criado_em,
       atualizadoEm: row.atualizado_em
@@ -3265,64 +3354,61 @@ async function abrirProjetoPublicoPorId(id) {
   let projeto = null;
   let autor = '';
 
-  // Local (dono)
-  carregarProjetosLocais();
+  // Memória da sessão (dono logado) — só se for público
   projeto = projetosPerfil.find(x => x.id === id && x.publico) || null;
   if (projeto) {
     autor = dadosConta.nomeExibicao || dadosConta.nome || (dadosConta.handle ? '@' + dadosConta.handle : '');
   }
 
-  // Servidor
-  if (!projeto) {
-    try {
-      const { data } = await supabaseClient
-        .from('projetos')
-        .select('*, perfis(nome, handle)')
-        .eq('id', id)
-        .eq('publico', true)
-        .maybeSingle();
-      if (data) {
-        projeto = {
-          id: data.id,
-          titulo: data.titulo,
-          resumo: data.resumo,
-          videoUrl: data.video_url,
-          pdfUrl: data.pdf_url,
-          acessoUrl: data.acesso_url,
-          publico: true
-        };
-        const pe = data.perfis;
-        autor = (pe && (pe.nome || (pe.handle ? '@' + pe.handle : ''))) || 'Alguém do espaço';
+  // Servidor (sem join em perfis — evita falha de FK)
+  try {
+    const { data, error } = await supabaseClient
+      .from('projetos')
+      .select('*')
+      .eq('id', id)
+      .eq('publico', true)
+      .maybeSingle();
+    if (!error && data) {
+      projeto = {
+        id: data.id,
+        titulo: data.titulo,
+        resumo: data.resumo,
+        videoUrl: data.video_url,
+        pdfUrl: data.pdf_url,
+        acessoUrl: data.acesso_url,
+        capaUrl: data.capa_url || '',
+        publico: true
+      };
+      if (data.user_id) {
+        try {
+          const { data: pe } = await supabaseClient
+            .from('perfis')
+            .select('nome, nome_exibicao, handle')
+            .eq('id', data.user_id)
+            .maybeSingle();
+          if (pe) {
+            autor = pe.nome_exibicao || pe.nome || (pe.handle ? '@' + pe.handle : '') || autor;
+          }
+        } catch (e3) {}
       }
-    } catch (e) {
-      try {
-        const { data } = await supabaseClient.from('projetos').select('*').eq('id', id).eq('publico', true).maybeSingle();
-        if (data) {
-          projeto = {
-            id: data.id,
-            titulo: data.titulo,
-            resumo: data.resumo,
-            videoUrl: data.video_url,
-            pdfUrl: data.pdf_url,
-            acessoUrl: data.acesso_url,
-            publico: true
-          };
-        }
-      } catch (e2) {}
     }
-  }
+  } catch (e) {}
 
   if (!projeto) {
-    document.getElementById('pub-proj-titulo').textContent = 'Projeto indisponível';
-    document.getElementById('pub-proj-resumo').textContent = 'Este card não existe, não é público ou ainda não foi sincronizado.';
+    document.getElementById('pub-proj-titulo').textContent = 'Vitrine indisponível';
+    document.getElementById('pub-proj-resumo').textContent =
+      'Este link ainda não está no servidor. Abra a vitrine, toque em Guardar com “Vitrine pública” ligado e confira se a tabela projetos existe no Supabase.';
     return;
   }
 
-  document.getElementById('pub-proj-titulo').textContent = projeto.titulo || 'Projeto';
+  document.getElementById('pub-proj-titulo').textContent = projeto.titulo || 'Vitrine';
   document.getElementById('pub-proj-autor').textContent = autor ? `por ${autor}` : '';
   document.getElementById('pub-proj-resumo').textContent = projeto.resumo || '';
 
   const midias = [];
+  if (projeto.capaUrl) {
+    midias.push(`<img src="${projeto.capaUrl.replace(/"/g,'')}" alt="" style="width:100%;max-width:320px;border-radius:14px;margin:0 auto 16px;display:block;border:1px solid var(--linha);">`);
+  }
   if (projeto.videoUrl) {
     midias.push(`<a class="continuar-btn pronto" style="display:block;text-align:center;margin-bottom:10px;text-decoration:none;" href="${projeto.videoUrl}" target="_blank" rel="noopener">Assistir vídeo</a>`);
   }
