@@ -626,6 +626,22 @@
     margin-bottom: 30px;
     text-align: left;
   }
+  .historia-final-item {
+    text-align: left;
+    margin-bottom: 22px;
+  }
+  .historia-final-pergunta {
+    font-size: 12px;
+    color: var(--dourado-fraco);
+    letter-spacing: 0.02em;
+    margin-bottom: 6px;
+  }
+  .historia-final-resposta {
+    font-family: 'Fraunces', serif;
+    font-size: 16px;
+    line-height: 1.6;
+    color: var(--osso);
+  }
   .historia-final-acoes {
     display: flex;
     flex-direction: column;
@@ -1660,6 +1676,13 @@
               <p>O ser humano nas Escrituras, antes da segunda vinda</p>
             </div>
           </div>
+          <div class="caminho-card" onclick="abrirLeitura()">
+            <div class="caminho-icone" style="background:rgba(184,147,90,0.1)">◈</div>
+            <div class="caminho-textos">
+              <h3>Ler</h3>
+              <p>Um raciocínio contínuo — continue de onde parou</p>
+            </div>
+          </div>
           <div class="caminho-card" onclick="abrirNovoReconhecimento()">
             <div class="caminho-icone" style="background:rgba(184,147,90,0.1)">✨</div>
             <div class="caminho-textos">
@@ -1921,6 +1944,31 @@
       </div>
 
       <div class="codigo-card">
+        <h3>Antes de você, alguém começou</h3>
+        <p>Em 1843, <strong>Ada Lovelace</strong> escreveu o que hoje é reconhecido como o primeiro algoritmo da história — antes mesmo de existir um computador capaz de executá-lo. Ela imaginou o programa antes de a máquina existir de verdade.</p>
+        <p style="margin-top:12px;">Um século depois, o primeiro programa realmente executado por um computador eletrônico rodou em 1948, em Manchester, e fazia algo simples: encontrar o maior divisor de um número. Não resolvia o mundo. Só provava que a ideia funcionava.</p>
+        <p style="margin-top:12px;">Décadas depois, a Internet que você usa agora começou como uma rede entre quatro computadores, e a primeira mensagem enviada por ela, em 1969, travou no meio da palavra "LOGIN" — só as letras "L" e "O" chegaram ao destino.</p>
+      </div>
+
+      <div class="codigo-card">
+        <h3>Por que isso importa aqui</h3>
+        <p>Nenhum desses começos foi grandioso. Foram pequenos, incompletos, muitas vezes falhos — e ainda assim sustentam tudo que existe hoje em cima deles, incluindo este mesmo espaço em que você está lendo agora.</p>
+        <p style="margin-top:12px;">Este guia existe em contemplação a isso: você não precisa começar grande. Precisa começar. Um índice de números, uma mensagem que trava na metade, um algoritmo escrito antes mesmo de a máquina existir — esse é o tamanho real de todo primeiro passo.</p>
+      </div>
+
+      <div class="codigo-card">
+        <h3>O que é, de fato, um código</h3>
+
+        <p>Um código não é magia nem mistério reservado a poucos. É uma <strong>instrução escrita</strong> — você diz ao computador o que fazer, em uma linguagem que ele entende, e ele executa exatamente isso. Nada mais.</p>
+        <p style="margin-top:12px;">Três linguagens aparecem nos exemplos abaixo, cada uma com um papel diferente:</p>
+        <div class="passos-criacao" style="margin-top:12px;">
+          <div class="passo-criacao"><div><strong>HTML</strong><span>A estrutura. Define o que existe na página — um título, um parágrafo, um botão. É o esqueleto.</span></div></div>
+          <div class="passo-criacao"><div><strong>CSS</strong><span>A aparência. Define cores, espaçamentos, formato. É o que faz o esqueleto parecer algo intencional, não um rascunho.</span></div></div>
+          <div class="passo-criacao"><div><strong>JavaScript</strong><span>O comportamento. Define o que acontece quando algo é tocado, digitado ou enviado. É o que dá vida ao que antes era só forma parada.</span></div></div>
+        </div>
+      </div>
+
+      <div class="codigo-card">
         <h3>1. Comece com um arquivo</h3>
         <p>Um aplicativo web pode começar com um simples <strong>index.html</strong>. Nele você coloca a primeira estrutura da sua ideia.</p>
         <div class="codigo-bloco">
@@ -1938,6 +1986,7 @@
 &lt;/body&gt;
 &lt;/html&gt;</pre>
         </div>
+        <p style="margin-top:12px;font-size:13px;color:var(--osso-fraco);">Repare: cada linha começando com <strong>&lt;</strong> é uma <em>tag</em> — um par que abre e fecha (<strong>&lt;h1&gt;</strong> ... <strong>&lt;/h1&gt;</strong>), como uma frase entre parênteses. É assim que o navegador sabe onde cada elemento começa e termina.</p>
       </div>
 
       <div class="codigo-card">
@@ -2137,6 +2186,18 @@
     </div>
   </div>
 
+  <!-- TELA LER — fluxo contínuo de leituras, sem fases, retoma de onde parou -->
+  <div class="tela" id="tela-leitura-continua">
+    <div class="cadastro-topo">
+      <button class="voltar-simples" onclick="voltarTela('tela-reconhecimento'); try{mostrarVistaReconhecimento('inicio')}catch(e){}">‹ voltar</button>
+      <span class="marca-mini">ler</span>
+      <span style="width:50px"></span>
+    </div>
+    <div class="cadastro-conteudo" id="leitura-continua-conteudo">
+      <!-- preenchido por renderizarLeituraAtual() -->
+    </div>
+  </div>
+
   <div class="tela" id="tela-interior">
     <div class="cadastro-topo">
       <button class="voltar-simples" onclick="voltarTela('tela-territorio')">‹ voltar</button>
@@ -2173,6 +2234,18 @@
         <div id="vitrines-destaques" class="vitrines-row"></div>
         <div id="lista-projetos-interior" style="margin-top:8px;"></div>
         <button type="button" class="entrar-btn" style="animation:none;opacity:1;margin-top:14px;width:100%;" onclick="abrirEditorProjeto()">+ Nova vitrine</button>
+
+        <p class="secao-label">Escritura em destaque</p>
+        <div id="escritura-destaque-vazia" style="display:none;">
+          <p style="font-size:12px;color:var(--osso-fraco);line-height:1.5;margin:-4px 0 14px;">
+            Nenhuma escritura destacada ainda. Escolha uma em "Ler" para fixar aqui.
+          </p>
+        </div>
+        <div id="escritura-destaque-conteudo" class="frase-dia" style="display:none;margin-top:0;"></div>
+        <div style="display:flex;gap:10px;margin-top:12px;">
+          <button type="button" class="entrar-btn" style="animation:none;opacity:1;flex:1;margin:0;padding:12px;" onclick="abrirLeitura()">Destacar escritura</button>
+          <button type="button" class="entrar-btn" style="animation:none;opacity:1;flex:1;margin:0;padding:12px;" onclick="irPara('tela-reconhecimento'); abrirIdentidade();">Guardar em identidade</button>
+        </div>
 
         <div class="aviso-privacidade" style="margin-top:28px;">
           <span>◐</span>
@@ -2656,6 +2729,11 @@ function irPara(idTela, opcoes) {
   // Sempre que volta/entra no Território, tenta alimentar o dia
   if (idTela === 'tela-territorio') {
     atualizarConteudoDiarioAutomaticamente(true);
+  }
+
+  // Sempre que entra no Interior, atualiza a escritura em destaque
+  if (idTela === 'tela-interior') {
+    try { renderizarEscrituraDestaque(); } catch (e) {}
   }
 }
 
@@ -4317,6 +4395,249 @@ function abrirIdentidade() {
   mostrarVistaReconhecimento('identidade');
 }
 
+// ============================================================
+// LER — fluxo contínuo de leituras conectadas
+// Sem fases nomeadas: um raciocínio único que avança da condição
+// humana nas Escrituras até o reconhecimento da distração de hoje,
+// dialogando com os temas da trilogia. A pessoa retoma de onde parou.
+// ============================================================
+const sequenciaLeitura = [
+  {
+    referencia: "Gênesis 3:8-10",
+    texto: "\"E ouviram a voz do Senhor Deus, que passeava no jardim... e escondeu-se Adão e sua mulher da presença do Senhor Deus... E disse: Ouvi a tua voz no jardim, e temi, porque estava nu, e escondi-me.\"",
+    reflexao: "O primeiro movimento humano depois da queda não foi a fome, nem a dor. Foi o esconder-se. Antes de qualquer distração externa, já existia uma distração interna: a dificuldade de permanecer visível diante do que é real."
+  },
+  {
+    referencia: "Eclesiastes 1:8",
+    texto: "\"Todas as coisas são fatigantes, mais do que se pode dizer; os olhos nunca se fartam de ver, nem os ouvidos de ouvir.\"",
+    reflexao: "Um dos homens mais ricos e ocupados da história antiga já descrevia o que hoje chamamos de rolagem infinita. O problema nunca foi a falta de estímulo — sempre foi o apetite por mais estímulo sem nunca chegar à saciedade."
+  },
+  {
+    referencia: "Mateus 13:22",
+    texto: "\"O que foi semeado entre espinhos... é o que ouve a palavra, mas os cuidados deste século e a sedução das riquezas sufocam a palavra, e fica infrutífera.\"",
+    reflexao: "Jesus já nomeava, dois mil anos antes das notificações, o mecanismo exato da distração: não é a ausência da palavra, é o sufocamento dela por camadas de cuidado e sedução acumuladas por cima. A semente não morre — é abafada."
+  },
+  {
+    referencia: "Conexão com Além do Algoritmo",
+    texto: "\"Você não foi derrotado — você foi distraído.\"",
+    reflexao: "Esta frase, escrita séculos depois de Eclesiastes e Mateus, descreve o mesmo fenômeno com outra roupagem. A distração não é um problema moderno — é a condição humana antiga, agora acelerada por um sistema que a multiplica em escala nunca vista."
+  },
+  {
+    referencia: "2 Timóteo 3:1-4",
+    texto: "\"Sabe, porém, isto: que nos últimos dias sobrevirão tempos trabalhosos. Porque haverá homens amantes de si mesmos... mais amigos dos deleites do que amigos de Deus.\"",
+    reflexao: "Paulo não descreve um povo distante. Descreve um estado do coração que atravessa qualquer época — o amor-próprio desordenado, que hoje encontra seu palco mais eficiente nas telas que carregamos no bolso."
+  },
+  {
+    referencia: "Romanos 12:2",
+    texto: "\"E não vos conformeis com este século, mas transformai-vos pela renovação da vossa mente, para que experimenteis qual seja a boa, agradável e perfeita vontade de Deus.\"",
+    reflexao: "A saída nunca foi fugir do mundo, mas recusar-se a ser moldado por ele sem perceber. Renovar a mente é um ato contínuo, não um evento único — é exatamente o que este espaço de Reconhecimento tenta sustentar, leitura após leitura."
+  },
+  {
+    referencia: "Conexão com A Matéria do Espírito",
+    texto: "\"O corpo não é uma prisão, mas uma ferramenta altamente sofisticada.\"",
+    reflexao: "Se a mente pode ser renovada, o corpo que a habita não é obstáculo — é instrumento. A distração tenta convencer o contrário: que o corpo só serve para consumir, nunca para perceber. Ler com atenção já é um ato de resistência a essa mentira."
+  },
+  {
+    referencia: "Salmos 46:10",
+    texto: "\"Aquietai-vos, e sabei que eu sou Deus.\"",
+    reflexao: "Não há como chegar até aqui sem passar pelo silêncio. Este é o ponto de repouso momentâneo desta leitura — não o fim do raciocínio, mas o lugar onde ele pode descansar antes de continuar, na próxima vez que você voltar."
+  }
+];
+
+function abrirLeitura() {
+  irPara('tela-leitura-continua');
+  renderizarLeituraAtual();
+}
+
+// Cache local — usado só como valor imediato/offline enquanto o servidor
+// não responde. O Supabase é sempre a fonte de verdade quando disponível,
+// porque o localStorage do Chrome pode ser apagado a qualquer momento.
+function progressoLeituraCache() {
+  try {
+    const valor = parseInt(localStorage.getItem('ecossistema_progresso_leitura') || '0', 10);
+    return Number.isFinite(valor) && valor >= 0 && valor < sequenciaLeitura.length ? valor : 0;
+  } catch (e) {
+    return 0;
+  }
+}
+
+function salvarProgressoLeituraCache(indice) {
+  try { localStorage.setItem('ecossistema_progresso_leitura', String(indice)); } catch (e) {}
+}
+
+async function progressoLeituraSalvo() {
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) return progressoLeituraCache();
+
+  const { data, error } = await supabaseClient
+    .from('reflexoes')
+    .select('id, conteudo')
+    .eq('user_id', session.user.id)
+    .eq('tipo', 'progresso_leitura')
+    .maybeSingle();
+
+  if (error || !data) return progressoLeituraCache();
+
+  const indice = data.conteudo?.indice ?? 0;
+  salvarProgressoLeituraCache(indice); // mantém o cache alinhado
+  return indice;
+}
+
+async function salvarProgressoLeitura(indice) {
+  salvarProgressoLeituraCache(indice); // resposta imediata na tela, mesmo offline
+
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) return; // sem conta — fica só no cache deste aparelho
+
+  const { data: existente } = await supabaseClient
+    .from('reflexoes')
+    .select('id')
+    .eq('user_id', session.user.id)
+    .eq('tipo', 'progresso_leitura')
+    .maybeSingle();
+
+  if (existente) {
+    await supabaseClient.from('reflexoes').update({ conteudo: { indice } }).eq('id', existente.id);
+  } else {
+    await supabaseClient.from('reflexoes').insert({
+      user_id: session.user.id, tipo: 'progresso_leitura', conteudo: { indice }, partilhada: false
+    });
+  }
+}
+
+async function renderizarLeituraAtual() {
+  const container = document.getElementById('leitura-continua-conteudo');
+  if (!container) return;
+  container.innerHTML = `<p class="cadastro-subtitulo">Carregando sua leitura...</p>`;
+
+  const indice = await progressoLeituraSalvo();
+  const item = sequenciaLeitura[indice];
+  const ultimaLeitura = indice >= sequenciaLeitura.length - 1;
+
+  container.innerHTML = `
+    <p class="secao-label" style="margin-top:0;">${item.referencia}</p>
+    <p class="livro-apresentacao" style="font-family:'Fraunces',serif;font-size:17px;line-height:1.65;font-style:italic;">${item.texto}</p>
+    <p class="livro-apresentacao" style="margin-top:18px;">${item.reflexao}</p>
+
+    <div class="historia-final-acoes" style="margin-top:28px;">
+      ${ultimaLeitura
+        ? `<p style="font-family:'Fraunces',serif;font-style:italic;font-size:13.5px;color:var(--osso-fraco);text-align:center;margin-bottom:6px;">Você chegou ao ponto mais recente deste raciocínio. Volte quando quiser recomeçar do início ou apenas repousar aqui.</p>
+           <button class="entrar-btn" style="animation:none;opacity:1;" onclick="reiniciarLeitura()">Recomeçar do início</button>`
+        : `<button class="continuar-btn pronto" onclick="avancarLeitura()">Continuar lendo</button>`
+      }
+      <button class="entrar-btn" style="animation:none;opacity:1;" onclick="compartilharLeituraAtual()">↗ Compartilhar esta leitura</button>
+      <button class="entrar-btn" style="animation:none;opacity:1;" onclick="guardarLeituraEmIdentidade()">Guardar em Identidade</button>
+      <button class="entrar-btn" style="animation:none;opacity:1;" onclick="destacarLeituraAtual()">◐ Destacar no Interior</button>
+    </div>
+  `;
+}
+
+async function avancarLeitura() {
+  const indice = await progressoLeituraSalvo();
+  const proximo = Math.min(indice + 1, sequenciaLeitura.length - 1);
+  await salvarProgressoLeitura(proximo);
+  renderizarLeituraAtual();
+}
+
+async function reiniciarLeitura() {
+  await salvarProgressoLeitura(0);
+  renderizarLeituraAtual();
+}
+
+async function compartilharLeituraAtual() {
+  const indice = await progressoLeituraSalvo();
+  const item = sequenciaLeitura[indice];
+  const texto = `${item.texto}\n\n${item.referencia} — via Ecossistema Digital da Consciência`;
+
+  if (navigator.share) {
+    navigator.share({ text: texto }).catch(() => {});
+  } else if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(texto).then(() => mostrarConfirmacao('Leitura copiada — cole onde quiser compartilhar'));
+  } else {
+    mostrarConfirmacao('Selecione e copie o texto para compartilhar');
+  }
+}
+
+async function guardarLeituraEmIdentidade() {
+  const indice = await progressoLeituraSalvo();
+  const item = sequenciaLeitura[indice];
+  const texto = `${item.referencia}\n${item.texto}`;
+  const agora = new Date();
+  const dataFormatada = agora.toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' });
+
+  anotacoes.unshift({ id: proximoIdAnotacao++, texto, data: dataFormatada, partilhada: false });
+  renderizarAnotacoes();
+  adicionarNaFila('anotacao', { texto, partilhada: false });
+  if (estaOnline()) sincronizarFila();
+  mostrarConfirmacao('Leitura guardada — visível também em Identidade');
+}
+
+async function destacarLeituraAtual() {
+  const indice = await progressoLeituraSalvo();
+  const item = sequenciaLeitura[indice];
+
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (session) {
+    const { data: existente } = await supabaseClient
+      .from('reflexoes')
+      .select('id')
+      .eq('user_id', session.user.id)
+      .eq('tipo', 'escritura_destaque')
+      .maybeSingle();
+
+    if (existente) {
+      await supabaseClient.from('reflexoes').update({ conteudo: item }).eq('id', existente.id);
+    } else {
+      await supabaseClient.from('reflexoes').insert({
+        user_id: session.user.id, tipo: 'escritura_destaque', conteudo: item, partilhada: false
+      });
+    }
+  }
+
+  try { localStorage.setItem('ecossistema_escritura_destaque', JSON.stringify(item)); } catch (e) {}
+  mostrarConfirmacao('Escritura destacada no seu Interior');
+}
+
+async function renderizarEscrituraDestaque() {
+  const vazio = document.getElementById('escritura-destaque-vazia');
+  const conteudo = document.getElementById('escritura-destaque-conteudo');
+  if (!vazio || !conteudo) return;
+
+  let item = null;
+  const { data: { session } } = await supabaseClient.auth.getSession();
+
+  if (session) {
+    const { data } = await supabaseClient
+      .from('reflexoes')
+      .select('conteudo')
+      .eq('user_id', session.user.id)
+      .eq('tipo', 'escritura_destaque')
+      .maybeSingle();
+    if (data) item = data.conteudo;
+  }
+
+  if (!item) {
+    // sem conta ou sem resposta do servidor — tenta o cache local como último recurso
+    try {
+      const salvo = localStorage.getItem('ecossistema_escritura_destaque');
+      if (salvo) item = JSON.parse(salvo);
+    } catch (e) {}
+  }
+
+  if (!item) {
+    vazio.style.display = 'block';
+    conteudo.style.display = 'none';
+    return;
+  }
+
+  vazio.style.display = 'none';
+  conteudo.style.display = 'block';
+  conteudo.innerHTML = `
+    <p>${item.texto}</p>
+    <p class="fonte">${item.referencia}</p>
+  `;
+}
+
 function renderizarIdentidade() {
   const lista = document.getElementById('lista-identidade');
   const respondidas = identidadeRespostas
@@ -4374,7 +4695,7 @@ function reescreverResposta(indice) {
 // cobre essa pergunta de fato. Enquanto não adicionar mais conteúdo lá,
 // as outras perguntas mostram só "Reconheça isso." sem o link.
 const perguntasEstrategicas = [
-  { texto: "Como faço algo assim?", temInformacao: true },
+  { texto: "Como faço algo assim?", temInformacao: true, destino: 'tela-guia-aplicativo' },
   { texto: "Isso vai mudar alguma coisa em mim?", temInformacao: true, destino: 'tela-leitura' }
 ];
 
@@ -4602,28 +4923,40 @@ function proximaPergunta(pulou = false) {
 
 // ---------- Fim da história — compartilhar ou guardar ----------
 function finalizarHistoria() {
-  const partes = respostasNovo.filter(Boolean).map(r => r.resposta);
-  const textoHistoria = partes.join(' ');
+  const paresRespondidos = perguntas
+    .map((p, i) => ({ pergunta: p.texto, resposta: respostasNovo[i] ? respostasNovo[i].resposta : null }))
+    .filter(par => par.resposta);
+
+  const historiaHtml = paresRespondidos.map(par => `
+    <div class="historia-final-item">
+      <p class="historia-final-pergunta">${par.pergunta}</p>
+      <p class="historia-final-resposta">${par.resposta}</p>
+    </div>
+  `).join('');
 
   const palco = document.getElementById('palco-pergunta');
   palco.innerHTML = `
     <div class="historia-final">
       <div class="pergunta-numero">sua história até aqui</div>
-      <p class="historia-final-texto">${textoHistoria}</p>
-      <p style="font-family:'Fraunces', serif; font-style:italic; font-size:14px; color:var(--osso-fraco); margin:-16px 0 26px;">
+      ${historiaHtml}
+      <p style="font-family:'Fraunces', serif; font-style:italic; font-size:14px; color:var(--osso-fraco); margin:10px 0 26px;">
         Isso não termina aqui. Sua história continua a cada vez que você volta e reconhece um pouco mais.
       </p>
       <div class="historia-final-acoes">
         <button class="continuar-btn pronto" onclick="guardarHistoriaComo(true)">Compartilhar na comunidade</button>
         <button class="entrar-btn" style="animation:none;opacity:1;" onclick="guardarHistoriaComo(false)">Guardar em anotações</button>
+        <button class="entrar-btn" style="animation:none;opacity:1;" onclick="mostrarReconhecimentoInicio()">Ir para o Reconhecimento</button>
       </div>
     </div>
   `;
 }
 
 function guardarHistoriaComo(partilhar) {
-  const partes = respostasNovo.filter(Boolean).map(r => r.resposta);
-  const texto = partes.join(' ');
+  const paresRespondidos = perguntas
+    .map((p, i) => ({ pergunta: p.texto, resposta: respostasNovo[i] ? respostasNovo[i].resposta : null }))
+    .filter(par => par.resposta);
+  // O texto salvo mantém pergunta + resposta juntos, não só as respostas coladas.
+  const texto = paresRespondidos.map(par => `${par.pergunta}\n${par.resposta}`).join('\n\n');
   const agora = new Date();
   const dataFormatada = agora.toLocaleDateString('pt-BR', { day: 'numeric', month: 'short' });
 
