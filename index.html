@@ -2336,6 +2336,24 @@
         <div class="caminho-card"><div class="caminho-icone">✓</div><div class="caminho-textos"><h3>Aprovadas</h3><p>Decidir quais criações podem ganhar lugar dentro do Ecossistema.</p></div></div>
       </div>
 
+      <p class="secao-label" style="margin-top:26px;">Leituras (seção "Ler")</p>
+      <p style="font-size:12px;color:var(--osso-fraco);line-height:1.5;margin:-4px 0 14px;">
+        Cada leitura adicionada aqui entra no fim da sequência que todos acompanham em "Ler". Ninguém perde o que já leu — o app só passa a ter mais um passo à frente.
+      </p>
+      <div class="campo-grupo">
+        <label class="campo-label" for="painel-leitura-referencia">Referência</label>
+        <input type="text" id="painel-leitura-referencia" class="campo-input" placeholder="Ex.: Tiago 1:5">
+      </div>
+      <div class="campo-grupo">
+        <label class="campo-label" for="painel-leitura-texto">Texto</label>
+        <textarea id="painel-leitura-texto" class="campo-input" style="min-height:80px;resize:vertical;" placeholder="O trecho da escritura, entre aspas"></textarea>
+      </div>
+      <div class="campo-grupo">
+        <label class="campo-label" for="painel-leitura-reflexao">Reflexão</label>
+        <textarea id="painel-leitura-reflexao" class="campo-input" style="min-height:80px;resize:vertical;" placeholder="Como este trecho se conecta com o raciocínio anterior"></textarea>
+      </div>
+      <button type="button" class="entrar-btn" style="animation:none;opacity:1;width:100%;" onclick="publicarNovaLeitura()">+ Adicionar à sequência</button>
+
       <div class="aviso-privacidade" style="margin-top:24px;">
         <span>◐</span>
         <span>Esta tela é a visão do Criador. A edição real de usuários, autorizações, cards e páginas será ligada às tabelas e permissões do Supabase.</span>
@@ -3821,6 +3839,12 @@ function aplicarVersiculoENoticias(cfg) {
         <h4>${n.titulo}</h4>
         <p>${n.resumo || ''}</p>
         ${n.descricao ? `<p style="margin-top:8px;color:var(--osso);font-size:12.5px;line-height:1.55;">${n.descricao}</p>` : ''}
+        ${n.link ? `
+          <div style="display:flex;justify-content:space-between;align-items:center;margin-top:10px;">
+            ${n.fonte ? `<span style="font-size:11px;color:var(--osso-fraco);">${n.fonte}</span>` : '<span></span>'}
+            <a href="${n.link}" target="_blank" rel="noopener noreferrer" style="font-size:11.5px;color:var(--dourado-fraco);text-decoration:none;">Ler na fonte ↗</a>
+          </div>
+        ` : ''}
       </div>
     `).join('');
   }
@@ -4400,8 +4424,13 @@ function abrirIdentidade() {
 // Sem fases nomeadas: um raciocínio único que avança da condição
 // humana nas Escrituras até o reconhecimento da distração de hoje,
 // dialogando com os temas da trilogia. A pessoa retoma de onde parou.
+//
+// A lista abaixo é o ponto de partida (usado se o banco ainda não tem
+// nada salvo). A lista real, que cresce com o tempo, vive no Supabase
+// — o fundador adiciona novas leituras pelo Painel, sem precisar de
+// uma nova versão do aplicativo.
 // ============================================================
-const sequenciaLeitura = [
+const sequenciaLeituraPadrao = [
   {
     referencia: "Gênesis 3:8-10",
     texto: "\"E ouviram a voz do Senhor Deus, que passeava no jardim... e escondeu-se Adão e sua mulher da presença do Senhor Deus... E disse: Ouvi a tua voz no jardim, e temi, porque estava nu, e escondi-me.\"",
@@ -4443,6 +4472,83 @@ const sequenciaLeitura = [
     reflexao: "Não há como chegar até aqui sem passar pelo silêncio. Este é o ponto de repouso momentâneo desta leitura — não o fim do raciocínio, mas o lugar onde ele pode descansar antes de continuar, na próxima vez que você voltar."
   }
 ];
+
+// A lista de verdade — buscada do Supabase toda vez que "Ler" é aberto.
+// Guardamos também um cache local, só para resposta instantânea caso a
+// pessoa reabra o app rapidamente ou fique momentaneamente offline.
+let sequenciaLeitura = sequenciaLeituraPadrao;
+
+function sequenciaLeituraCache() {
+  try {
+    const salvo = localStorage.getItem('ecossistema_sequencia_leitura');
+    if (salvo) {
+      const lista = JSON.parse(salvo);
+      if (Array.isArray(lista) && lista.length > 0) return lista;
+    }
+  } catch (e) {}
+  return sequenciaLeituraPadrao;
+}
+
+function salvarSequenciaLeituraCache(lista) {
+  try { localStorage.setItem('ecossistema_sequencia_leitura', JSON.stringify(lista)); } catch (e) {}
+}
+
+// Busca a sequência real no Supabase (tabela reflexoes, tipo 'leitura_ecossistema',
+// pertencentes ao fundador — visíveis a todos, como uma tabela editorial).
+// Se o banco ainda não tem nada, usa a lista padrão acima como primeiro conteúdo.
+async function carregarSequenciaLeitura() {
+  sequenciaLeitura = sequenciaLeituraCache(); // resposta imediata, mesmo antes do servidor responder
+
+  const { data, error } = await supabaseClient
+    .from('reflexoes')
+    .select('conteudo, criado_em')
+    .eq('tipo', 'leitura_ecossistema')
+    .order('criado_em', { ascending: true });
+
+  if (!error && data && data.length > 0) {
+    sequenciaLeitura = data.map(linha => linha.conteudo);
+    salvarSequenciaLeituraCache(sequenciaLeitura);
+  }
+
+  return sequenciaLeitura;
+}
+
+// Usado pelo Painel do Criador: adiciona uma nova leitura ao fim da
+// sequência pública. Fica visível para todos assim que salva — ninguém
+// mais precisa esperar uma nova versão do aplicativo para ler algo novo.
+async function publicarNovaLeitura() {
+  const referencia = document.getElementById('painel-leitura-referencia').value.trim();
+  const texto = document.getElementById('painel-leitura-texto').value.trim();
+  const reflexao = document.getElementById('painel-leitura-reflexao').value.trim();
+
+  if (!referencia || !texto) {
+    alert('Referência e texto são obrigatórios.');
+    return;
+  }
+
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (!session) {
+    alert('É preciso estar autenticado para publicar.');
+    return;
+  }
+
+  const { error } = await supabaseClient.from('reflexoes').insert({
+    user_id: session.user.id,
+    tipo: 'leitura_ecossistema',
+    conteudo: { referencia, texto, reflexao },
+    partilhada: false
+  });
+
+  if (error) {
+    alert('Não foi possível publicar. Confira a tabela reflexoes no Supabase.');
+    return;
+  }
+
+  document.getElementById('painel-leitura-referencia').value = '';
+  document.getElementById('painel-leitura-texto').value = '';
+  document.getElementById('painel-leitura-reflexao').value = '';
+  mostrarConfirmacao('Leitura adicionada à sequência');
+}
 
 function abrirLeitura() {
   irPara('tela-leitura-continua');
@@ -4510,8 +4616,10 @@ async function renderizarLeituraAtual() {
   if (!container) return;
   container.innerHTML = `<p class="cadastro-subtitulo">Carregando sua leitura...</p>`;
 
+  await carregarSequenciaLeitura(); // busca a lista mais atual — pode ter crescido desde a última vez
+
   const indice = await progressoLeituraSalvo();
-  const item = sequenciaLeitura[indice];
+  const item = sequenciaLeitura[Math.min(indice, sequenciaLeitura.length - 1)];
   const ultimaLeitura = indice >= sequenciaLeitura.length - 1;
 
   container.innerHTML = `
