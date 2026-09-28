@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
 <title>Ecossistema Digital da Consciência</title>
 <meta name="description" content="Um espaço de presença, reconhecimento e consciência — fora do algoritmo.">
-<meta name="application-version" content="movimento-02-vendas">
+<meta name="application-version" content="movimento-03-supabase">
 <meta name="theme-color" content="#0B0B0A">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -3216,19 +3216,26 @@ async function sincronizarPerfilNoServidor() {
     const { data: { session } } = await supabaseClient.auth.getSession();
     if (!session) return false;
     const payload = {
+      id: session.user.id,
+      email: session.user.email || dadosConta.email || null,
       nome: dadosConta.nomeExibicao || dadosConta.nome || null,
       nome_exibicao: dadosConta.nomeExibicao || null,
       handle: dadosConta.handle || null,
       bio: dadosConta.bio || null,
       vitrine_publica: !!dadosConta.vitrinePublica
     };
-    const { error } = await supabaseClient.from('perfis').update(payload).eq('id', session.user.id);
+    // upsert: cria linha se ainda não existir (estado online do perfil)
+    let { error } = await supabaseClient.from('perfis').upsert(payload, { onConflict: 'id' });
     if (error) {
-      // tenta sem colunas novas se o SQL ainda não rodou
-      await supabaseClient.from('perfis').update({
+      // tenta update mínimo se colunas novas não existirem
+      const { error: e2 } = await supabaseClient.from('perfis').update({
         nome: payload.nome,
         handle: payload.handle
       }).eq('id', session.user.id);
+      if (e2) {
+        console.error('perfil sync', error, e2);
+        return false;
+      }
       return false;
     }
     return true;
@@ -4294,6 +4301,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       salvarSessao();
       await carregarDadosDoServidor();
       await carregarProjetosDoServidor();
+      await carregarPaginasVendasDoServidor();
+      preencherInterior();
       if (!veioDeLinkProjeto && !document.getElementById('tela-territorio').classList.contains('ativa')) {
         irPara('tela-territorio');
       }
@@ -4352,10 +4361,17 @@ async function validarLogin(evento) {
     dadosConta.email = email;
     dadosConta.nome = perfil?.nome || '';
     dadosConta.cpf = perfil?.cpf || '';
+    if (perfil?.handle) dadosConta.handle = perfil.handle;
+    if (perfil?.nome_exibicao) dadosConta.nomeExibicao = perfil.nome_exibicao;
+    if (perfil?.bio != null) dadosConta.bio = perfil.bio || '';
+    if (perfil?.vitrine_publica != null) dadosConta.vitrinePublica = !!perfil.vitrine_publica;
 
     preencherInterior();
     salvarSessao(); // cache local — permite abrir offline depois
     await carregarDadosDoServidor();
+    await carregarProjetosDoServidor();
+    await carregarPaginasVendasDoServidor();
+    preencherInterior();
 
     irPara('tela-territorio');
     return false;
@@ -5848,6 +5864,7 @@ animar();
 
 // ============================================================
 // PÁGINAS DE VENDAS + DESTAQUES + WHATSAPP + TERMINAL
+// (páginas e perfil: servidor = fonte da verdade)
 // ============================================================
 const LINK_WHATSAPP_COMUNIDADE = 'https://chat.whatsapp.com/LE1jvGXpoWb0BxIQEJSrEK';
 const LINK_WHATSAPP_DIRETO = 'https://wa.me/5585992787892';
@@ -5868,6 +5885,74 @@ function salvarPaginasVendasLocal() {
   localStorage.setItem('ecossistema_paginas_vendas', JSON.stringify(paginasVendas));
 }
 
+function rowParaPagina(row) {
+  return {
+    id: row.id,
+    titulo: row.titulo || '',
+    headline: row.headline || '',
+    sub: row.sub || '',
+    ctaTexto: row.cta_texto || '',
+    ctaUrl: row.cta_url || '',
+    btn2Texto: row.btn2_texto || '',
+    btn2Url: row.btn2_url || '',
+    publico: !!row.publico,
+    atualizadoEm: row.atualizado_em || null
+  };
+}
+
+async function sincronizarPaginaVendasNoServidor(p) {
+  try {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) return { ok: false, motivo: 'sem sessão' };
+    const payload = {
+      id: p.id,
+      user_id: session.user.id,
+      titulo: p.titulo || null,
+      headline: p.headline || null,
+      sub: p.sub || null,
+      cta_texto: p.ctaTexto || null,
+      cta_url: p.ctaUrl || null,
+      btn2_texto: p.btn2Texto || null,
+      btn2_url: p.btn2Url || null,
+      publico: !!p.publico,
+      atualizado_em: new Date().toISOString()
+    };
+    const { error } = await supabaseClient.from('paginas_vendas').upsert(payload);
+    if (error) {
+      console.error('paginas_vendas upsert', error);
+      return { ok: false, motivo: error.message };
+    }
+    return { ok: true };
+  } catch (e) {
+    return { ok: false, motivo: String(e) };
+  }
+}
+
+async function carregarPaginasVendasDoServidor() {
+  try {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) {
+      carregarPaginasVendas();
+      return;
+    }
+    const { data, error } = await supabaseClient
+      .from('paginas_vendas')
+      .select('*')
+      .eq('user_id', session.user.id)
+      .order('atualizado_em', { ascending: false });
+    if (error) {
+      console.error('carregar paginas_vendas', error);
+      carregarPaginasVendas();
+      return;
+    }
+    paginasVendas = (data || []).map(rowParaPagina);
+    salvarPaginasVendasLocal();
+    renderizarListaPaginasVendas();
+  } catch (e) {
+    carregarPaginasVendas();
+  }
+}
+
 function alternarModoDestaque(modo) {
   modoDestaqueAtual = modo === 'vendas' ? 'vendas' : 'circulos';
   const c = document.getElementById('bloco-destaque-circulos');
@@ -5886,7 +5971,7 @@ function renderizarListaPaginasVendas() {
   const el = document.getElementById('lista-paginas-vendas');
   if (!el) return;
   if (!paginasVendas.length) {
-    el.innerHTML = '<p style="font-size:13px;color:var(--osso-fraco);line-height:1.5;">Nenhuma página ainda. Crie um cartaz com headline e botões — o link vira divulgação.</p>';
+    el.innerHTML = '<p style="font-size:13px;color:var(--osso-fraco);line-height:1.5;">Nenhuma página ainda. Crie um cartaz com headline e botões — o link fica no servidor quando for pública.</p>';
     return;
   }
   el.innerHTML = paginasVendas.map(p => `
@@ -5894,7 +5979,7 @@ function renderizarListaPaginasVendas() {
       <div class="caminho-icone" style="background:rgba(184,147,90,0.12)">▣</div>
       <div class="caminho-textos">
         <h3>${(p.titulo || p.headline || 'Página').replace(/</g,'')}</h3>
-        <p>${p.publico ? 'Pública · tocável para editar' : 'Rascunho · só você'}</p>
+        <p>${p.publico ? 'Pública no servidor · tocável para editar' : 'Rascunho · só você'}</p>
       </div>
     </div>
   `).join('');
@@ -5951,14 +6036,14 @@ function atualizarLinkPaginaVendasUI(p) {
   } else box.style.display = 'none';
 }
 
-function salvarPaginaVendas() {
+async function salvarPaginaVendas() {
   carregarPaginasVendas();
   const headline = (document.getElementById('pv-headline')?.value || '').trim();
   if (!headline) { mostrarConfirmacao('Escreva a headline'); return; }
   const publico = !!document.getElementById('pv-publico')?.classList.contains('ligado');
   const titulo = (document.getElementById('pv-titulo')?.value || '').trim();
   const dados = {
-    id: editandoPaginaVendasId || ('pv_' + Date.now().toString(36)),
+    id: editandoPaginaVendasId || ('pv_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6)),
     titulo: titulo || headline.slice(0, 40),
     headline,
     sub: (document.getElementById('pv-sub')?.value || '').trim(),
@@ -5974,18 +6059,32 @@ function salvarPaginaVendas() {
   else paginasVendas.unshift(dados);
   salvarPaginasVendasLocal();
   editandoPaginaVendasId = dados.id;
+
+  const sync = await sincronizarPaginaVendasNoServidor(dados);
   atualizarLinkPaginaVendasUI(dados);
   const btnAp = document.getElementById('btn-apagar-pv');
   if (btnAp) btnAp.style.display = 'block';
   renderizarListaPaginasVendas();
-  mostrarConfirmacao(publico ? 'Página pública — copie o link' : 'Página guardada');
+
+  if (!sync.ok) {
+    mostrarConfirmacao('Guardada neste aparelho — servidor: ' + (sync.motivo || 'falhou. Rode o SQL de paginas_vendas.'));
+  } else {
+    mostrarConfirmacao(publico ? 'Página pública no servidor — copie o link' : 'Página no servidor');
+  }
 }
 
-function apagarPaginaVendas() {
+async function apagarPaginaVendas() {
   if (!editandoPaginaVendasId) return;
+  const id = editandoPaginaVendasId;
   carregarPaginasVendas();
-  paginasVendas = paginasVendas.filter(x => x.id !== editandoPaginaVendasId);
+  paginasVendas = paginasVendas.filter(x => x.id !== id);
   salvarPaginasVendasLocal();
+  try {
+    const { data: { session } } = await supabaseClient.auth.getSession();
+    if (session) {
+      await supabaseClient.from('paginas_vendas').delete().eq('id', id).eq('user_id', session.user.id);
+    }
+  } catch (e) {}
   editandoPaginaVendasId = null;
   renderizarListaPaginasVendas();
   mostrarConfirmacao('Página apagada');
@@ -5998,20 +6097,11 @@ function copiarLinkPaginaVendas() {
   navigator.clipboard.writeText(t).then(() => mostrarConfirmacao('Link copiado')).catch(() => mostrarConfirmacao(t));
 }
 
-function abrirPaginaVendasPublica(id) {
-  carregarPaginasVendas();
-  const p = paginasVendas.find(x => x.id === id && x.publico);
+function renderPubPagina(p) {
   const hl = document.getElementById('pv-pub-headline');
   const sub = document.getElementById('pv-pub-sub');
   const ac = document.getElementById('pv-pub-acoes');
   const se = document.getElementById('pv-pub-selo');
-  if (!p) {
-    if (hl) hl.textContent = 'Página indisponível';
-    if (sub) sub.textContent = 'Esta página não está pública ou ainda não existe neste aparelho.';
-    if (ac) ac.innerHTML = '';
-    irPara('tela-pagina-vendas-pub');
-    return;
-  }
   if (se) se.textContent = p.titulo || 'Página';
   if (hl) hl.textContent = p.headline || '—';
   if (sub) sub.textContent = p.sub || '';
@@ -6023,7 +6113,42 @@ function abrirPaginaVendasPublica(id) {
     acoes += '<a class="entrar-btn" style="display:block;text-align:center;text-decoration:none;animation:none;opacity:1;margin-top:0;" href="' + p.btn2Url.replace(/"/g,'') + '" target="_blank" rel="noopener">' + p.btn2Texto.replace(/</g,'') + '</a>';
   }
   if (ac) ac.innerHTML = acoes;
+}
+
+async function abrirPaginaVendasPublica(id) {
   irPara('tela-pagina-vendas-pub');
+  const hl = document.getElementById('pv-pub-headline');
+  const sub = document.getElementById('pv-pub-sub');
+  const ac = document.getElementById('pv-pub-acoes');
+  if (hl) hl.textContent = '…';
+  if (sub) sub.textContent = 'Carregando…';
+  if (ac) ac.innerHTML = '';
+
+  // 1) servidor (público)
+  try {
+    const { data, error } = await supabaseClient
+      .from('paginas_vendas')
+      .select('*')
+      .eq('id', id)
+      .eq('publico', true)
+      .maybeSingle();
+    if (!error && data) {
+      renderPubPagina(rowParaPagina(data));
+      return;
+    }
+  } catch (e) {}
+
+  // 2) cache local (mesmo aparelho / dono)
+  carregarPaginasVendas();
+  const local = paginasVendas.find(x => x.id === id && x.publico);
+  if (local) {
+    renderPubPagina(local);
+    return;
+  }
+
+  if (hl) hl.textContent = 'Página indisponível';
+  if (sub) sub.textContent = 'Não está pública no servidor, ou o SQL de paginas_vendas ainda não foi aplicado.';
+  if (ac) ac.innerHTML = '';
 }
 
 function abrirTerminalCriacao() {
