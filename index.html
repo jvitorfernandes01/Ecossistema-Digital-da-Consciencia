@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
 <title>Ecossistema Digital da Consciência</title>
 <meta name="description" content="Um espaço de presença, reconhecimento e consciência — fora do algoritmo.">
-<meta name="application-version" content="movimento-01">
+<meta name="application-version" content="movimento-02-vendas">
 <meta name="theme-color" content="#0B0B0A">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -1906,6 +1906,27 @@
             <p>Do primeiro código ao primeiro link — comece por uma ideia pequena.</p>
           </div>
         </div>
+        <div class="caminho-card" onclick="abrirEditorPaginaVendas()">
+          <div class="caminho-icone" style="background:rgba(184,147,90,0.12)">▣</div>
+          <div class="caminho-textos">
+            <h3>Página de vendas</h3>
+            <p>Projeto Começo — headline, botões e link para divulgar (sem Canva).</p>
+          </div>
+        </div>
+        <div class="caminho-card" onclick="abrirTerminalCriacao()">
+          <div class="caminho-icone" style="background:rgba(107,50,38,0.18)">⌨</div>
+          <div class="caminho-textos">
+            <h3>Terminal de criação</h3>
+            <p>Acesso direto ao meio: anotações, intenção e o que você está construindo.</p>
+          </div>
+        </div>
+        <div class="caminho-card" onclick="abrirComunidadeWhatsApp()">
+          <div class="caminho-icone" style="background:rgba(37,211,102,0.15)">◎</div>
+          <div class="caminho-textos">
+            <h3>Comunidade no WhatsApp</h3>
+            <p>Comunidade consciente — conversa ao vivo, fora do algoritmo do feed.</p>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -2074,6 +2095,8 @@
     </div>
 
     <div id="partilhas-reais"></div>
+    <button type="button" id="btn-whatsapp-comunidade" class="entrar-btn" style="animation:none;opacity:1;width:100%;margin:20px 0 8px;" onclick="abrirComunidadeWhatsApp()">◎ Comunidade consciente no WhatsApp</button>
+    <p style="font-size:12px;color:var(--osso-fraco);text-align:center;line-height:1.5;margin-bottom:24px;">Acesso direto ao grupo — conversa ao vivo, fora do feed.</p>
   </div>
 
   <!-- TELA LIVRO — experiência imersiva ao tocar no card do livro -->
@@ -2227,13 +2250,27 @@
           <button type="button" class="entrar-btn" style="animation:none;opacity:1;flex:1;margin:0;padding:12px;" onclick="copiarLinkPerfil()">Compartilhar perfil</button>
         </div>
 
-        <p class="secao-label">Vitrines</p>
+        <p class="secao-label">Destacar</p>
         <p style="font-size:12px;color:var(--osso-fraco);line-height:1.5;margin:-4px 0 14px;">
-          Como destaques: páginas compartilháveis. Sem feed — só o que você escolhe mostrar.
+          Duas formas: <strong style="color:var(--osso);font-weight:500;">círculos</strong> (estilo destaques) ou
+          <strong style="color:var(--osso);font-weight:500;">página de vendas</strong> (link para divulgar, tipo Canva/Notion).
         </p>
-        <div id="vitrines-destaques" class="vitrines-row"></div>
-        <div id="lista-projetos-interior" style="margin-top:8px;"></div>
-        <button type="button" class="entrar-btn" style="animation:none;opacity:1;margin-top:14px;width:100%;" onclick="abrirEditorProjeto()">+ Nova vitrine</button>
+
+        <div style="display:flex;gap:8px;margin-bottom:14px;">
+          <button type="button" class="entrar-btn" id="btn-modo-circulos" style="animation:none;opacity:1;flex:1;margin:0;padding:10px;font-size:12px;border-color:var(--dourado-fraco);" onclick="alternarModoDestaque('circulos')">◎ Círculos</button>
+          <button type="button" class="entrar-btn" id="btn-modo-vendas" style="animation:none;opacity:1;flex:1;margin:0;padding:10px;font-size:12px;" onclick="alternarModoDestaque('vendas')">▣ Páginas</button>
+        </div>
+
+        <div id="bloco-destaque-circulos">
+          <div id="vitrines-destaques" class="vitrines-row"></div>
+          <div id="lista-projetos-interior" style="margin-top:8px;"></div>
+          <button type="button" class="entrar-btn" style="animation:none;opacity:1;margin-top:14px;width:100%;" onclick="abrirEditorProjeto()">+ Nova vitrine (círculo)</button>
+        </div>
+
+        <div id="bloco-destaque-vendas" style="display:none;">
+          <div id="lista-paginas-vendas"></div>
+          <button type="button" class="entrar-btn" style="animation:none;opacity:1;margin-top:14px;width:100%;" onclick="abrirEditorPaginaVendas()">+ Nova página de vendas</button>
+        </div>
 
         <p class="secao-label">Escritura em destaque</p>
         <div id="escritura-destaque-vazia" style="display:none;">
@@ -2454,6 +2491,119 @@
       <p class="interior-valor" id="pub-perfil-bio" style="line-height:1.7;margin-bottom:24px;display:none;"></p>
       <p class="secao-label">Projetos públicos</p>
       <div id="pub-perfil-projetos"></div>
+    </div>
+  </div>
+
+  <!-- PÁGINA DE VENDAS — editor (estilo Notion/Canva link) -->
+  <div class="tela" id="tela-pagina-vendas-editor">
+    <div class="cadastro-topo">
+      <button class="voltar-simples" onclick="voltarTela('tela-interior')">‹ voltar</button>
+      <span class="marca-mini">página de vendas</span>
+      <span style="width:50px"></span>
+    </div>
+    <div class="cadastro-conteudo" style="padding-bottom:56px;">
+      <h2 class="cadastro-titulo" id="titulo-editor-vendas">Nova página</h2>
+      <p class="cadastro-subtitulo">Como um cartaz digital: título forte, texto e botões. O link vira seu meio de divulgação.</p>
+
+      <div class="campo-grupo">
+        <label class="campo-label" for="pv-titulo">Nome interno</label>
+        <input type="text" id="pv-titulo" class="campo-input" placeholder="Ex.: Projeto Começo" maxlength="60">
+      </div>
+      <div class="campo-grupo">
+        <label class="campo-label" for="pv-headline">Headline (grande)</label>
+        <input type="text" id="pv-headline" class="campo-input" placeholder="TRANSFORME SEU FUTURO DIGITAL HOJE!" maxlength="120" oninput="previewPaginaVendas()">
+      </div>
+      <div class="campo-grupo">
+        <label class="campo-label" for="pv-sub">Texto de apoio</label>
+        <textarea id="pv-sub" class="campo-input" rows="3" maxlength="400" placeholder="Uma frase que orienta quem chega pelo link…" style="resize:vertical;min-height:80px;" oninput="previewPaginaVendas()"></textarea>
+      </div>
+      <div class="campo-grupo">
+        <label class="campo-label" for="pv-cta-texto">Botão principal — texto</label>
+        <input type="text" id="pv-cta-texto" class="campo-input" placeholder="Quero começar" maxlength="40" oninput="previewPaginaVendas()">
+      </div>
+      <div class="campo-grupo">
+        <label class="campo-label" for="pv-cta-url">Botão principal — link</label>
+        <input type="url" id="pv-cta-url" class="campo-input" placeholder="https://… ou wa.me/…" oninput="previewPaginaVendas()">
+      </div>
+      <div class="campo-grupo">
+        <label class="campo-label" for="pv-btn2-texto">Botão secundário — texto (opcional)</label>
+        <input type="text" id="pv-btn2-texto" class="campo-input" placeholder="Falar no WhatsApp" maxlength="40" oninput="previewPaginaVendas()">
+      </div>
+      <div class="campo-grupo">
+        <label class="campo-label" for="pv-btn2-url">Botão secundário — link</label>
+        <input type="url" id="pv-btn2-url" class="campo-input" placeholder="https://chat.whatsapp.com/…" oninput="previewPaginaVendas()">
+      </div>
+
+      <p class="secao-label">Prévia</p>
+      <div id="pv-preview" style="border:1px solid var(--linha);border-radius:16px;padding:28px 20px;background:linear-gradient(180deg,rgba(184,147,90,0.08),transparent);text-align:center;margin-bottom:18px;">
+        <p id="pv-prev-headline" style="font-family:'Fraunces',serif;font-size:22px;line-height:1.3;margin:0 0 12px;">Sua headline</p>
+        <p id="pv-prev-sub" style="font-size:13px;color:var(--osso-fraco);line-height:1.6;margin:0 0 20px;">Texto de apoio</p>
+        <div id="pv-prev-btns" style="display:flex;flex-direction:column;gap:10px;"></div>
+      </div>
+
+      <div class="editor-opcao-comunidade" style="margin-bottom:16px;" onclick="document.getElementById('pv-publico').classList.toggle('ligado')">
+        <div class="editor-opcao-comunidade-texto">
+          <h4>Página pública</h4>
+          <p>Ligado = link ?v= para divulgar</p>
+        </div>
+        <div class="toggle" id="pv-publico"></div>
+      </div>
+      <div id="pv-link-box" style="display:none;margin-bottom:16px;">
+        <label class="campo-label">Link desta página</label>
+        <p id="pv-link" class="interior-valor" style="font-size:12px;word-break:break-all;"></p>
+        <button type="button" class="entrar-btn" style="animation:none;opacity:1;margin-top:8px;width:100%;" onclick="copiarLinkPaginaVendas()">Copiar link</button>
+      </div>
+
+      <button type="button" class="continuar-btn pronto" style="width:100%;" onclick="salvarPaginaVendas()">Guardar página</button>
+      <button type="button" id="btn-apagar-pv" class="criar-conta-btn" style="display:none;background:transparent;border:1px solid var(--linha);color:var(--osso);margin-top:12px;" onclick="apagarPaginaVendas()">Apagar página</button>
+    </div>
+  </div>
+
+  <!-- PÁGINA DE VENDAS — vista pública (?v=id) -->
+  <div class="tela" id="tela-pagina-vendas-pub">
+    <div class="cadastro-topo">
+      <button class="voltar-simples" onclick="voltarTela(dadosConta && (dadosConta.nome || dadosConta.email) ? 'tela-territorio' : 'tela-entrada')">‹ voltar</button>
+    </div>
+    <div class="cadastro-conteudo" style="padding-bottom:48px;text-align:center;max-width:480px;">
+      <p class="secao-label" id="pv-pub-selo">Projeto Começo</p>
+      <h2 class="cadastro-titulo" id="pv-pub-headline" style="font-size:26px;line-height:1.25;">—</h2>
+      <p class="cadastro-subtitulo" id="pv-pub-sub" style="margin-bottom:28px;"></p>
+      <div id="pv-pub-acoes" style="display:flex;flex-direction:column;gap:12px;"></div>
+    </div>
+  </div>
+
+  <!-- TERMINAL DE CRIAÇÃO — atalho consciente -->
+  <div class="tela" id="tela-terminal-criacao">
+    <div class="cadastro-topo">
+      <button class="voltar-simples" onclick="voltarTela('tela-criacao')">‹ voltar</button>
+      <span class="marca-mini">terminal</span>
+      <span style="width:50px"></span>
+    </div>
+    <div class="cadastro-conteudo" style="padding-bottom:56px;">
+      <h2 class="cadastro-titulo">Terminal de criação</h2>
+      <p class="cadastro-subtitulo">Acesso direto ao meio: o que você escreve, decide e compartilha — sem o ruído do feed.</p>
+      <div class="caminhos-grid">
+        <div class="caminho-card" onclick="irPara('tela-criacao'); try{trocarAbaCriacao('anotacoes')}catch(e){}">
+          <div class="caminho-icone" style="background:rgba(184,147,90,0.12)">✎</div>
+          <div class="caminho-textos"><h3>Anotações</h3><p>O que está vivo agora.</p></div>
+        </div>
+        <div class="caminho-card" onclick="irPara('tela-criacao'); try{trocarAbaCriacao('agenda')}catch(e){}">
+          <div class="caminho-icone" style="background:rgba(184,147,90,0.12)">◈</div>
+          <div class="caminho-textos"><h3>Agenda / intenção</h3><p>O tempo como espaço.</p></div>
+        </div>
+        <div class="caminho-card" onclick="abrirEditorPaginaVendas()">
+          <div class="caminho-icone" style="background:rgba(184,147,90,0.12)">▣</div>
+          <div class="caminho-textos"><h3>Página de vendas</h3><p>Cartaz com link para divulgar.</p></div>
+        </div>
+        <div class="caminho-card" onclick="abrirComunidadeWhatsApp()">
+          <div class="caminho-icone" style="background:rgba(37,211,102,0.15)">◎</div>
+          <div class="caminho-textos"><h3>WhatsApp</h3><p>Comunidade consciente.</p></div>
+        </div>
+        <div class="caminho-card" onclick="irPara('tela-comunidade')">
+          <div class="caminho-icone" style="background:rgba(184,147,90,0.12)">◐</div>
+          <div class="caminho-textos"><h3>Comunidade no app</h3><p>Partilhas e reconhecimento.</p></div>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -2757,14 +2907,22 @@ function irPara(idTela, opcoes) {
 
 /** Volta para a tela anterior real. fallback = se não houver histórico. */
 function voltarTela(fallback) {
+  const atual = telaAtivaId();
   while (historicoTelas.length) {
     const anterior = historicoTelas.pop();
-    if (anterior && anterior !== telaAtivaId() && document.getElementById(anterior)) {
-      irPara(anterior, { silencioso: true });
-      return;
-    }
+    if (!anterior || anterior === atual) continue;
+    if (!document.getElementById(anterior)) continue;
+    // Evita loop em telas de editor/públicas sem contexto
+    irPara(anterior, { silencioso: true });
+    return;
   }
-  irPara(fallback || 'tela-territorio', { silencioso: true });
+  const dest = fallback || (dadosConta && (dadosConta.nome || dadosConta.email) ? 'tela-territorio' : 'tela-entrada');
+  irPara(dest, { silencioso: true });
+}
+
+/** Voltar sempre empilhando corretamente a partir de botões com destino fixo opcional */
+function voltarComDestino(fallback) {
+  voltarTela(fallback);
 }
 
 // Data de hoje formatada
@@ -5685,6 +5843,202 @@ function animar() {
 animar();
 
 // PWA — registra service worker para instalação e uso offline
+
+// ============================================================
+// PÁGINAS DE VENDAS + DESTAQUES + WHATSAPP + TERMINAL
+// ============================================================
+const LINK_WHATSAPP_COMUNIDADE = 'https://chat.whatsapp.com/LE1jvGXpoWb0BxIQEJSrEK';
+const LINK_WHATSAPP_DIRETO = 'https://wa.me/5585992787892';
+
+let paginasVendas = [];
+let editandoPaginaVendasId = null;
+let modoDestaqueAtual = 'circulos';
+
+function carregarPaginasVendas() {
+  try {
+    paginasVendas = JSON.parse(localStorage.getItem('ecossistema_paginas_vendas') || '[]') || [];
+  } catch (e) {
+    paginasVendas = [];
+  }
+}
+
+function salvarPaginasVendasLocal() {
+  localStorage.setItem('ecossistema_paginas_vendas', JSON.stringify(paginasVendas));
+}
+
+function alternarModoDestaque(modo) {
+  modoDestaqueAtual = modo === 'vendas' ? 'vendas' : 'circulos';
+  const c = document.getElementById('bloco-destaque-circulos');
+  const v = document.getElementById('bloco-destaque-vendas');
+  const bc = document.getElementById('btn-modo-circulos');
+  const bv = document.getElementById('btn-modo-vendas');
+  if (c) c.style.display = modoDestaqueAtual === 'circulos' ? 'block' : 'none';
+  if (v) v.style.display = modoDestaqueAtual === 'vendas' ? 'block' : 'none';
+  if (bc) bc.style.borderColor = modoDestaqueAtual === 'circulos' ? 'var(--dourado-fraco)' : 'var(--linha)';
+  if (bv) bv.style.borderColor = modoDestaqueAtual === 'vendas' ? 'var(--dourado-fraco)' : 'var(--linha)';
+  if (modoDestaqueAtual === 'vendas') renderizarListaPaginasVendas();
+}
+
+function renderizarListaPaginasVendas() {
+  carregarPaginasVendas();
+  const el = document.getElementById('lista-paginas-vendas');
+  if (!el) return;
+  if (!paginasVendas.length) {
+    el.innerHTML = '<p style="font-size:13px;color:var(--osso-fraco);line-height:1.5;">Nenhuma página ainda. Crie um cartaz com headline e botões — o link vira divulgação.</p>';
+    return;
+  }
+  el.innerHTML = paginasVendas.map(p => `
+    <div class="caminho-card" style="margin-bottom:10px;" onclick="abrirEditorPaginaVendas('${p.id}')">
+      <div class="caminho-icone" style="background:rgba(184,147,90,0.12)">▣</div>
+      <div class="caminho-textos">
+        <h3>${(p.titulo || p.headline || 'Página').replace(/</g,'')}</h3>
+        <p>${p.publico ? 'Pública · tocável para editar' : 'Rascunho · só você'}</p>
+      </div>
+    </div>
+  `).join('');
+}
+
+function abrirEditorPaginaVendas(id) {
+  carregarPaginasVendas();
+  editandoPaginaVendasId = id || null;
+  const p = id ? paginasVendas.find(x => x.id === id) : null;
+  const tit = document.getElementById('titulo-editor-vendas');
+  if (tit) tit.textContent = p ? 'Editar página' : 'Nova página';
+  const set = (idEl, val) => { const n = document.getElementById(idEl); if (n) n.value = val; };
+  set('pv-titulo', p?.titulo || '');
+  set('pv-headline', p?.headline || 'TRANSFORME SEU FUTURO DIGITAL HOJE!');
+  set('pv-sub', p?.sub || 'Um caminho claro para quem está pronto para começar — sem ruído, com direção.');
+  set('pv-cta-texto', p?.ctaTexto || 'Quero começar');
+  set('pv-cta-url', p?.ctaUrl || '');
+  set('pv-btn2-texto', p?.btn2Texto || 'Comunidade no WhatsApp');
+  set('pv-btn2-url', p?.btn2Url || LINK_WHATSAPP_COMUNIDADE);
+  const tog = document.getElementById('pv-publico');
+  if (tog) tog.classList.toggle('ligado', !!(p && p.publico));
+  const btnAp = document.getElementById('btn-apagar-pv');
+  if (btnAp) btnAp.style.display = p ? 'block' : 'none';
+  previewPaginaVendas();
+  atualizarLinkPaginaVendasUI(p);
+  irPara('tela-pagina-vendas-editor');
+}
+
+function previewPaginaVendas() {
+  const h = document.getElementById('pv-headline')?.value || 'Sua headline';
+  const s = document.getElementById('pv-sub')?.value || '';
+  const cta = document.getElementById('pv-cta-texto')?.value || '';
+  const b2 = document.getElementById('pv-btn2-texto')?.value || '';
+  const eh = document.getElementById('pv-prev-headline');
+  const es = document.getElementById('pv-prev-sub');
+  const eb = document.getElementById('pv-prev-btns');
+  if (eh) eh.textContent = h;
+  if (es) es.textContent = s;
+  if (eb) {
+    let html = '';
+    if (cta) html += '<div style="padding:14px;border-radius:100px;background:var(--dourado);color:var(--preto);font-size:14px;font-weight:500;">' + cta.replace(/</g,'') + '</div>';
+    if (b2) html += '<div style="padding:14px;border-radius:100px;border:1px solid var(--linha);color:var(--osso);font-size:14px;">' + b2.replace(/</g,'') + '</div>';
+    eb.innerHTML = html || '<span style="color:var(--osso-fraco);font-size:12px;">Botões aparecem aqui</span>';
+  }
+}
+
+function atualizarLinkPaginaVendasUI(p) {
+  const box = document.getElementById('pv-link-box');
+  const link = document.getElementById('pv-link');
+  if (!box || !link) return;
+  if (p && p.publico && p.id) {
+    link.textContent = location.origin + location.pathname + '?v=' + encodeURIComponent(p.id);
+    box.style.display = 'block';
+  } else box.style.display = 'none';
+}
+
+function salvarPaginaVendas() {
+  carregarPaginasVendas();
+  const headline = (document.getElementById('pv-headline')?.value || '').trim();
+  if (!headline) { mostrarConfirmacao('Escreva a headline'); return; }
+  const publico = !!document.getElementById('pv-publico')?.classList.contains('ligado');
+  const titulo = (document.getElementById('pv-titulo')?.value || '').trim();
+  const dados = {
+    id: editandoPaginaVendasId || ('pv_' + Date.now().toString(36)),
+    titulo: titulo || headline.slice(0, 40),
+    headline,
+    sub: (document.getElementById('pv-sub')?.value || '').trim(),
+    ctaTexto: (document.getElementById('pv-cta-texto')?.value || '').trim(),
+    ctaUrl: (document.getElementById('pv-cta-url')?.value || '').trim(),
+    btn2Texto: (document.getElementById('pv-btn2-texto')?.value || '').trim(),
+    btn2Url: (document.getElementById('pv-btn2-url')?.value || '').trim(),
+    publico,
+    atualizadoEm: new Date().toISOString()
+  };
+  const idx = paginasVendas.findIndex(x => x.id === dados.id);
+  if (idx >= 0) paginasVendas[idx] = dados;
+  else paginasVendas.unshift(dados);
+  salvarPaginasVendasLocal();
+  editandoPaginaVendasId = dados.id;
+  atualizarLinkPaginaVendasUI(dados);
+  const btnAp = document.getElementById('btn-apagar-pv');
+  if (btnAp) btnAp.style.display = 'block';
+  renderizarListaPaginasVendas();
+  mostrarConfirmacao(publico ? 'Página pública — copie o link' : 'Página guardada');
+}
+
+function apagarPaginaVendas() {
+  if (!editandoPaginaVendasId) return;
+  carregarPaginasVendas();
+  paginasVendas = paginasVendas.filter(x => x.id !== editandoPaginaVendasId);
+  salvarPaginasVendasLocal();
+  editandoPaginaVendasId = null;
+  renderizarListaPaginasVendas();
+  mostrarConfirmacao('Página apagada');
+  voltarTela('tela-interior');
+}
+
+function copiarLinkPaginaVendas() {
+  const t = document.getElementById('pv-link')?.textContent;
+  if (!t) return;
+  navigator.clipboard.writeText(t).then(() => mostrarConfirmacao('Link copiado')).catch(() => mostrarConfirmacao(t));
+}
+
+function abrirPaginaVendasPublica(id) {
+  carregarPaginasVendas();
+  const p = paginasVendas.find(x => x.id === id && x.publico);
+  const hl = document.getElementById('pv-pub-headline');
+  const sub = document.getElementById('pv-pub-sub');
+  const ac = document.getElementById('pv-pub-acoes');
+  const se = document.getElementById('pv-pub-selo');
+  if (!p) {
+    if (hl) hl.textContent = 'Página indisponível';
+    if (sub) sub.textContent = 'Esta página não está pública ou ainda não existe neste aparelho.';
+    if (ac) ac.innerHTML = '';
+    irPara('tela-pagina-vendas-pub');
+    return;
+  }
+  if (se) se.textContent = p.titulo || 'Página';
+  if (hl) hl.textContent = p.headline || '—';
+  if (sub) sub.textContent = p.sub || '';
+  let acoes = '';
+  if (p.ctaTexto && p.ctaUrl) {
+    acoes += '<a class="continuar-btn pronto" style="display:block;text-align:center;text-decoration:none;" href="' + p.ctaUrl.replace(/"/g,'') + '" target="_blank" rel="noopener">' + p.ctaTexto.replace(/</g,'') + '</a>';
+  }
+  if (p.btn2Texto && p.btn2Url) {
+    acoes += '<a class="entrar-btn" style="display:block;text-align:center;text-decoration:none;animation:none;opacity:1;margin-top:0;" href="' + p.btn2Url.replace(/"/g,'') + '" target="_blank" rel="noopener">' + p.btn2Texto.replace(/</g,'') + '</a>';
+  }
+  if (ac) ac.innerHTML = acoes;
+  irPara('tela-pagina-vendas-pub');
+}
+
+function abrirTerminalCriacao() {
+  irPara('tela-terminal-criacao');
+}
+
+function abrirComunidadeWhatsApp() {
+  window.open(LINK_WHATSAPP_COMUNIDADE, '_blank', 'noopener,noreferrer');
+}
+
+(function hookDeepLinkVendas() {
+  try {
+    const vid = new URLSearchParams(location.search).get('v');
+    if (vid) setTimeout(function(){ abrirPaginaVendasPublica(vid); }, 500);
+  } catch (e) {}
+})();
+
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', () => {
   iniciarAtualizacaoDiariaAutomatica();
