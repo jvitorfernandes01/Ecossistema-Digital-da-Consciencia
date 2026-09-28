@@ -3049,6 +3049,8 @@ function preencherInterior() {
   atualizarFotoPerfilUI();
   atualizarAvatarTopo();
   renderizarProjetosInterior();
+  try { renderizarListaPaginasVendas(); } catch (e) {}
+  try { alternarModoDestaque(modoDestaqueAtual || 'circulos'); } catch (e) {}
   verificarAcessoPainel();
   atualizarUILinkPerfil();
   fecharEditarPerfil();
