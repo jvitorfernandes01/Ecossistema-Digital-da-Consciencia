@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
 <title>Ecossistema Digital da Consciência</title>
 <meta name="description" content="Um espaço de presença, reconhecimento e consciência — fora do algoritmo.">
-<meta name="application-version" content="movimento-05-fixes">
+<meta name="application-version" content="movimento-06-perfil-servidor">
 <meta name="theme-color" content="#0B0B0A">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -3176,7 +3176,7 @@ function aoEscolherFotoPerfil(event) {
   event.target.value = '';
 }
 
-function salvarPerfilPublico() {
+async function salvarPerfilPublico() {
   const nomeEx = (document.getElementById('campo-nome-exibicao') || {}).value || '';
   const handle = ((document.getElementById('campo-handle') || {}).value || '')
     .toLowerCase()
@@ -3190,12 +3190,21 @@ function salvarPerfilPublico() {
   dadosConta.handle = handle;
   dadosConta.bio = bio;
   dadosConta.vitrinePublica = vitrine;
+  // mantém nome legal se vazio de exibição
+  if (!dadosConta.nome && dadosConta.nomeExibicao) dadosConta.nome = dadosConta.nomeExibicao;
   salvarSessao();
   atualizarFotoPerfilUI();
   atualizarAvatarTopo();
   atualizarUILinkPerfil();
-  sincronizarPerfilNoServidor().then((ok) => {
-    mostrarConfirmacao(ok ? 'Perfil atualizado no servidor' : 'Perfil guardado neste aparelho');
+  preencherInteriorViewsOnly();
+  sincronizarPerfilNoServidor().then((res) => {
+    const ok = res === true || (res && res.ok);
+    if (ok) {
+      mostrarConfirmacao('Perfil atualizado no servidor');
+    } else {
+      const m = (res && res.motivo) ? res.motivo : 'sem sessão ou erro no banco';
+      mostrarConfirmacao('Não gravou no servidor: ' + m);
+    }
   });
 }
 
@@ -3231,34 +3240,89 @@ function copiarLinkPerfil() {
 
 async function sincronizarPerfilNoServidor() {
   try {
-    const { data: { session } } = await supabaseClient.auth.getSession();
-    if (!session) return false;
-    const payload = {
-      id: session.user.id,
+    let { data: { session } } = await supabaseClient.auth.getSession();
+    if (!session) {
+      // tenta renovar sessão antes de desistir
+      const { data: ref } = await supabaseClient.auth.refreshSession();
+      session = ref?.session || null;
+    }
+    if (!session) {
+      return { ok: false, motivo: 'Sessão expirada — entre de novo na conta' };
+    }
+
+    const uid = session.user.id;
+    const base = {
+      id: uid,
       email: session.user.email || dadosConta.email || null,
-      nome: dadosConta.nomeExibicao || dadosConta.nome || null,
-      nome_exibicao: dadosConta.nomeExibicao || null,
-      handle: dadosConta.handle || null,
-      bio: dadosConta.bio || null,
+      nome: (dadosConta.nomeExibicao || dadosConta.nome || '').trim() || null
+    };
+    const completo = {
+      ...base,
+      nome_exibicao: (dadosConta.nomeExibicao || '').trim() || null,
+      handle: (dadosConta.handle || '').trim() || null,
+      bio: (dadosConta.bio || '').trim() || null,
       vitrine_publica: !!dadosConta.vitrinePublica
     };
-    // upsert: cria linha se ainda não existir (estado online do perfil)
-    let { error } = await supabaseClient.from('perfis').upsert(payload, { onConflict: 'id' });
-    if (error) {
-      // tenta update mínimo se colunas novas não existirem
-      const { error: e2 } = await supabaseClient.from('perfis').update({
-        nome: payload.nome,
-        handle: payload.handle
-      }).eq('id', session.user.id);
-      if (e2) {
-        console.error('perfil sync', error, e2);
-        return false;
+
+    // 1) upsert completo
+    let { error } = await supabaseClient.from('perfis').upsert(completo, { onConflict: 'id' });
+    if (!error) return { ok: true };
+
+    console.warn('perfil upsert completo', error.message);
+
+    // 2) se coluna nova não existe, tenta só campos básicos
+    const msg = (error.message || '') + ' ' + (error.details || '');
+    if (/nome_exibicao|vitrine_publica|column|schema|bio/i.test(msg)) {
+      let { error: e2 } = await supabaseClient.from('perfis').upsert({
+        id: uid,
+        email: base.email,
+        nome: base.nome,
+        handle: completo.handle
+      }, { onConflict: 'id' });
+      if (!e2) {
+        return { ok: false, motivo: 'Parcial no servidor. Rode o SQL de colunas do perfil (nome_exibicao, bio, vitrine_publica).' };
       }
-      return false;
+      error = e2;
     }
-    return true;
+
+    // 3) update se a linha já existe
+    let { error: e3 } = await supabaseClient.from('perfis').update({
+      nome: completo.nome,
+      nome_exibicao: completo.nome_exibicao,
+      handle: completo.handle,
+      bio: completo.bio,
+      vitrine_publica: completo.vitrine_publica,
+      email: completo.email
+    }).eq('id', uid);
+    if (!e3) return { ok: true };
+
+    // 4) update mínimo
+    let { error: e4 } = await supabaseClient.from('perfis').update({
+      nome: base.nome,
+      handle: completo.handle
+    }).eq('id', uid);
+    if (!e4) {
+      return { ok: false, motivo: 'Só nome/@ básicos. Rode o SQL de perfil no Supabase.' };
+    }
+
+    // 5) insert se não existe linha
+    let { error: e5 } = await supabaseClient.from('perfis').insert(completo);
+    if (!e5) return { ok: true };
+    let { error: e6 } = await supabaseClient.from('perfis').insert({
+      id: uid,
+      email: base.email,
+      nome: base.nome,
+      handle: completo.handle
+    });
+    if (!e6) {
+      return { ok: false, motivo: 'Perfil criado parcial. Rode o SQL de colunas novas.' };
+    }
+
+    const motivo = (error && error.message) || (e3 && e3.message) || (e4 && e4.message) || (e5 && e5.message) || 'RLS ou tabela';
+    console.error('perfil sync falhou', error, e3, e4, e5, e6);
+    return { ok: false, motivo };
   } catch (e) {
-    return false;
+    return { ok: false, motivo: (e && e.message) || 'Falha de rede' };
   }
 }
 
@@ -4340,7 +4404,10 @@ document.addEventListener('DOMContentLoaded', async () => {
       salvarSessao();
       // Se tem dados locais e servidor vazio, empurra de volta
       if (dadosConta.handle || dadosConta.nomeExibicao || dadosConta.bio) {
-        try { await sincronizarPerfilNoServidor(); } catch (e) {}
+        try {
+          const r = await sincronizarPerfilNoServidor();
+          if (!(r === true || (r && r.ok))) console.warn('re-sync perfil', r);
+        } catch (e) {}
       }
       await carregarDadosDoServidor();
       await carregarProjetosDoServidor();
@@ -4434,8 +4501,11 @@ async function validarLogin(evento) {
     preencherInterior();
     salvarSessao();
     if (dadosConta.handle || dadosConta.nomeExibicao || dadosConta.bio) {
-      try { await sincronizarPerfilNoServidor(); } catch (e) {}
-    }
+        try {
+          const r = await sincronizarPerfilNoServidor();
+          if (!(r === true || (r && r.ok))) console.warn('re-sync perfil', r);
+        } catch (e) {}
+      }
     await carregarDadosDoServidor();
     await carregarProjetosDoServidor();
     await carregarPaginasVendasDoServidor();
