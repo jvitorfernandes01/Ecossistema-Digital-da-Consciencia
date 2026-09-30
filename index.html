@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
 <title>Ecossistema Digital da Consciência</title>
 <meta name="description" content="Um espaço de presença, reconhecimento e consciência — fora do algoritmo.">
-<meta name="application-version" content="movimento-06-perfil-servidor">
+<meta name="application-version" content="movimento-07-so-servidor">
 <meta name="theme-color" content="#0B0B0A">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -2698,7 +2698,15 @@
 // ============================================================
 const supabaseUrl = 'https://cawvxladfbkabvvtouag.supabase.co';
 const supabaseKey = 'sb_publishable_G0ky94FqYoX__lDz22mclQ_ar-TAYHT';
-const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+// Auth só em sessionStorage (some ao fechar o navegador). Dados do app = só Supabase.
+const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey, {
+  auth: {
+    persistSession: true,
+    storage: window.sessionStorage,
+    autoRefreshToken: true,
+    detectSessionInUrl: false
+  }
+});
 
 // Estrutura esperada no banco (rode isto uma vez no SQL Editor do Supabase —
 // se as tabelas "perfis" e "reflexoes" já existirem, rode só a parte nova
@@ -2993,37 +3001,12 @@ async function sairDaConta() {
 let dadosConta = { nome: '', cpf: '', email: '', nomeExibicao: '', handle: '', foto: '', bio: '', vitrinePublica: false };
 
 function salvarSessao() {
-  // Mínimo no aparelho: só o necessário para reabrir a UI.
-  // Histórico de identidade, projetos e conteúdo do dia vivem no Supabase.
-  try {
-    localStorage.setItem('ecossistema_sessao', JSON.stringify({
-      conta: {
-        nome: dadosConta.nome || '',
-        email: dadosConta.email || '',
-        nomeExibicao: dadosConta.nomeExibicao || '',
-        handle: dadosConta.handle || '',
-        bio: dadosConta.bio || '',
-        vitrinePublica: !!dadosConta.vitrinePublica
-        // sem cpf, sem foto base64 — não ficam no histórico local do telefone
-      }
-    }));
-  } catch (e) {}
+  // Intencionalmente vazio: nada de perfil/páginas no localStorage.
+  // Fonte da verdade = Supabase (auth fica só no sessionStorage do cliente).
 }
 
 function carregarSessaoSalva() {
-  try {
-    const salvo = localStorage.getItem('ecossistema_sessao');
-    if (salvo) {
-      const dados = JSON.parse(salvo);
-      if (dados && dados.conta) {
-        dadosConta = { ...dadosConta, ...dados.conta, cpf: '', foto: '' };
-      } else if (dados && dados.email) {
-        dadosConta = { ...dadosConta, ...dados, cpf: '', foto: '' };
-      }
-      // identidade não é mais restaurada do telefone — vem do servidor
-      return !!(dadosConta.email || dadosConta.nome);
-    }
-  } catch (e) {}
+  // Sem cache local de perfil. Só entra no Território se já houver sessão Supabase (sessionStorage).
   return false;
 }
 
@@ -6021,15 +6004,12 @@ let editandoPaginaVendasId = null;
 let modoDestaqueAtual = 'circulos';
 
 function carregarPaginasVendas() {
-  try {
-    paginasVendas = JSON.parse(localStorage.getItem('ecossistema_paginas_vendas') || '[]') || [];
-  } catch (e) {
-    paginasVendas = [];
-  }
+  // memória da sessão atual apenas (preenchida pelo servidor)
+  if (!Array.isArray(paginasVendas)) paginasVendas = [];
 }
 
 function salvarPaginasVendasLocal() {
-  localStorage.setItem('ecossistema_paginas_vendas', JSON.stringify(paginasVendas));
+  // não grava no telefone
 }
 
 function normalizarBotoes(p) {
@@ -6415,7 +6395,7 @@ async function abrirPaginaVendasPublica(id) {
   }
 
   if (hl) hl.textContent = 'Página indisponível';
-  if (sub) sub.textContent = 'Não encontrada no servidor. Confirme: (1) SQL de paginas_vendas rodado (2) Guardar com “Página pública” ligado (3) toast “no servidor”.';
+  if (sub) sub.textContent = 'A tabela paginas_vendas ainda não existe no Supabase, ou a página não foi publicada. No SQL Editor, rode o arquivo supabase_CRIAR_TUDO.sql e depois Guardar a página com “Pública” ligado.';
   if (ac) ac.innerHTML = '';
 }
 
